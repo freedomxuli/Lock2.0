@@ -1,6 +1,6 @@
 ﻿using SmartFramework4v2.Data;
 using SmartFramework4v2.Data.SqlServer;
-using SmartFramework4v2.Web.WebExecutor;
+using SmartFramework4v2.Web.WebExcutor;
 using System;
 using System.Collections.Generic;
 using System.Linq;

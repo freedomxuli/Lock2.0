@@ -1,6 +1,6 @@
 ﻿<%@ Application Language="C#" %>
 <%@ Import Namespace="SmartFramework4v2.Web.Common"%>
-<%@ Import Namespace="SmartFramework4v2.Web.WebExecutor" %>
+<%@ Import Namespace="SmartFramework4v2.Web.WebExcutor" %>
 <script runat="server">
 
     void Application_Start(object sender, EventArgs e)

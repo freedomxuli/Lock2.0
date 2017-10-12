@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using SmartFramework4v2.Data.SqlServer;
 using System.Text;
-using SmartFramework4v2.Web.WebExecutor;
+using SmartFramework4v2.Web.WebExcutor;
 
 /// <summary>
 ///UserClass 的摘要说明

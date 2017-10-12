@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using SmartFramework4v2.Web.WebExecutor;
+using SmartFramework4v2.Web.WebExcutor;
 using SmartFramework4v2.Data;
 using SmartFramework4v2.Data.SqlServer;
 using System.Collections;

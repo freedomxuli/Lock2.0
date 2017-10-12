@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using SmartFramework4v2.Web.WebExecutor;
+using SmartFramework4v2.Web.WebExcutor;
 
 /// <summary>
 ///Login 的摘要说明
