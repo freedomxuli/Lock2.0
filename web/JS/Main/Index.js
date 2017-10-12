@@ -1,4 +1,6 @@
-﻿
+﻿/// <reference path="DeskTop.js" />
+/// <reference path="DeskTop.js" />
+
 var now;
 function gettime() {
     var date = new Date();
@@ -111,10 +113,10 @@ Ext.onReady(function () {
                 border: false,
                 padding: 2,
                 id: 'MainPanel',
-                html: '<iframe name="mainframe" id="mainframe" frameborder="0" src="" width="100%" height="100%">'
+                html: '<iframe name="mainframe" id="mainframe" frameborder="0" src="page/Main/desktop.html" width="100%" height="100%">'
             }
             ];
-            me.callParent(arguments);
+            me.callParent(arguments);//../JS/Main/DeskTop.aspx
         }
 
     });

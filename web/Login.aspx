@@ -109,6 +109,7 @@ body,td,th {
             }
         }
         function Login() {
+            window.location.href = 'Main/Index.aspx';
             CS("CZCLZ.UserClass.Login", function(retVal) {
                 if (!retVal) {
                     Ext.MessageBox.show({

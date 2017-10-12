@@ -40,6 +40,7 @@
         sb.AppendFormat("<link type='text/css' href='{0}' rel='Stylesheet' />", GetVPath("~/js/easyui/themes/icon.css"));
         sb.AppendFormat("<link type='text/css' href='{0}' rel='Stylesheet' />", GetVPath("~/css/icon.css"));
         sb.AppendFormat("<link type='text/css' href='{0}' rel='Stylesheet' />", GetVPath("~/css/Main.css"));
+        sb.AppendFormat("<link type='text/css' href='{0}' rel='Stylesheet' />", GetVPath("~/css/DeskTop.css"));
         sb.AppendFormat("\r\n<script type='text/javascript' src='{0}'></script>", GetVPath("~/js/jquery-1.7.1.min.js"));
         sb.AppendFormat("\r\n<script type='text/javascript' src='{0}'></script>", GetVPath("~/js/easyui/jquery.easyui.min.js"));
         sb.AppendFormat("\r\n<script type='text/javascript' src='{0}'></script>",
@@ -51,7 +52,6 @@
         sb.AppendFormat("\r\n<script type='text/javascript' src='{0}'></script>", GetVPath("~/js/fun.js"));
         sb.AppendFormat("\r\n<script type='text/javascript' src='{0}'></script>", GetVPath("~/js/extjs/ext-lang-zh_CN.js"));
         sb.AppendFormat("\r\n<script type='text/javascript' src='{0}'></script>", GetVPath("~/js/FrameStack.js"));
-        
 
         Hashtable ht = new Hashtable();
         foreach (var key in Request.QueryString.AllKeys)
