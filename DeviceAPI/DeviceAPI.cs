@@ -89,5 +89,14 @@ namespace DeviceAPI
             string strreturn = DoPost(ServiceUrl + linkurl, "");
             return strreturn;
         }
+
+        //获取指定房间设备采集的信息房屋管理服务器查询
+        public static string GetCollectDeviceInfo(string homeno, string EquipmentId, string EquipmentAuthoriCode)
+        {
+            string data = "{HomeNo:\"" + homeno + "\",EquipmentId:\"" + EquipmentId + "\",EquipmentAuthoriCode:\"" + EquipmentAuthoriCode + "\"}";
+            string linkurl = string.Format(StrTemp, "collection", data);
+            string strreturn = DoPost(ServiceUrl + linkurl, "");
+            return strreturn;
+        }
     }
 }
