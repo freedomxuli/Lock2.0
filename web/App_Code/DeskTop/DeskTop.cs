@@ -87,7 +87,7 @@ public class DeskTop
                     dt_room.Rows[i]["DAY7"] = days[6];
                 }
 
-                string sql_order = @"SELECT a.AuthorizeNo,a.AuthorLiveStatus,a.RoomId,a.HotelId,CONVERT(varchar(10), a.LiveStartDate, 120) LiveStartDate,CONVERT(varchar(10), a.LiveEndDate, 120) LiveEndDate,
+                string sql_order = @"SELECT a.AuthorizeNo,a.AuthorLiveStatus,a.RoomId,a.HotelId,a.OrderUserState,CONVERT(varchar(10), a.LiveStartDate, 120) LiveStartDate,CONVERT(varchar(10), a.LiveEndDate, 120) LiveEndDate,
                                  a.UserId,a.RealName,a.CellPhone,case when a.PlatType = 0 then '其他平台' when a.PlatType = 1 then 'E家智宿' when a.PlatType = 2 then '美团' when a.PlatType = 3 then '线下' end PlatType,
                                  b.RoomGuidNumber,case when a.AuthorRoomStyle = 1 then '全天' when a.AuthorRoomStyle = 2 then '钟点' when a.AuthorRoomStyle = 3 then '月租' when a.AuthorRoomStyle = 4 then '看房' end AuthorRoomStyle
                                  FROM Lock_AuthorizeOrder a 
@@ -133,7 +133,40 @@ public class DeskTop
                     }
                 }
 
-                string html = SmartFramework4v2.Web.Common.SmartTemplate.RenderTemplate(HttpContext.Current.Server.MapPath("~/JS/Main/Tshow.cshtml"), new { days = days, week = week, dt_room = dt_room, dt_order = dt_order, dt_service = dt_service });
+                int dcldd = 0;//待处理订单
+                int jrrz = 0;//今日入住
+                int jrdtf = 0;//今日待退房
+                int jrkf = 0;//今日空房
+                string sql_hotel = "SELECT HandlerKind,ID FROM Lock_Hotel WHERE ID IN (SELECT HotelId FROM Lock_Room WHERE UserId = 1701)";
+                DataTable dt_hotel = db.ExecuteDataTable(sql_hotel);
+                for (int i = 0; i < dt_hotel.Rows.Count; i++)
+                {
+                    if (dt_hotel.Rows[i]["HandlerKind"].ToString() == "0")
+                    {
+                        DataRow[] drs = dt_order.Select("HotelId = '" + dt_hotel.Rows[i]["ID"].ToString() + "' and AuthorLiveStatus = 0");
+                        dcldd += drs.Length;
+                    }
+                    else
+                    {
+                        DataRow[] drs = dt_order.Select("HotelId = '" + dt_hotel.Rows[i]["ID"].ToString() + "' and (AuthorLiveStatus = 0 or (AuthorLiveStatus = 1 and OrderUserState = 0))");
+                        dcldd += drs.Length;
+                    }
+                }
+
+                DataRow[] drs_jrrz = dt_order.Select("LiveStartDate = '" + DateTime.Now.ToString("yyyy-MM-dd") + "'");
+                jrrz = drs_jrrz.Length;
+
+                DataRow[] drs_jrdtf = dt_order.Select("LiveEndDate = '" + DateTime.Now.ToString("yyyy-MM-dd") + "'");
+                jrdtf = drs_jrdtf.Length;
+
+                for (int i = 0; i < dt_room.Rows.Count; i++)
+                {
+                    DataRow[] drs = dt_order.Select("LiveStartDate <= '" + DateTime.Now.ToString("yyyy-MM-dd") + "' and LiveEndDate >= '" + DateTime.Now.ToString("yyyy-MM-dd") + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                    if(drs.Length==0)
+                        jrkf++;
+                }
+
+                string html = SmartFramework4v2.Web.Common.SmartTemplate.RenderTemplate(HttpContext.Current.Server.MapPath("~/JS/Main/Tshow.cshtml"), new { days = days, week = week, dt_room = dt_room, dt_order = dt_order, dt_service = dt_service, dcldd = dcldd, jrrz = jrrz, jrdtf = jrdtf, jrkf = jrkf });
 
                 return html;
             }
