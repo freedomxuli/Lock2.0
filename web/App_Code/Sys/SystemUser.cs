@@ -142,7 +142,7 @@ public class SystemUser
     {
         string sqlStr = "select UserID YH_ID, UserName YH_DLM,LoweredUserName YH_XM from aspnet_Users  where  UserID = @yh_id";
         SqlCommand cmd = new SqlCommand(sqlStr);
-        cmd.Parameters.AddWithValue("@yh_id", SystemUser.CurrentUser.UserID);
+        cmd.Parameters.AddWithValue("@yh_id", userid);
         using (DBConnection dbc = new DBConnection())
         {
             var dtb = dbc.ExecuteDataTable(cmd);
