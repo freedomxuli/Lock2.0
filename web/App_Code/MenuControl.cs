@@ -18,11 +18,17 @@ public class MenuControl
         <MainMenu>
         
             <Menu Name='系统设置'>            
-                <Item Name='宾馆管理'>
-                   <Tab p='' Name='宾馆管理'>approot/r/page/Hotel/HotelManage.html</Tab>
+                <Item Name='门店管理'>
+                   <Tab p='' Name='门店管理'>approot/r/page/Hotel/HotelManage.html</Tab>
                 </Item>
                <Item Name='房间管理'>
                    <Tab p='' Name='房间管理'>approot/r/page/Hotel/RoomManage.html</Tab>
+                </Item>
+               <Item Name='订单管理'>
+                   <Tab p='' Name='订单管理'>approot/r/page/Hotel/RoomManage.html</Tab>
+                </Item>
+               <Item Name='子店管理'>
+                   <Tab p='' Name='子店管理'>approot/r/page/Hotel/RoomManage.html</Tab>
                 </Item>
             </Menu>
           
