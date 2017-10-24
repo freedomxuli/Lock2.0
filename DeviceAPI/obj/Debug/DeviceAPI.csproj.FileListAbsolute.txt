@@ -1,0 +1,6 @@
+E:\MyProject\lockv2.0\DeviceAPI\bin\Debug\DeviceAPI.dll
+E:\MyProject\lockv2.0\DeviceAPI\bin\Debug\DeviceAPI.pdb
+E:\MyProject\lockv2.0\DeviceAPI\bin\Debug\Newtonsoft.Json.dll
+E:\MyProject\lockv2.0\DeviceAPI\obj\Debug\DeviceAPI.csprojResolveAssemblyReference.cache
+E:\MyProject\lockv2.0\DeviceAPI\obj\Debug\DeviceAPI.dll
+E:\MyProject\lockv2.0\DeviceAPI\obj\Debug\DeviceAPI.pdb
