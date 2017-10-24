@@ -16,7 +16,9 @@ var store = createSFW4Store({
        { name: 'UserName' },
        { name: 'FreezeMoney' },
        { name: 'CreateDate' },
-       { name: 'CompleteAddress' }
+       { name: 'CompleteAddress' },
+       { name: 'CellPhone' },
+       { name: 'RealName' }
 
     ],
     //sorters: [{ property: 'b', direction: 'DESC'}],
@@ -42,23 +44,14 @@ function loadData(nPage) {
 
 }
 
-
-//************************************页面方法***************************************
-
-function delDevice(id) {
-    Ext.MessageBox.confirm('删除提示', '是否要删除数据!', function (obj) {
-        if (obj == "yes") {
-            CS('CZCLZ.JjrDB.DeleteFdDevice', function (retVal) {
-                if (retVal) {
-                    CS('CZCLZ.JjrDB.GetFdSbList', function (retVal) {
-                        deviceStore.loadData(retVal);
-                    }, CS.onError, serviceId);
-                }
-            }, CS.onError, id);
+function edit(id) {
+    FrameStack.pushFrame({
+        url: "HotelAdd.html?id=" + id,
+        onClose: function (ret) {
+            loadData(1);
         }
     });
 }
-
 
 //************************************主界面*****************************************
 Ext.onReady(function () {
@@ -136,7 +129,16 @@ Ext.onReady(function () {
                                      sortable: false,
                                      menuDisabled: true,
                                      align: 'center',
-                                     text: "负责人"
+                                     text: "所属房东",
+                                     renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                         var CellPhone = "";
+                                         var RealName = "";
+                                         if (record.data.CellPhone != null)
+                                             CellPhone = record.data.CellPhone;
+                                         if (record.data.RealName != null)
+                                             RealName = record.data.RealName;
+                                         return CellPhone + "(" + RealName + ")";
+                                     }
                                  },
                                   {
                                       xtype: 'gridcolumn',
@@ -260,10 +262,10 @@ Ext.onReady(function () {
                                                                 for (var n = 0, len = rds.length; n < len; n++) {
                                                                     var rd = rds[n];
 
-                                                                    idlist.push(rd.get("User_ID"));
+                                                                    idlist.push(rd.get("ID"));
                                                                 }
 
-                                                                CS('CZCLZ.JjrDB.DelFdByids', function (retVal) {
+                                                                CS('CZCLZ.HotelDB.DeleteHotel', function (retVal) {
                                                                     if (retVal) {
                                                                         loadData(1);
                                                                     }

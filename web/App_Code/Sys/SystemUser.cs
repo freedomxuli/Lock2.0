@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using SmartFramework4v2.Data.SqlServer;
 using System.Text;
 using SmartFramework4v2.Web.WebExcutor;
+using System.Security.Cryptography;
 
 /// <summary>
 ///UserClass 的摘要说明
@@ -60,23 +61,41 @@ public class SystemUser
     {
         using (DBConnection dbc = new DBConnection())
         {
-            //string sqlStr = "select User_ID YH_ID, LoginName YH_DLM,User_XM YH_XM from tb_b_Users where  User_DelFlag=0 and LoginName=@LoginName and Password=@Password";
-            //string sqlStr = "select UserId YH_ID, UserName YH_DLM,LoweredUserName YH_XM from aspnet_Users where  UserName=@LoginName and Password=@Password";
-            //SqlCommand cmd = new SqlCommand(sqlStr);
-            //cmd.Parameters.AddWithValue("@LoginName", username);
-            //cmd.Parameters.AddWithValue("@Password", password);
-            //var dtUser = dbc.ExecuteDataTable(cmd);
+            string sqlStr = "select * from aspnet_Users where LoweredUserName=@LoweredUserName";
+            SqlCommand cmd = new SqlCommand(sqlStr);
+            cmd.Parameters.AddWithValue("@LoweredUserName", username);
+            var dtUser = dbc.ExecuteDataTable(cmd);
             SystemUser su = new SystemUser();
-            //if (dtUser.Rows.Count > 0)
-            //{
-            //    su.m_data = dtUser.Rows[0];
+            if (dtUser.Rows.Count > 0)
+            {
+                int pwf = Int16.Parse(dtUser.Rows[0]["PasswordFormat"].ToString());
+                string pw = dtUser.Rows[0]["Password"].ToString();
+                string pws = dtUser.Rows[0]["PasswordSalt"].ToString();
+                if (pwf == 0 && pw.Equals(password))
+                {
+                    su.m_data = dtUser.Rows[0];
+                    HttpContext.Current.Response.Cookies.Add(new HttpCookie("userid", dtUser.Rows[0]["UserId"].ToString()) { HttpOnly = true });
+                    return su;
+                }
+                else if (pwf == 1)
+                {
+                    byte[] bytes = Encoding.Unicode.GetBytes(password);
+                    byte[] src = Convert.FromBase64String(pws);
+                    byte[] dst = new byte[src.Length + bytes.Length];
+                    byte[] inArray = null;
+                    Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+                    Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+                    inArray = HashAlgorithm.Create("SHA1").ComputeHash(dst);
+                    if (pw.Equals(Convert.ToBase64String(inArray)))
+                    {
+                        su.m_data = dtUser.Rows[0];
+                        HttpContext.Current.Response.Cookies.Add(new HttpCookie("userid", dtUser.Rows[0]["UserId"].ToString()) { HttpOnly = true });
+                        return su;
+                    }
+                }
+            }
 
-            //    HttpContext.Current.Response.Cookies.Add(new HttpCookie("userid", dtUser.Rows[0]["YH_ID"].ToString()) { HttpOnly = true });
-            //    return su;
-            //}
-            //return null;
-            HttpContext.Current.Response.Cookies.Add(new HttpCookie("userid", "1701") { HttpOnly = true });
-            return su;
+            return null;
         }
     }
     public static void Logout()

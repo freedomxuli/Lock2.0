@@ -69,7 +69,7 @@ body,td,th {
                     </tr>
                     <tr>
                       <td height="35" align="right">&nbsp;</td>
-                      <td align="left"><INPUT type="password" style="BORDER-BOTTOM: #cbd0d4 1px solid; BORDER-LEFT: #cbd0d4 1px solid; WIDTH: 120px; HEIGHT: 20px; COLOR: #333333; FONT-SIZE: 14px; BORDER-TOP: #cbd0d4 1px solid; BORDER-RIGHT: #cbd0d4 1px solid" id="password" name="password" /></td>
+                      <td align="left"><INPUT type="password" style="BORDER-BOTTOM: #cbd0d4 1px solid; BORDER-LEFT: #cbd0d4 1px solid; WIDTH: 120px; HEIGHT: 20px; COLOR: #333333; FONT-SIZE: 14px; BORDER-TOP: #cbd0d4 1px solid; BORDER-RIGHT: #cbd0d4 1px solid" id="password" name="password" value="123456" /></td>
                     </tr>
                     <tr>
                       <td height="35" align="right">&nbsp;</td>

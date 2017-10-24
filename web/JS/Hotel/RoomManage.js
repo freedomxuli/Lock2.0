@@ -9,14 +9,14 @@ var store = createSFW4Store({
     currentPage: 1,
     fields: [
        { name: 'ID' },
+       { name: 'RoomNo' },
+       { name: 'RoomGuidNumber' },
        { name: 'HotelName' },
-       { name: 'HotelNo' },
-       { name: 'Mobile' },
-       { name: 'Tel' },
-       { name: 'UserName' },
-       { name: 'FreezeMoney' },
-       { name: 'CreateDate' },
-       { name: 'CompleteAddress' }
+       { name: 'CellPhone' },
+       { name: 'RealName' },
+       { name: 'RoomKind' },
+       { name: 'RoomCheckStatus' },
+       { name: 'RoomLiveStatus' }
 
     ],
     //sorters: [{ property: 'b', direction: 'DESC'}],
@@ -29,8 +29,10 @@ var store = createSFW4Store({
 function loadData(nPage) {
 
     var cx_mc = Ext.getCmp("cx_mc").getValue();
+    var cx_no = Ext.getCmp("cx_no").getValue();
+    var cx_lx = Ext.getCmp("cx_lx").getValue();
 
-    CS('CZCLZ.HotelDB.GetRoomList', function (retVal) {
+    CS('CZCLZ.RoomDB.GetRoomList', function (retVal) {
         store.setData({
             data: retVal.dt,
             pageSize: pageSize,
@@ -38,7 +40,7 @@ function loadData(nPage) {
             currentPage: retVal.cp
             //sorters: { property: 'a', direction: 'DESC' }
         });
-    }, CS.onError, nPage, pageSize, cx_mc);
+    }, CS.onError, nPage, pageSize, cx_mc, cx_no, cx_lx);
 
 }
 
@@ -95,78 +97,100 @@ Ext.onReady(function () {
                             {
                                 xtype: 'gridcolumn',
                                 flex: 1,
-                                dataIndex: 'HotelName',
+                                dataIndex: 'RoomNo',
                                 sortable: false,
                                 menuDisabled: true,
                                 align: 'center',
-                                text: "宾馆名称"
+                                text: "房间编号"
                             },
                              {
                                  xtype: 'gridcolumn',
                                  flex: 1,
-                                 dataIndex: 'HotelNo',
+                                 dataIndex: 'RoomGuidNumber',
                                  sortable: false,
                                  menuDisabled: true,
                                  align: 'center',
-                                 text: "宾馆编号"
+                                 text: "房间唯一编码"
                              },
                               {
                                   xtype: 'gridcolumn',
-                                  flex: 1,
-                                  dataIndex: 'Mobile',
+                                  flex: 1.5,
+                                  dataIndex: 'HotelName',
                                   sortable: false,
                                   menuDisabled: true,
                                   align: 'center',
-                                  text: "宾馆(手机)"
+                                  text: "所属门店"
                               },
 
                                 {
                                     xtype: 'gridcolumn',
                                     flex: 1,
-                                    dataIndex: 'Tel',
+                                    dataIndex: 'CellPhone',
                                     sortable: false,
                                     menuDisabled: true,
                                     align: 'center',
-                                    text: "宾馆(座机)"
+                                    text: "所属房东",
+                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                        var CellPhone = "";
+                                        var RealName = "";
+                                        if (record.data.CellPhone != null)
+                                            CellPhone = record.data.CellPhone;
+                                        if (record.data.RealName != null)
+                                            RealName = record.data.RealName;
+                                        return CellPhone + "(" + RealName + ")";
+                                    }
                                 },
                                  {
                                      xtype: 'gridcolumn',
                                      flex: 1,
-                                     dataIndex: 'UserName',
+                                     dataIndex: 'RoomKind',
                                      sortable: false,
                                      menuDisabled: true,
                                      align: 'center',
-                                     text: "负责人"
+                                     text: "房间类型",
+                                     renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                         if (value == "1")
+                                             return "分租";
+                                         else if (value == "2")
+                                             return "整租";
+                                     }
                                  },
                                   {
                                       xtype: 'gridcolumn',
                                       flex: 1,
-                                      dataIndex: 'FreezeMoney',
+                                      dataIndex: 'RoomCheckStatus',
                                       sortable: false,
                                       menuDisabled: true,
                                       align: 'center',
-                                      text: "余额"
+                                      text: "检查状态",
+                                      renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                          if (value == "1")
+                                              return "正常";
+                                          else if (value == "2")
+                                              return "维修";
+
+                                      }
                                   },
                                    {
                                        xtype: 'gridcolumn',
                                        flex: 1,
-                                       dataIndex: 'CompleteAddress',
+                                       dataIndex: 'RoomLiveStatus',
                                        sortable: false,
                                        menuDisabled: true,
                                        align: 'center',
-                                       text: "宾馆地址"
+                                       text: "入住状态",
+                                       renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                           if (value == "1")
+                                               return "空闲";
+                                           else if (value == "2")
+                                               return "已预订";
+                                           else if (value == "3")
+                                               return "已入住";
+                                           else if (value == "4")
+                                               return "待退房";
+                                       }
                                    },
 
-                            {
-                                xtype: 'datecolumn',
-                                flex: 1,
-                                format: 'Y-m-d H:i:s',
-                                dataIndex: 'CreateDate',
-                                sortable: false,
-                                menuDisabled: true,
-                                align: 'center',
-                                text: "创建时间"
-                            },
 
                             {
                                 text: '操作',
@@ -196,10 +220,34 @@ Ext.onReady(function () {
                                             xtype: 'textfield',
                                             id: 'cx_mc',
                                             width: 180,
-                                            labelWidth: 80,
+                                            labelWidth: 60,
                                             fieldLabel: '宾馆名称'
                                         },
-
+                                        {
+                                            xtype: 'textfield',
+                                            id: 'cx_no',
+                                            width: 180,
+                                            labelWidth: 60,
+                                            fieldLabel: '房间编号'
+                                        },
+                                         {
+                                             xtype: 'combobox',
+                                             id: 'cx_lx',
+                                             fieldLabel: '房间类型',
+                                             width: 180,
+                                             labelWidth: 60,
+                                             queryMode: 'local',
+                                             displayField: 'TEXT',
+                                             valueField: 'VALUE',
+                                             store: new Ext.data.ArrayStore({
+                                                 fields: ['TEXT', 'VALUE'],
+                                                 data: [
+                                                     ['全部', ''],
+                                                     ['分租', '1'],
+                                                     ['整租', '2']
+                                                 ]
+                                             })
+                                         },
                                         {
                                             xtype: 'buttongroup',
                                             title: '',
