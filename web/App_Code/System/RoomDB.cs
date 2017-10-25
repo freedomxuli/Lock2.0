@@ -1,4 +1,6 @@
-﻿using SmartFramework4v2.Data;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SmartFramework4v2.Data;
 using SmartFramework4v2.Data.SqlServer;
 using SmartFramework4v2.Web.Common.JSON;
 using SmartFramework4v2.Web.WebExcutor;
@@ -254,6 +256,26 @@ public class RoomDB
             {
                 throw ex;
             }
+        }
+    }
+
+    [CSMethod("GetService")]
+    public object GetService()
+    {
+        try
+        {
+            string url = "http://wx.zhisuroom.com/API/LockHandler.ashx";
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("interface", "GetDevice");
+            parameters.Add("deviceno", "177013975559");
+            parameters.Add("devicesn", "17101011");
+            string result = WebService.CallService(url,parameters);
+            JObject json = JsonConvert.DeserializeObject(result) as JObject;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
 
