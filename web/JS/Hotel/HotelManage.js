@@ -211,12 +211,12 @@ Ext.onReady(function () {
                                                     iconCls: 'search',
                                                     text: '查询',
                                                     handler: function () {
-                                                        //loadData(1);
-                                                        CS('CZCLZ.RoomDB.GetService', function (retVal) {
-                                                            if (retVal) {
-                                                              //  loadData(1);
-                                                            }
-                                                        }, CS.onError);
+                                                        loadData(1);
+                                                        //CS('CZCLZ.RoomDB.GetService', function (retVal) {
+                                                        //    if (retVal) {
+                                                        //      //  loadData(1);
+                                                        //    }
+                                                        //}, CS.onError);
                                                     }
                                                 }
                                             ]

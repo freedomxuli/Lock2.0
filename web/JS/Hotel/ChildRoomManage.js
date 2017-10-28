@@ -1,4 +1,6 @@
-﻿
+﻿var ParentId = queryString.ParentId;
+var RoomGuid = queryString.RoomGuid;
+var HotelId = queryString.HotelId;
 var pageSize = 15;
 var RoomId;
 
@@ -11,9 +13,7 @@ var store = createSFW4Store({
        { name: 'ID' },
        { name: 'RoomNo' },
        { name: 'RoomGuidNumber' },
-       { name: 'RoomGuid' },
        { name: 'HotelName' },
-          { name: 'HotelId' },
        { name: 'CellPhone' },
        { name: 'RealName' },
        { name: 'RoomKind' },
@@ -59,12 +59,7 @@ var DeviceTypeStore = Ext.create('Ext.data.Store', {
 
 
 function loadData(nPage) {
-
-    var cx_mc = Ext.getCmp("cx_mc").getValue();
-    var cx_no = Ext.getCmp("cx_no").getValue();
-    var cx_lx = Ext.getCmp("cx_lx").getValue();
-
-    CS('CZCLZ.RoomDB.GetRoomList', function (retVal) {
+    CS('CZCLZ.RoomDB.GetChildRoomList', function (retVal) {
         store.setData({
             data: retVal.dt,
             pageSize: pageSize,
@@ -72,12 +67,12 @@ function loadData(nPage) {
             currentPage: retVal.cp
             //sorters: { property: 'a', direction: 'DESC' }
         });
-    }, CS.onError, nPage, pageSize, cx_mc, cx_no, cx_lx);
+    }, CS.onError, nPage, pageSize, ParentId);
 }
 
 function edit(id) {
     FrameStack.pushFrame({
-        url: "RoomAdd.html?id=" + id,
+        url: "ChildRoomAdd.html?id=" + id + "&ParentId=" + ParentId + "&RoomGuid=" + RoomGuid + "&HotelId=" + HotelId,
         onClose: function (ret) {
             loadData(1);
         }
@@ -120,15 +115,6 @@ function sbgl(id) {
         CS('CZCLZ.RoomDB.GetRoomDevice', function (retVal) {
             deviceStore.loadData(retVal);
         }, CS.onError, RoomId);
-    });
-}
-
-function zjgl(id, RoomGuid, HotelId) {
-    FrameStack.pushFrame({
-        url: "ChildRoomManage.html?ParentId=" + id + "&RoomGuid=" + RoomGuid + "&HotelId=" + HotelId,
-        onClose: function (ret) {
-            loadData(1);
-        }
     });
 }
 
@@ -878,21 +864,6 @@ Ext.onReady(function () {
                                         return CellPhone + "(" + RealName + ")";
                                     }
                                 },
-                                 {
-                                     xtype: 'gridcolumn',
-                                     width: 80,
-                                     dataIndex: 'RoomKind',
-                                     sortable: false,
-                                     menuDisabled: true,
-                                     align: 'center',
-                                     text: "房间类型",
-                                     renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                         if (value == "1")
-                                             return "分租";
-                                         else if (value == "2")
-                                             return "整租";
-                                     }
-                                 },
                                   {
                                       xtype: 'gridcolumn',
                                       width: 80,
@@ -940,8 +911,6 @@ Ext.onReady(function () {
                                     var str;
                                     str = "<a href='#' onclick='edit(\"" + record.data.ID + "\")'>编辑</a>";
                                     var roomkind = record.data.RoomKind;
-                                    if (roomkind == 1)
-                                        str += "|<a href='#' onclick='zjgl(\"" + record.data.ID + "\",\"" + record.data.RoomGuid + "\",\"" + record.data.HotelId + "\")'>子间管理</a>";
                                     str += "|<a href='#' onclick='sbgl(\"" + record.data.ID + "\")'>设备管理</a>";
                                     str += "|<a href='#' onclick='jggl(\"" + record.data.ID + "\")'>价格管理</a>";
                                     str += "|<a href='#' onclick='wpgl(\"" + record.data.ID + "\")'>物品管理</a>";
@@ -959,38 +928,7 @@ Ext.onReady(function () {
                                     dock: 'top',
                                     items: [
 
-                                        {
-                                            xtype: 'textfield',
-                                            id: 'cx_mc',
-                                            width: 180,
-                                            labelWidth: 60,
-                                            fieldLabel: '宾馆名称'
-                                        },
-                                        {
-                                            xtype: 'textfield',
-                                            id: 'cx_no',
-                                            width: 180,
-                                            labelWidth: 60,
-                                            fieldLabel: '房间编号'
-                                        },
-                                         {
-                                             xtype: 'combobox',
-                                             id: 'cx_lx',
-                                             fieldLabel: '房间类型',
-                                             width: 180,
-                                             labelWidth: 60,
-                                             queryMode: 'local',
-                                             displayField: 'TEXT',
-                                             valueField: 'VALUE',
-                                             store: new Ext.data.ArrayStore({
-                                                 fields: ['TEXT', 'VALUE'],
-                                                 data: [
-                                                     ['全部', ''],
-                                                     ['分租', '1'],
-                                                     ['整租', '2']
-                                                 ]
-                                             })
-                                         },
+
                                         {
                                             xtype: 'buttongroup',
                                             title: '',
@@ -1015,7 +953,7 @@ Ext.onReady(function () {
                                                     text: '新增',
                                                     handler: function () {
                                                         FrameStack.pushFrame({
-                                                            url: "RoomAdd.html",
+                                                            url: "ChildRoomAdd.html?ParentId=" + ParentId + "&RoomGuid=" + RoomGuid + "&HotelId=" + HotelId,
                                                             onClose: function (ret) {
                                                                 loadData(1);
                                                             }
@@ -1069,25 +1007,20 @@ Ext.onReady(function () {
                                                 }
                                             ]
                                         },
-                                        {
-                                            xtype: 'buttongroup',
-                                            title: '',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    iconCls: 'add',
-                                                    text: '一键授权',
-                                                    handler: function () {
-                                                        FrameStack.pushFrame({
-                                                            url: "RoomAdd.html",
-                                                            onClose: function (ret) {
-                                                                loadData(1);
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                            ]
-                                        },
+                                         {
+                                             xtype: 'buttongroup',
+                                             title: '',
+                                             items: [
+                                                 {
+                                                     xtype: 'button',
+                                                     iconCls: 'back',
+                                                     text: '返回',
+                                                     handler: function () {
+                                                         FrameStack.popFrame();
+                                                     }
+                                                 }
+                                             ]
+                                         }
 
                                     ]
                                 },

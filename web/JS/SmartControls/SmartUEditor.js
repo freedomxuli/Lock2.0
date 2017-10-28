@@ -18,7 +18,7 @@
             //console.log('width:' + me.getWidth() + ';height:' + me.getHeight());
             //var width = me.width - 205;
             //var height = me.height - 109;
-            var config = { initialFrameWidth: "100%", initialFrameHeight:"100%", zIndex:99999 };
+            var config = { initialFrameWidth: "100%", initialFrameHeight:"100%", zIndex:1 };
             me.ueditorInstance = UE.getEditor(id, config);
             me.ueditorInstance.ready(function () {
                 me.initialized = true;
