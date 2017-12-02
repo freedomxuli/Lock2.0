@@ -32,7 +32,8 @@ public class HotelDB
                 }
 
 
-                string str = "select a.*,b.CellPhone,b.RealName from Lock_Hotel a left join aspnet_Members b on a.UserId=b.UserId where 1=1";
+                string str = @"select a.*,b.CellPhone,b.RealName from Lock_Hotel a left join aspnet_Members b on a.UserId=b.UserId 
+                where (a.UserId in(select MEUSERID from aspnet_FdAndMdUser where FDUSERID=" + SystemUser.CurrentUser.UserID + ") or a.UserId=" + SystemUser.CurrentUser.UserID + ")";
                 str += where;
 
                 //开始取分页数据
@@ -250,4 +251,64 @@ public class HotelDB
         }
     }
 
+    [CSMethod("GetManagerList")]
+    public object GetManagerList()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select MEUSERID VALUE,RealName TEXT from aspnet_FdAndMdUser a left join aspnet_Members b on a.MEUSERID=b.UserId where a.FDUSERID=" + SystemUser.CurrentUser.UserID;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("UpdateHotelManager")]
+    public object UpdateHotelManager(int HotelId, int UserId)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                dbc.ExecuteNonQuery("update Lock_Hotel set UserId=" + UserId + " where ID=" + HotelId);
+                dbc.ExecuteNonQuery("update Lock_Room set UserId=" + UserId + " where HotelId=" + HotelId);
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("getUserInfo")]
+    public object getUserInfo(string phone)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sql = @"select a.RealName,d.RoleName,a.CellPhone,b.IdCardNo
+  from aspnet_Members a left join aspnet_Users b on a.UserId=b.UserId
+  left join aspnet_UsersInRoles c on a.UserId=c.UserId
+  left join aspnet_Roles d on c.RoleId=d.RoleId
+  where a.CellPhone= " + dbc.ToSqlValue(phone) + "  order by d.RoleName desc";
+                DataTable dt = dbc.ExecuteDataTable(sql);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
 }

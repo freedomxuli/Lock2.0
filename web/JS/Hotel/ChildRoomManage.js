@@ -18,7 +18,8 @@ var store = createSFW4Store({
        { name: 'RealName' },
        { name: 'RoomKind' },
        { name: 'RoomCheckStatus' },
-       { name: 'RoomLiveStatus' }
+       { name: 'RoomLiveStatus' },
+       { name: 'ParentRoonNo' }
 
     ],
     //sorters: [{ property: 'b', direction: 'DESC'}],
@@ -438,6 +439,32 @@ Ext.define('deviceWin', {
                 ],
                 buttonAlign: 'center',
                 buttons: [
+                      {
+                          text: '设备绑定',
+                          handler: function () {
+                              Ext.MessageBox.confirm('提示', '确定绑定？', function (obj) {
+                                  if (obj == "yes") {
+                                      CS('CZCLZ.RoomDB.DeviceSQ', function (retVal) {
+                                          if (retVal) {
+                                              Ext.MessageBox.alert("提示", "绑定成功", function () {
+                                                  Ext.getCmp("deviceWin").close();
+                                                  loadData(1);
+                                              });
+                                          }
+                                          else {
+                                              Ext.MessageBox.alert("提示", "绑定失败", function () {
+                                                  Ext.getCmp("deviceWin").close();
+                                              });
+                                          }
+                                      }, CS.onError, RoomId);
+
+                                  }
+                                  else {
+                                      return;
+                                  }
+                              });
+                          }
+                      },
                     {
                         text: '关闭',
                         handler: function () {
@@ -751,7 +778,7 @@ Ext.define('addWin', {
                          store: new Ext.data.ArrayStore({
                              fields: ['TEXT', 'VALUE'],
                              data: [
-                                 ['分租', '1'],
+                                 ['合租', '1'],
                                  ['整租', '2']
                              ]
                          }),
@@ -846,24 +873,33 @@ Ext.onReady(function () {
                                   text: "所属门店"
                               },
 
-                                {
-                                    xtype: 'gridcolumn',
-                                    flex: 1,
-                                    dataIndex: 'CellPhone',
-                                    sortable: false,
-                                    menuDisabled: true,
-                                    align: 'center',
-                                    text: "所属房东",
-                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                        var CellPhone = "";
-                                        var RealName = "";
-                                        if (record.data.CellPhone != null)
-                                            CellPhone = record.data.CellPhone;
-                                        if (record.data.RealName != null)
-                                            RealName = record.data.RealName;
-                                        return CellPhone + "(" + RealName + ")";
-                                    }
-                                },
+                                //{
+                                //    xtype: 'gridcolumn',
+                                //    flex: 1,
+                                //    dataIndex: 'CellPhone',
+                                //    sortable: false,
+                                //    menuDisabled: true,
+                                //    align: 'center',
+                                //    text: "所属房东",
+                                //    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                //        var CellPhone = "";
+                                //        var RealName = "";
+                                //        if (record.data.CellPhone != null)
+                                //            CellPhone = record.data.CellPhone;
+                                //        if (record.data.RealName != null)
+                                //            RealName = record.data.RealName;
+                                //        return CellPhone + "(" + RealName + ")";
+                                //    }
+                                //},
+                                  {
+                                      xtype: 'gridcolumn',
+                                      flex: 1.5,
+                                      dataIndex: 'ParentRoonNo',
+                                      sortable: false,
+                                      menuDisabled: true,
+                                      align: 'center',
+                                      text: "所属房间"
+                                  },
                                   {
                                       xtype: 'gridcolumn',
                                       width: 80,
@@ -931,6 +967,7 @@ Ext.onReady(function () {
 
                                         {
                                             xtype: 'buttongroup',
+                                            hidden: true,
                                             title: '',
                                             items: [
                                                 {
@@ -1041,7 +1078,7 @@ Ext.onReady(function () {
 
     loadData(1);
 
-    CS('CZCLZ.RoomDB.GetDeviceTypeCombobox', function (retVal) {
+    CS('CZCLZ.RoomDB.GetChildDeviceTypeCombobox', function (retVal) {
         if (retVal) {
             DeviceTypeStore.loadData(retVal, true);
         }

@@ -24,7 +24,13 @@ var store = createSFW4Store({
        { name: 'StartDate' },
        { name: 'EndDate' },
        { name: 'Price' },
-       { name: 'WeekEndPrice' }
+       { name: 'WeekEndPrice' },
+       { name: 'HourPrice' },
+       { name: 'HourWeekEndPrice' },
+         { name: 'HourPrice2' },
+       { name: 'HourWeekEndPrice2' },
+         { name: 'HourPrice3' },
+       { name: 'HourWeekEndPrice3' }
     ],
     onPageChange: function (sto, nPage, sorters) {
         loadData(nPage);
@@ -34,8 +40,8 @@ var store = createSFW4Store({
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
 
-    height: 350,
-    width: 500,
+    height: 400,
+    width: 450,
     layout: {
         type: 'fit'
     },
@@ -59,36 +65,15 @@ Ext.define('addWin', {
                          name: 'ID',
                          hidden: true,
                          fieldLabel: 'ID',
-                         labelWidth: 70,
+                         labelWidth: 90,
                          anchor: '100%'
                      },
-                      {
-                          xtype: 'combobox',
-                          name: 'PriceType',
-                          fieldLabel: '价格类型',
-                          anchor: '100%',
-                          labelWidth: 70,
-                          queryMode: 'local',
-                          displayField: 'TEXT',
-                          valueField: 'VALUE',
-                          allowBlank: false,
-                          store: new Ext.data.ArrayStore({
-                              fields: ['TEXT', 'VALUE'],
-                              data: [
-                                  ['全天房价', '1'],
-                                  ['钟点房1价', '2'],
-                                  ['钟点房2价', '2'],
-                                  ['钟点房3价', '3'],
-                                  ['月租房价', '4']
-                              ]
-                          })
-                      },
                     {
                         xtype: 'datefield',
                         format: 'Y-m-d H:i:s',
                         name: 'StartDate',
                         fieldLabel: '开始时间',
-                        labelWidth: 70,
+                        labelWidth: 90,
                         allowBlank: false,
                         anchor: '100%'
                     },
@@ -97,7 +82,7 @@ Ext.define('addWin', {
                         format: 'Y-m-d H:i:s',
                         name: 'EndDate',
                         fieldLabel: '结束时间',
-                        labelWidth: 70,
+                        labelWidth: 90,
                         allowBlank: false,
                         anchor: '100%'
                     },
@@ -105,7 +90,7 @@ Ext.define('addWin', {
                         xtype: 'numberfield',
                         name: 'Price',
                         fieldLabel: '平时价',
-                        labelWidth: 70,
+                        labelWidth: 90,
                         allowBlank: false,
                         anchor: '100%'
                     },
@@ -114,10 +99,61 @@ Ext.define('addWin', {
                        xtype: 'numberfield',
                        name: 'WeekEndPrice',
                        fieldLabel: '周末价',
-                       labelWidth: 70,
+                       labelWidth: 90,
                        allowBlank: false,
                        anchor: '100%'
                    },
+                    {
+                        xtype: 'numberfield',
+                        name: 'HourPrice',
+                        fieldLabel: '钟点房1平时价',
+                        labelWidth: 90,
+                        allowBlank: false,
+                        anchor: '100%'
+                    },
+
+                   {
+                       xtype: 'numberfield',
+                       name: 'HourWeekEndPrice',
+                       fieldLabel: '钟点房1周末价',
+                       labelWidth: 90,
+                       allowBlank: false,
+                       anchor: '100%'
+                   },
+                    {
+                        xtype: 'numberfield',
+                        name: 'HourPrice2',
+                        fieldLabel: '钟点房2平时价',
+                        labelWidth: 90,
+                        allowBlank: false,
+                        anchor: '100%'
+                    },
+
+                   {
+                       xtype: 'numberfield',
+                       name: 'HourWeekEndPrice2',
+                       fieldLabel: '钟点房2周末价',
+                       labelWidth: 90,
+                       allowBlank: false,
+                       anchor: '100%'
+                   },
+                    {
+                        xtype: 'numberfield',
+                        name: 'HourPrice3',
+                        fieldLabel: '钟点房3平时价',
+                        labelWidth: 90,
+                        allowBlank: false,
+                        anchor: '100%'
+                    },
+
+                   {
+                       xtype: 'numberfield',
+                       name: 'HourWeekEndPrice3',
+                       fieldLabel: '钟点房3周末价',
+                       labelWidth: 90,
+                       allowBlank: false,
+                       anchor: '100%'
+                   }
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -221,9 +257,63 @@ Ext.onReady(function () {
                                  align: 'center',
                                  text: "周末价"
                              },
+                             {
+                                 xtype: 'gridcolumn',
+                                 flex: 1,
+                                 dataIndex: 'HourPrice',
+                                 sortable: false,
+                                 menuDisabled: true,
+                                 align: 'center',
+                                 text: "钟点房1平时价"
+                             },
+                             {
+                                 xtype: 'gridcolumn',
+                                 flex: 1,
+                                 dataIndex: 'HourWeekEndPrice',
+                                 sortable: false,
+                                 menuDisabled: true,
+                                 align: 'center',
+                                 text: "钟点房1周末价"
+                             },
+                                   {
+                                       xtype: 'gridcolumn',
+                                       flex: 1,
+                                       dataIndex: 'HourPrice2',
+                                       sortable: false,
+                                       menuDisabled: true,
+                                       align: 'center',
+                                       text: "钟点房2平时价"
+                                   },
+                             {
+                                 xtype: 'gridcolumn',
+                                 flex: 1,
+                                 dataIndex: 'HourWeekEndPrice2',
+                                 sortable: false,
+                                 menuDisabled: true,
+                                 align: 'center',
+                                 text: "钟点房2周末价"
+                             },
+                                   {
+                                       xtype: 'gridcolumn',
+                                       flex: 1,
+                                       dataIndex: 'HourPrice3',
+                                       sortable: false,
+                                       menuDisabled: true,
+                                       align: 'center',
+                                       text: "钟点房3平时价"
+                                   },
+                             {
+                                 xtype: 'gridcolumn',
+                                 flex: 1,
+                                 dataIndex: 'HourWeekEndPrice3',
+                                 sortable: false,
+                                 menuDisabled: true,
+                                 align: 'center',
+                                 text: "钟点房3周末价"
+                             },
                             {
                                 text: '操作',
-                                width: 300,
+                                width: 80,
                                 align: 'center',
                                 sortable: false,
                                 menuDisabled: true,
@@ -244,27 +334,27 @@ Ext.onReady(function () {
                                     dock: 'top',
                                     items: [
 
-                                         {
-                                             xtype: 'combobox',
-                                             id: 'cx_lx',
-                                             fieldLabel: '价格类型',
-                                             width: 180,
-                                             labelWidth: 60,
-                                             queryMode: 'local',
-                                             displayField: 'TEXT',
-                                             valueField: 'VALUE',
-                                             store: new Ext.data.ArrayStore({
-                                                 fields: ['TEXT', 'VALUE'],
-                                                 data: [
-                                                     ['全天房价', '1'],
-                                                     ['钟点房1价', '2'],
-                                                     ['钟点房2价', '2'],
-                                                     ['钟点房3价', '3'],
-                                                     ['月租房价', '4']
-                                                 ]
-                                             }),
-                                             value: '1'
-                                         },
+                                         //{
+                                         //    xtype: 'combobox',
+                                         //    id: 'cx_lx',
+                                         //    fieldLabel: '价格类型',
+                                         //    width: 180,
+                                         //    labelWidth: 60,
+                                         //    queryMode: 'local',
+                                         //    displayField: 'TEXT',
+                                         //    valueField: 'VALUE',
+                                         //    store: new Ext.data.ArrayStore({
+                                         //        fields: ['TEXT', 'VALUE'],
+                                         //        data: [
+                                         //            ['全天房价', '1'],
+                                         //            ['钟点房1价', '2'],
+                                         //            ['钟点房2价', '2'],
+                                         //            ['钟点房3价', '3'],
+                                         //            ['月租房价', '4']
+                                         //        ]
+                                         //    }),
+                                         //    value: '1'
+                                         //},
 
                                         {
                                             xtype: 'buttongroup',

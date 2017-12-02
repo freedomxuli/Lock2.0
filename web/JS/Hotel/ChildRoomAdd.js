@@ -2,6 +2,7 @@
 var RoomGuid = queryString.RoomGuid;
 var HotelId = queryString.HotelId;
 var ParentId = queryString.ParentId;
+var tag
 
 var roomPic = [];
 var goodsPic = [];
@@ -36,36 +37,112 @@ function tp(v) {
     });
 }
 
+
 function initData() {
-    if (id != null && id != "") {
-        CS('CZCLZ.RoomDB.GetRoomInfo', function (retVal) {
-            if (retVal) {
-                Ext.getCmp('addform').form.setValues(retVal[0]);
+    CS('CZCLZ.RoomDB.GetTag', function (ret) {
+        if (ret) {
+            tag = ret;
+            var Items = [];
+            for (var i = 0; i < ret.length; i++) {
+                //var checkbox = new Ext.form.field.Checkbox({
+                //    xtype: 'checkboxfield',
+                //    boxLabel: ret[i].TagName,
+                //    name: 'tag',
+                //    hideLabel: true,
+                //    inputValue: ret[i].ID + '',
+                //    handler: function (chk, checked) {
+                //        if (checked) {
+                //            alert(123);
+                //            var tf = new Ext.form.TextField({
+                //                xtype: 'textfield',
+                //                margin: '10 10 10 10',
+                //                // id: ret[i].ID + '',
+                //                columnWidth: 0.5
+                //            });
+                //            Ext.getCmp("addform").items.add(tf);
+                //        }
+                //        else {
 
-                if (retVal[0]["Image1"] != "" && retVal[0]["Image1"] != null)
-                    roomPic.push(retVal[0]["Image1"]);
-                if (retVal[0]["Image2"] != "" && retVal[0]["Image2"] != null)
-                    roomPic.push(retVal[0]["Image2"]);
-                if (retVal[0]["Image3"] != "" && retVal[0]["Image3"] != null)
-                    roomPic.push(retVal[0]["Image3"]);
-                if (retVal[0]["Image4"] != "" && retVal[0]["Image4"] != null)
-                    roomPic.push(retVal[0]["Image4"]);
-                if (retVal[0]["Image5"] != "" && retVal[0]["Image5"] != null)
-                    roomPic.push(retVal[0]["Image5"]);
+                //        }
+                //    }
+                //});
+                //Items.push(checkbox);
 
-                if (retVal[0]["GoodsImage1"] != "" && retVal[0]["GoodsImage1"] != null)
-                    goodsPic.push(retVal[0]["GoodsImage1"]);
-                if (retVal[0]["GoodsImage2"] != "" && retVal[0]["GoodsImage2"] != null)
-                    goodsPic.push(retVal[0]["GoodsImage2"]);
-                if (retVal[0]["GoodsImage3"] != "" && retVal[0]["GoodsImage3"] != null)
-                    goodsPic.push(retVal[0]["GoodsImage3"]);
-                if (retVal[0]["GoodsImage4"] != "" && retVal[0]["GoodsImage4"] != null)
-                    goodsPic.push(retVal[0]["GoodsImage4"]);
-                if (retVal[0]["GoodsImage5"] != "" && retVal[0]["GoodsImage5"] != null)
-                    goodsPic.push(retVal[0]["GoodsImage5"]);
+                //var tf = new Ext.form.TextField({
+                //    xtype: 'checkboxfield',
+                //    margin: '10 10 10 10',
+                //    labelWidth: 80,
+                //    fieldLabel: ret[i].TagName,
+                //    id: ret[i].ID + '',
+                //    columnWidth: 0.4
+                //});
+                //Ext.getCmp("addform").items.add(tf);
+
+                //var df = new Ext.form.DisplayField({
+                //    xtype: 'displayfield',
+                //    margin: '10 10 10 10',
+                //    columnWidth: 0.1,
+                //    value: ret[i].Unit
+                //});
+                //Ext.getCmp("addform").items.add(df);
+
+                var tf = new Ext.form.TextField({
+                    xtype: 'textfield',
+                    margin: '10 10 10 10',
+                    labelWidth: 80,
+                    fieldLabel: ret[i].TagName,
+                    id: ret[i].ID + '',
+                    name: ret[i].ID + '',
+                    columnWidth: 0.4
+                });
+                Ext.getCmp("addform").items.add(tf);
+
+                var df = new Ext.form.DisplayField({
+                    xtype: 'displayfield',
+                    margin: '10 10 10 10',
+                    columnWidth: 0.1,
+                    value: ret[i].Unit
+                });
+                Ext.getCmp("addform").items.add(df);
             }
-        }, CS.onError, id);
-    }
+            Ext.getCmp("tagGroup").add(Items);
+
+            if (id != null && id != "") {
+                CS('CZCLZ.RoomDB.GetRoomInfo', function (retVal) {
+                    if (retVal) {
+                        Ext.getCmp('addform').form.setValues(retVal.dt[0]);
+
+                        if (retVal.dt[0]["Image1"] != "" && retVal.dt[0]["Image1"] != null)
+                            roomPic.push(retVal.dt[0]["Image1"]);
+                        if (retVal.dt[0]["Image2"] != "" && retVal.dt[0]["Image2"] != null)
+                            roomPic.push(retVal.dt[0]["Image2"]);
+                        if (retVal.dt[0]["Image3"] != "" && retVal.dt[0]["Image3"] != null)
+                            roomPic.push(retVal.dt[0]["Image3"]);
+                        if (retVal.dt[0]["Image4"] != "" && retVal.dt[0]["Image4"] != null)
+                            roomPic.push(retVal.dt[0]["Image4"]);
+                        if (retVal.dt[0]["Image5"] != "" && retVal.dt[0]["Image5"] != null)
+                            roomPic.push(retVal.dt[0]["Image5"]);
+
+                        if (retVal.dt[0]["GoodsImage1"] != "" && retVal.dt[0]["GoodsImage1"] != null)
+                            goodsPic.push(retVal.dt[0]["GoodsImage1"]);
+                        if (retVal.dt[0]["GoodsImage2"] != "" && retVal.dt[0]["GoodsImage2"] != null)
+                            goodsPic.push(retVal.dt[0]["GoodsImage2"]);
+                        if (retVal.dt[0]["GoodsImage3"] != "" && retVal.dt[0]["GoodsImage3"] != null)
+                            goodsPic.push(retVal.dt[0]["GoodsImage3"]);
+                        if (retVal.dt[0]["GoodsImage4"] != "" && retVal.dt[0]["GoodsImage4"] != null)
+                            goodsPic.push(retVal.dt[0]["GoodsImage4"]);
+                        if (retVal.dt[0]["GoodsImage5"] != "" && retVal.dt[0]["GoodsImage5"] != null)
+                            goodsPic.push(retVal.dt[0]["GoodsImage5"]);
+
+                        var tagdata = retVal.dt1;
+                        for (var i in tagdata) {
+                            Ext.getCmp(tagdata[i]["TagId"] + "").setValue(tagdata[i]["TagDec"]);
+                        }
+                    }
+                }, CS.onError, id);
+            }
+        }
+    }, CS.onError);
 }
 
 
@@ -210,7 +287,20 @@ Ext.onReady(function () {
                                                   height: 200,
                                                   columnWidth: 1,
                                                   labelWidth: 80
-                                              }
+                                              },
+                                               {
+                                                   xtype: 'checkboxgroup',
+                                                   id: 'tagGroup',
+                                                   margin: '10 10 10 10',
+                                                   layout: {
+                                                       type: 'table'
+                                                   },
+                                                   fieldLabel: '房间标签',
+                                                   columnWidth: 1,
+                                                   labelWidth: 80,
+                                                   items: [
+                                                   ]
+                                               }
                                 ]
 
                             }
@@ -223,14 +313,22 @@ Ext.onReady(function () {
                                     var form = Ext.getCmp('addform');
                                     if (form.form.isValid()) {
                                         var values = form.getValues(false);
-
+                                        var tagids = [];
+                                        var tagvalues = [];
+                                        for (var i in tag) {
+                                            var tagvalue = Ext.getCmp(tag[i]["ID"] + "").getValue();
+                                            if (tagvalue != "") {
+                                                tagids.push(tag[i]["ID"]);
+                                                tagvalues.push(tagvalue);
+                                            }
+                                        }
                                         CS('CZCLZ.RoomDB.SaveChildRoom', function (retVal) {
                                             if (retVal) {
                                                 Ext.MessageBox.alert("提示", "保存成功!", function () {
                                                     FrameStack.popFrame();
                                                 });
                                             }
-                                        }, CS.onError, values, roomPic, goodsPic, ParentId, HotelId, RoomGuid);
+                                        }, CS.onError, values, roomPic, goodsPic, ParentId, HotelId, RoomGuid, tagids, tagvalues);
                                     }
                                 }
 

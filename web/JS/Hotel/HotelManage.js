@@ -1,6 +1,7 @@
 ﻿
 var pageSize = 15;
 var serviceId;
+var hotelId;
 
 //************************************数据源*****************************************
 var store = createSFW4Store({
@@ -27,6 +28,13 @@ var store = createSFW4Store({
     }
 });
 
+var UserStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
+
+
 
 function loadData(nPage) {
 
@@ -52,6 +60,95 @@ function edit(id) {
         }
     });
 }
+
+function choseAdmin(id) {
+    hotelId = id;
+    var win = new choseWin();
+    win.show(null, function () {
+        CS('CZCLZ.HotelDB.GetManagerList', function (retVal) {
+            if (retVal.length > 0) {
+                UserStore.loadData(retVal, false);
+            }
+        }, CS.onError);
+    })
+}
+
+Ext.define('choseWin', {
+    extend: 'Ext.window.Window',
+
+    height: 150,
+    width: 300,
+    layout: {
+        type: 'fit'
+    },
+    id: 'choseWin',
+    closeAction: 'destroy',
+    modal: true,
+    title: '选择管理员',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'choseForm',
+                frame: true,
+                bodyPadding: 10,
+
+                title: '',
+                items: [
+
+                       {
+                           xtype: 'combobox',
+                           id: 'User',
+                           fieldLabel: '门店管理员',
+                           editable: false,
+                           labelWidth: 70,
+                           anchor: '100%',
+                           store: UserStore,
+                           queryMode: 'local',
+                           displayField: 'TEXT',
+                           valueField: 'VALUE',
+                           value: ''
+                       }
+
+                ],
+                buttonAlign: 'center',
+                buttons: [
+
+                    {
+                        text: '保存',
+                        handler: function () {
+                            var form = Ext.getCmp('choseForm');
+                            if (form.form.isValid()) {
+                                var userid = Ext.getCmp("User").getValue();
+                                Ext.MessageBox.confirm('提示', '确认选择？', function (obj) {
+                                    if (obj == "yes") {
+                                        CS('CZCLZ.HotelDB.UpdateHotelManager', function (retVal) {
+                                            if (retVal) {
+                                                Ext.MessageBox.alert("提示", "保存成功!", function () {
+                                                    loadData(1);
+                                                });
+                                            }
+                                            Ext.getCmp('choseWin').close();
+                                        }, CS.onError, hotelId, userid);
+                                    }
+                                });
+
+                            }
+                        }
+                    },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
 
 //************************************主界面*****************************************
 Ext.onReady(function () {
@@ -172,14 +269,14 @@ Ext.onReady(function () {
 
                             {
                                 text: '操作',
-                                width: 100,
+                                width: 120,
                                 align: 'center',
                                 sortable: false,
                                 menuDisabled: true,
                                 renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                                     var str;
                                     str = "<a href='#' onclick='edit(\"" + record.data.ID + "\")'>编辑</a>";
-
+                                    str += "|<a href='#' onclick='choseAdmin(\"" + record.data.ID + "\")'>选择管理员</a>";
                                     return str;
                                 }
                             }
@@ -224,11 +321,13 @@ Ext.onReady(function () {
                                         {
                                             xtype: 'buttongroup',
                                             title: '',
+                                            hidden: true,
                                             items: [
                                                 {
                                                     xtype: 'button',
                                                     iconCls: 'add',
                                                     text: '新增',
+                                                   
                                                     handler: function () {
                                                         FrameStack.pushFrame({
                                                             url: "HotelAdd.html",

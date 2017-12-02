@@ -32,6 +32,23 @@ function tp() {
     });
 }
 
+function getUserInfo(phone) {
+    CS('CZCLZ.HotelDB.getUserInfo', function (retVal) {
+        if (retVal.length > 0) {
+            var win = new UserWin();
+            win.show(null, function () {
+                var UserForm = Ext.getCmp("UserForm");
+                UserForm.form.setValues(retVal[0]);
+
+            });
+
+        }
+        else {
+
+        }
+    }, CS.onError, phone);
+}
+
 
 Ext.onReady(function () {
     Ext.define('add', {
@@ -95,7 +112,13 @@ Ext.onReady(function () {
                                              margin: '10 10 10 10',
                                              fieldLabel: '联系手机',
                                              columnWidth: 0.5,
-                                             labelWidth: 80
+                                             labelWidth: 80,
+                                             listeners: {
+                                                 blur: function (value) {
+                                                     getUserInfo(this.value);
+                                                 }
+
+                                             }
 
                                          },
                                          {
@@ -104,8 +127,34 @@ Ext.onReady(function () {
                                              margin: '10 10 10 10',
                                              fieldLabel: '联系座机',
                                              columnWidth: 0.5,
-                                             labelWidth: 80
+                                             labelWidth: 80,
+                                             listeners: {
+                                                 blur: function (value) {
+                                                     getUserInfo(this.value);
+                                                 }
 
+                                             }
+
+                                         },
+                                         {
+                                             xtype: 'combobox',
+                                             name: 'ManagementMode',
+                                             fieldLabel: '经营方式',
+                                             margin: '10 10 10 10',
+                                             columnWidth: 0.5,
+                                             labelWidth: 80,
+                                             queryMode: 'local',
+                                             displayField: 'TEXT',
+                                             valueField: 'VALUE',
+                                             allowBlank: false,
+                                             store: new Ext.data.ArrayStore({
+                                                 fields: ['TEXT', 'VALUE'],
+                                                 data: [
+                                                     ['自营', 1],
+                                                     ['门店管理员经营', 2],
+                                                     ['平台托管', 3]
+                                                 ]
+                                             })
                                          },
                                          {
                                              xtype: 'panel',
@@ -175,6 +224,21 @@ Ext.onReady(function () {
                                                 columnWidth: 0.5,
                                                 labelWidth: 80
                                             },
+                                            //{
+                                            //    xtype: 'displayfield',
+                                            //    value: ' <div id="inputBox"><input type="file" title="请选择图片" id="file" multiple accept="image/png,image/jpg,image/gif,image/JPEG"/>点击选择图片</div>',
+                                            //    margin: '10 10 10 10',
+                                            //    fieldLabel: '门店图片',
+                                            //    columnWidth: 0.5,
+                                            //    labelWidth: 80
+                                            //},
+                                             {
+                                                 xtype: 'displayfield',
+                                                 value: '<div id="imgBox"></div>',
+                                                 margin: '10 10 10 10',
+                                                 columnWidth: 1,
+                                                 labelWidth: 80
+                                             },
                                             {
                                                 xtype: 'checkboxgroup',
                                                 id: 'ServiceInfo',
@@ -425,6 +489,13 @@ Ext.onReady(function () {
                                                         }
                                                     ]
                                                 },
+                                                {
+                                                    xtype: 'displayfield',
+
+                                                    columnWidth: 0.5,
+                                                    labelWidth: 90,
+                                                    margin: '10 10 10 10'
+                                                },
                                                  {
                                                      xtype: 'numberfield',
                                                      name: 'MonthRentPrice',
@@ -432,6 +503,14 @@ Ext.onReady(function () {
                                                      labelWidth: 90,
                                                      margin: '10 10 10 10',
                                                      fieldLabel: '月租房价格'
+                                                 },
+                                                 {
+                                                     xtype: 'numberfield',
+                                                     name: 'DepositPriceByMonth',
+                                                     columnWidth: 0.5,
+                                                     labelWidth: 90,
+                                                     margin: '10 10 10 10',
+                                                     fieldLabel: '月租房押金'
                                                  },
                                                  {
                                                      xtype: 'numberfield',
@@ -469,6 +548,11 @@ Ext.onReady(function () {
                                                              name: 'jspt',
                                                              inputValue: 1,
                                                              boxLabel: '支付宝'
+                                                         }, {
+                                                             xtype: 'radiofield',
+                                                             name: 'jspt',
+                                                             inputValue: 2,
+                                                             boxLabel: '银联'
                                                          }
                                                      ]
                                                  },
@@ -486,7 +570,13 @@ Ext.onReady(function () {
                                                      columnWidth: 0.5,
                                                      labelWidth: 90,
                                                      margin: '10 10 10 10',
-                                                     fieldLabel: '门店负责人电话'
+                                                     fieldLabel: '门店负责人电话',
+                                                     listeners: {
+                                                         blur: function (value) {
+                                                             getUserInfo(this.value);
+                                                         }
+
+                                                     }
                                                  },
                                                   {
                                                       xtype: 'textfield',
@@ -494,7 +584,12 @@ Ext.onReady(function () {
                                                       columnWidth: 0.5,
                                                       labelWidth: 90,
                                                       margin: '10 10 10 10',
-                                                      fieldLabel: '默认保洁手机'
+                                                      fieldLabel: '默认保洁手机',
+                                                      listeners: {
+                                                          blur: function (value) {
+                                                              getUserInfo(this.value);
+                                                          }
+                                                      }
                                                   },
                                               {
                                                   xtype: 'ueditor',
@@ -519,7 +614,7 @@ Ext.onReady(function () {
                                                   name: 'ConsumeRule',
                                                   listeners: {
                                                       initialize: function () {
-                                                          initData();
+                                                          setTimeout(initData(), 2000);
                                                       }
                                                   },
                                                   height: 200,
@@ -615,7 +710,14 @@ Ext.onReady(function () {
 
     });
     new add();
-
+    imgUpload({
+        inputId: 'file', //input框id
+        imgBox: 'imgBox', //图片容器id
+        buttonId: 'btn', //提交按钮id
+        upUrl: 'php/imgFile.php',  //提交地址
+        data: 'file1', //参数名
+        num: "5"//上传个数
+    })
 });
 
 
@@ -788,6 +890,76 @@ Ext.define('SelectImg', {
 
     initComponent: function () {
         var me = this;
+        me.callParent(arguments);
+    }
+});
+
+Ext.define('UserWin', {
+    extend: 'Ext.window.Window',
+
+    height: 250,
+    width: 400,
+    layout: {
+        type: 'fit'
+    },
+    id: 'UserWin',
+    closeAction: 'destroy',
+    modal: true,
+    title: '用户信息',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'UserForm',
+                bodyPadding: 10,
+
+                title: '',
+                items: [
+                    {
+                        xtype: 'displayfield',
+                        name: 'RealName',
+                        fieldLabel: '姓名',
+                        labelWidth: 70,
+                        allowBlank: false,
+                        anchor: '100%'
+                    },
+                    {
+                        xtype: 'displayfield',
+                        name: 'RoleName',
+                        fieldLabel: '角色',
+                        labelWidth: 70,
+                        allowBlank: false,
+                        anchor: '100%'
+                    },
+                    {
+                        xtype: 'displayfield',
+                        name: 'CellPhone',
+                        fieldLabel: '手机号',
+                        labelWidth: 70,
+                        allowBlank: false,
+                        anchor: '100%'
+                    },
+                    {
+                        xtype: 'displayfield',
+                        name: 'IdCardNo',
+                        fieldLabel: '身份证',
+                        labelWidth: 70,
+                        allowBlank: false,
+                        anchor: '100%'
+                    }
+                ],
+                buttonAlign: 'center',
+                buttons: [
+                    {
+                        text: '确定',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
         me.callParent(arguments);
     }
 });

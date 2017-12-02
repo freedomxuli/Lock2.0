@@ -56,7 +56,17 @@ var DeviceTypeStore = Ext.create('Ext.data.Store', {
     ]
 });
 
+var TypeStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
 
+var BrandStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
 
 function loadData(nPage) {
 
@@ -232,13 +242,12 @@ Ext.define('addDeviceWin', {
                                  var values = form.form.getValues(false);
 
                                  CS('CZCLZ.RoomDB.GetDevice', function (retVal) {
-                                     if (retVal) {
-                                         if (retVal.status == "ok") {
-                                             Ext.MessageBox.alert("提示", "获取设备成功", function () {
-                                                 Ext.getCmp("CallBackData").setValue(retVal.result);
-                                             });
-                                         }
+                                     if (retVal.status == "ok") {
+                                         Ext.MessageBox.alert("提示", "获取设备成功", function () {
+                                             Ext.getCmp("CallBackData").setValue(retVal.result);
+                                         });
                                      }
+
                                      else {
                                          Ext.MessageBox.alert("提示", "获取设备失败");
                                      }
@@ -256,18 +265,17 @@ Ext.define('addDeviceWin', {
 
 
                                 CS('CZCLZ.RoomDB.GetDevice', function (retVal) {
-                                    if (retVal) {
-                                        if (retVal.status == "ok") {
-                                            CS('CZCLZ.RoomDB.SaveRoomDevice', function (retVal) {
-                                                if (retVal) {
-                                                    CS('CZCLZ.RoomDB.GetRoomDevice', function (retVal) {
-                                                        deviceStore.loadData(retVal);
-                                                    }, CS.onError, RoomId);
-                                                }
 
-                                                Ext.getCmp('addDeviceWin').close()
-                                            }, CS.onError, values, RoomId);
-                                        }
+                                    if (retVal.status == "ok") {
+                                        CS('CZCLZ.RoomDB.SaveRoomDevice', function (retVal) {
+                                            if (retVal) {
+                                                CS('CZCLZ.RoomDB.GetRoomDevice', function (retVal) {
+                                                    deviceStore.loadData(retVal);
+                                                }, CS.onError, RoomId);
+                                            }
+
+                                            Ext.getCmp('addDeviceWin').close()
+                                        }, CS.onError, values, RoomId);
                                     }
                                     else {
                                         Ext.MessageBox.alert("提示", "请先获取设备");
@@ -453,6 +461,32 @@ Ext.define('deviceWin', {
                 buttonAlign: 'center',
                 buttons: [
                     {
+                        text: '设备绑定',
+                        handler: function () {
+                            Ext.MessageBox.confirm('提示', '确定绑定？', function (obj) {
+                                if (obj == "yes") {
+                                    CS('CZCLZ.RoomDB.DeviceSQ', function (retVal) {
+                                        if (retVal) {
+                                            Ext.MessageBox.alert("提示", "绑定成功", function () {
+                                                Ext.getCmp("deviceWin").close();
+                                                loadData(1);
+                                            });
+                                        }
+                                        else {
+                                            Ext.MessageBox.alert("提示", "绑定失败", function () {
+                                                Ext.getCmp("deviceWin").close();
+                                            });
+                                        }
+                                    }, CS.onError, RoomId);
+
+                                }
+                                else {
+                                    return;
+                                }
+                            });
+                        }
+                    },
+                    {
                         text: '关闭',
                         handler: function () {
                             this.up('window').close();
@@ -470,7 +504,7 @@ Ext.define('deviceWin', {
 Ext.define('addGoodsWin', {
     extend: 'Ext.window.Window',
 
-    height: 250,
+    height: 350,
     width: 400,
     layout: {
         type: 'fit'
@@ -498,6 +532,34 @@ Ext.define('addGoodsWin', {
                          labelWidth: 70,
                          anchor: '100%'
                      },
+                      {
+                          xtype: 'combobox',
+                          name: 'Type',
+                          fieldLabel: '物品类型',
+                          editable: false,
+                          allowBlank: false,
+                          labelWidth: 70,
+                          anchor: '100%',
+                          store: TypeStore,
+                          queryMode: 'local',
+                          displayField: 'TEXT',
+                          valueField: 'VALUE',
+                          value: ''
+                      },
+                      {
+                          xtype: 'combobox',
+                          name: 'Brand',
+                          fieldLabel: '物品品牌',
+                          editable: false,
+                          allowBlank: false,
+                          labelWidth: 70,
+                          anchor: '100%',
+                          store: BrandStore,
+                          queryMode: 'local',
+                          displayField: 'TEXT',
+                          valueField: 'VALUE',
+                          value: ''
+                      },
                     {
                         xtype: 'textfield',
                         name: 'Name',
@@ -530,6 +592,22 @@ Ext.define('addGoodsWin', {
                         allowBlank: false,
                         anchor: '100%'
                     },
+                      {
+                          xtype: 'numberfield',
+                          name: 'LossPrice',
+                          fieldLabel: '物品损价',
+                          labelWidth: 70,
+                          allowBlank: false,
+                          anchor: '100%'
+                      },
+                       {
+                           xtype: 'textfield',
+                           name: 'Condition',
+                           fieldLabel: '物品成色',
+                           labelWidth: 70,
+                           allowBlank: false,
+                           anchor: '100%'
+                       },
                     {
                         xtype: 'numberfield',
                         name: 'Sort',
@@ -765,7 +843,7 @@ Ext.define('addWin', {
                          store: new Ext.data.ArrayStore({
                              fields: ['TEXT', 'VALUE'],
                              data: [
-                                 ['分租', '1'],
+                                 ['合租', '1'],
                                  ['整租', '2']
                              ]
                          }),
@@ -888,7 +966,7 @@ Ext.onReady(function () {
                                      text: "房间类型",
                                      renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
                                          if (value == "1")
-                                             return "分租";
+                                             return "合租";
                                          else if (value == "2")
                                              return "整租";
                                      }
@@ -986,7 +1064,7 @@ Ext.onReady(function () {
                                                  fields: ['TEXT', 'VALUE'],
                                                  data: [
                                                      ['全部', ''],
-                                                     ['分租', '1'],
+                                                     ['合租', '1'],
                                                      ['整租', '2']
                                                  ]
                                              })
@@ -1068,26 +1146,7 @@ Ext.onReady(function () {
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            xtype: 'buttongroup',
-                                            title: '',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    iconCls: 'add',
-                                                    text: '一键授权',
-                                                    handler: function () {
-                                                        FrameStack.pushFrame({
-                                                            url: "RoomAdd.html",
-                                                            onClose: function (ret) {
-                                                                loadData(1);
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                            ]
-                                        },
+                                        }
 
                                     ]
                                 },
@@ -1113,4 +1172,16 @@ Ext.onReady(function () {
             DeviceTypeStore.loadData(retVal, true);
         }
     }, CS.onError);
+
+    CS('CZCLZ.RoomDB.GetZDB', function (retVal) {
+        if (retVal) {
+            TypeStore.loadData(retVal, true);
+        }
+    }, CS.onError, 2);
+
+    CS('CZCLZ.RoomDB.GetZDB', function (retVal) {
+        if (retVal) {
+            BrandStore.loadData(retVal, true);
+        }
+    }, CS.onError, 3);
 })
