@@ -21,13 +21,14 @@ function DataBind() {
 }
 
 function tp(v) {
+    alert("approot/r/" + roomPic[0]);
     var win = new phWin({ lx: v });
     win.show(null, function () {
         if (v == 1) {
             for (var i = 0; i < roomPic.length; i++) {
                 Ext.getCmp('uploadproductpic').add(new SelectImg({
                     isSelected: false,
-                    src: roomPic[i],
+                    src: "approot/r/" + roomPic[i],
                     fileid: roomPic[i]
                 }));
             }
@@ -36,7 +37,7 @@ function tp(v) {
             for (var i = 0; i < goodsPic.length; i++) {
                 Ext.getCmp('uploadproductpic').add(new SelectImg({
                     isSelected: false,
-                    src: goodsPic[i],
+                    src: "approot/r/" + goodsPic[i],
                     fileid: goodsPic[i]
                 }));
             }
@@ -50,47 +51,6 @@ function initData() {
             tag = ret;
             var Items = [];
             for (var i = 0; i < ret.length; i++) {
-                //var checkbox = new Ext.form.field.Checkbox({
-                //    xtype: 'checkboxfield',
-                //    boxLabel: ret[i].TagName,
-                //    name: 'tag',
-                //    hideLabel: true,
-                //    inputValue: ret[i].ID + '',
-                //    handler: function (chk, checked) {
-                //        if (checked) {
-                //            alert(123);
-                //            var tf = new Ext.form.TextField({
-                //                xtype: 'textfield',
-                //                margin: '10 10 10 10',
-                //                // id: ret[i].ID + '',
-                //                columnWidth: 0.5
-                //            });
-                //            Ext.getCmp("addform").items.add(tf);
-                //        }
-                //        else {
-
-                //        }
-                //    }
-                //});
-                //Items.push(checkbox);
-
-                //var tf = new Ext.form.TextField({
-                //    xtype: 'checkboxfield',
-                //    margin: '10 10 10 10',
-                //    labelWidth: 80,
-                //    fieldLabel: ret[i].TagName,
-                //    id: ret[i].ID + '',
-                //    columnWidth: 0.4
-                //});
-                //Ext.getCmp("addform").items.add(tf);
-
-                //var df = new Ext.form.DisplayField({
-                //    xtype: 'displayfield',
-                //    margin: '10 10 10 10',
-                //    columnWidth: 0.1,
-                //    value: ret[i].Unit
-                //});
-                //Ext.getCmp("addform").items.add(df);
 
                 var tf = new Ext.form.TextField({
                     xtype: 'textfield',
@@ -167,7 +127,8 @@ Ext.onReady(function () {
                     {
                         xtype: 'panel',
                         layout: {
-                            type: 'anchor'
+                            type: 'vbox',
+                            align: 'center'
                         },
                         autoScroll: true,
                         items: [
@@ -177,9 +138,10 @@ Ext.onReady(function () {
                                 layout: {
                                     type: 'column'
                                 },
+                                width: 800,
                                 border: true,
                                 // margin: 10,
-                                title: '房间信息',
+                                //title: '房间信息',
                                 items: [
                                         {
                                             xtype: 'textfield',
@@ -449,7 +411,7 @@ Ext.define('phWin', {
                          Ext.getCmp('uploadproductpic').upload('CZCLZ.RoomDB.UploadPicForProduct', function (retVal) {
                              Ext.getCmp('uploadproductpic').add(new SelectImg({
                                  isSelected: retVal.isDefault,
-                                 src: retVal.fileurl,
+                                 src: "approot/r/" + retVal.fileurl,
                                  fileid: retVal.fileurl
                              }));
                              if (lx == 1)

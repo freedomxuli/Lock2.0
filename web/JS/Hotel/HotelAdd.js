@@ -1,5 +1,6 @@
 ﻿var id = queryString.id;
 var picItem = [];
+var tag;
 
 var dqstore = Ext.create('Ext.data.Store', {
     fields: ['VALUE', 'TEXT'],
@@ -25,7 +26,7 @@ function tp() {
         for (var i = 0; i < picItem.length; i++) {
             Ext.getCmp('uploadproductpic').add(new SelectImg({
                 isSelected: false,
-                src: picItem[i],
+                src: "approot/r/" + picItem[i],
                 fileid: picItem[i]
             }));
         }
@@ -56,7 +57,6 @@ Ext.onReady(function () {
         layout: {
             type: 'fit'
         },
-
         initComponent: function () {
             var me = this;
 
@@ -65,7 +65,8 @@ Ext.onReady(function () {
                     {
                         xtype: 'panel',
                         layout: {
-                            type: 'anchor'
+                            type: 'vbox',
+                            align: 'center'
                         },
                         autoScroll: true,
                         items: [
@@ -76,8 +77,9 @@ Ext.onReady(function () {
                                     type: 'column'
                                 },
                                 border: true,
+                                width: 800,
                                 // margin: 10,
-                                title: '宾馆信息',
+
                                 items: [
                                         {
                                             xtype: 'textfield',
@@ -156,13 +158,34 @@ Ext.onReady(function () {
                                                  ]
                                              })
                                          },
+                                          {
+                                              xtype: 'combobox',
+                                              name: 'HandlerKind',
+                                              fieldLabel: '办理类型',
+                                              margin: '10 10 10 10',
+                                              columnWidth: 0.5,
+                                              labelWidth: 80,
+                                              queryMode: 'local',
+                                              displayField: 'TEXT',
+                                              valueField: 'VALUE',
+                                              allowBlank: false,
+                                              store: new Ext.data.ArrayStore({
+                                                  fields: ['TEXT', 'VALUE'],
+                                                  data: [
+                                                      ['自助', 0],
+                                                      ['前台办理', 1]
+                                                  ]
+                                              })
+                                          },
+                                         
                                          {
                                              xtype: 'panel',
+                                             id: 'map',
                                              margin: '10 10 10 10',
                                              fieldLabel: '地点标注',
                                              columnWidth: 1,
-                                             labelWidth: 80,
-                                             html: '<iframe src="approot/r/MapSelect.aspx?v=122" frameborder="0" scrolling="no" width="100%" height="300px"></iframe>'
+                                             labelWidth: 80
+
                                          },
                                          {
                                              xtype: 'displayfield',
@@ -239,12 +262,27 @@ Ext.onReady(function () {
                                                  columnWidth: 1,
                                                  labelWidth: 80
                                              },
+                                               {
+                                                   xtype: 'checkboxgroup',
+                                                   id: 'IsAutoAccept',
+                                                   columnWidth: 0.5,
+                                                   labelWidth: 90,
+                                                   margin: '10 10 10 10',
+                                                   fieldLabel: '是否自助接单',
+                                                   items: [
+                                                       {
+                                                           xtype: 'checkboxfield',
+                                                           name: 'IsAutoAccept',
+                                                           boxLabel: '是'
+                                                       }
+                                                   ]
+                                               },
                                             {
                                                 xtype: 'checkboxgroup',
                                                 id: 'ServiceInfo',
                                                 name: 'ServiceInfo',
                                                 columnWidth: 1,
-                                                labelWidth: 80,
+                                                labelWidth: 90,
                                                 margin: '10 10 10 10',
                                                 fieldLabel: '门店提供服务',
                                                 items: [
@@ -404,6 +442,7 @@ Ext.onReady(function () {
                                                          }
                                                     ]
                                                 },
+                                               
                                                {
                                                    xtype: 'checkboxgroup',
                                                    id: 'IsHasWeekendPrice',
@@ -614,13 +653,26 @@ Ext.onReady(function () {
                                                   name: 'ConsumeRule',
                                                   listeners: {
                                                       initialize: function () {
-                                                          setTimeout(initData(), 2000);
+                                                          setTimeout(initData(), 1000);
                                                       }
                                                   },
                                                   height: 200,
                                                   columnWidth: 1,
                                                   labelWidth: 80
-                                              }
+                                              },
+                                                {
+                                                    xtype: 'checkboxgroup',
+                                                    id: 'tagGroup',
+                                                    margin: '10 10 10 10',
+                                                    layout: {
+                                                        type: 'table'
+                                                    },
+                                                    fieldLabel: '门店标签',
+                                                    columnWidth: 1,
+                                                    labelWidth: 80,
+                                                    items: [
+                                                    ]
+                                                }
                                 ]
 
                             }
@@ -682,14 +734,31 @@ Ext.onReady(function () {
                                             values["JsPlatSel"] = 0;
                                         else
                                             values["JsPlatSel"] = 1;
+
+                                        if (Ext.getCmp('IsAutoAccept').items.get(0).getValue() == true)
+                                            values["IsAutoAccept"] = 1;
+                                        else
+                                            values["IsAutoAccept"] = 0;
+
+                                       
+                                        var tagids = [];
+                                        var tagvalues = [];
+                                        for (var i in tag) {
+                                            var tagvalue = Ext.getCmp(tag[i]["ZDBID"] + "").getValue();
+                                            if (tagvalue != "") {
+                                                tagids.push(tag[i]["ZDBID"]);
+                                                tagvalues.push(tagvalue);
+                                            }
+                                        }
+
                                         CS('CZCLZ.HotelDB.SaveHotel', function (retVal) {
                                             if (retVal) {
-                                                //Ext.MessageBox.alert("提示", "保存成功!", function () {
-                                                //    FrameStack.popFrame();
-                                                //});
-                                                FrameStack.popFrame()
+                                                Ext.MessageBox.alert("提示", "保存成功!", function () {
+                                                    FrameStack.popFrame();
+                                                });
+
                                             }
-                                        }, CS.onError, values, picItem);
+                                        }, CS.onError, values, picItem, tagids, tagvalues);
                                     }
                                 }
 
@@ -710,69 +779,100 @@ Ext.onReady(function () {
 
     });
     new add();
-    imgUpload({
-        inputId: 'file', //input框id
-        imgBox: 'imgBox', //图片容器id
-        buttonId: 'btn', //提交按钮id
-        upUrl: 'php/imgFile.php',  //提交地址
-        data: 'file1', //参数名
-        num: "5"//上传个数
-    })
 });
 
 
 function initData() {
-    if (id != null && id != "") {
-        CS('CZCLZ.HotelDB.GetHotelInfo', function (retVal) {
-            if (retVal) {
-                Ext.getCmp('addform').form.setValues(retVal[0]);
-                var ServiceInfo = retVal[0]["ServiceInfo"];
-                var si = new Array();
-                si = ServiceInfo.split(",");
-                for (i = 0; i < si.length ; i++) {
-                    if (si[i] == "停车场")
-                        Ext.getCmp('ServiceInfo').items.get(0).setValue("on");
-                    if (si[i] == "接机服务")
-                        Ext.getCmp('ServiceInfo').items.get(1).setValue("on");
-                    if (si[i] == "叫醒服务")
-                        Ext.getCmp('ServiceInfo').items.get(2).setValue("on");
-                    if (si[i] == "可带宠物")
-                        Ext.getCmp('ServiceInfo').items.get(3).setValue("on");
-                }
-                if (retVal[0]["IsHasWeekendPrice"] == "1")
-                    Ext.getCmp('IsHasWeekendPrice').items.get(0).setValue("on");
-                if (retVal[0]["WeekendConatin5"] == "1")
-                    Ext.getCmp('zmdy').items.get(0).setValue("on");
-                if (retVal[0]["WeekendConatin6"] == "1")
-                    Ext.getCmp('zmdy').items.get(1).setValue("on");
-                if (retVal[0]["WeekendConatin7"] == "1")
-                    Ext.getCmp('zmdy').items.get(2).setValue("on");
-                if (retVal[0]["IsOpenDayRent"] == "1")
-                    Ext.getCmp('IsOpenDayRent').items.get(0).setValue("on");
-                if (retVal[0]["IsOpenHourRent"] == "1")
-                    Ext.getCmp('IsOpenHourRent').items.get(0).setValue("on");
-                if (retVal[0]["IsOpenMonthRent"] == "1")
-                    Ext.getCmp('IsOpenMonthRent').items.get(0).setValue("on");
-                if (retVal[0]["JsPlatSel"] == "0")
-                    Ext.getCmp('JsPlatSel').items.get(0).setValue(true);
-                else
-                    Ext.getCmp('JsPlatSel').items.get(1).setValue(true);
+    CS('CZCLZ.SystemDB.GetZDBById', function (ret) {
+        if (ret) {
+            tag = ret;
+            var Items = [];
+            for (var i = 0; i < ret.length; i++) {
 
-                if (retVal[0]["Image1"] != "" && retVal[0]["Image1"] != null)
-                    picItem.push(retVal[0]["Image1"]);
-                if (retVal[0]["Image2"] != "" && retVal[0]["Image2"] != null)
-                    picItem.push(retVal[0]["Image2"]);
-                if (retVal[0]["Image3"] != "" && retVal[0]["Image3"] != null)
-                    picItem.push(retVal[0]["Image3"]);
-                if (retVal[0]["Image4"] != "" && retVal[0]["Image4"] != null)
-                    picItem.push(retVal[0]["Image4"]);
-                if (retVal[0]["Image5"] != "" && retVal[0]["Image5"] != null)
-                    picItem.push(retVal[0]["Image5"]);
+                var tf = new Ext.form.TextField({
+                    xtype: 'textfield',
+                    margin: '10 10 10 10',
+                    labelWidth: 80,
+                    fieldLabel: ret[i].MC,
+                    id: ret[i].ZDBID + '',
+                    value: ret[i].Info,
+                    name: ret[i].ZDBID + '',
 
+                    columnWidth: 0.4
+                });
+                Ext.getCmp("addform").items.add(tf);
 
+                var df = new Ext.form.DisplayField({
+                    xtype: 'displayfield',
+                    margin: '10 10 10 10',
+                    columnWidth: 0.1,
+                    value: ret[i].Unit
+                });
+                Ext.getCmp("addform").items.add(df);
             }
-        }, CS.onError, id);
-    }
+            Ext.getCmp("tagGroup").add(Items);
+            if (id != null && id != "") {
+                CS('CZCLZ.HotelDB.GetHotelInfo', function (retVal) {
+                    if (retVal) {
+                        var lat;
+                        var lng
+                        if (retVal[0]["Lat"] != null && retVal[0]["Lat"] != undefined) {
+                            lat = retVal[0]["Lat"];
+                            lng = retVal[0]["Lng"];
+                        }
+                        Ext.getCmp("map").update('<iframe src="approot/r/MapSelect.aspx?v=122&lat=' + lat + '&lng=' + lng + '" frameborder="0" scrolling="no" width="100%" height="300px"></iframe>');
+                        Ext.getCmp('addform').form.setValues(retVal[0]);
+                        var ServiceInfo = retVal[0]["ServiceInfo"];
+                        var si = new Array();
+                        si = ServiceInfo.split(",");
+                        for (i = 0; i < si.length ; i++) {
+                            if (si[i] == "停车场")
+                                Ext.getCmp('ServiceInfo').items.get(0).setValue("on");
+                            if (si[i] == "接机服务")
+                                Ext.getCmp('ServiceInfo').items.get(1).setValue("on");
+                            if (si[i] == "叫醒服务")
+                                Ext.getCmp('ServiceInfo').items.get(2).setValue("on");
+                            if (si[i] == "可带宠物")
+                                Ext.getCmp('ServiceInfo').items.get(3).setValue("on");
+                        }
+                        if (retVal[0]["IsAutoAccept"] == "1")
+                            Ext.getCmp('IsAutoAccept').items.get(0).setValue("on");
+                        if (retVal[0]["IsHasWeekendPrice"] == "1")
+                            Ext.getCmp('IsHasWeekendPrice').items.get(0).setValue("on");
+                        if (retVal[0]["WeekendConatin5"] == "1")
+                            Ext.getCmp('zmdy').items.get(0).setValue("on");
+                        if (retVal[0]["WeekendConatin6"] == "1")
+                            Ext.getCmp('zmdy').items.get(1).setValue("on");
+                        if (retVal[0]["WeekendConatin7"] == "1")
+                            Ext.getCmp('zmdy').items.get(2).setValue("on");
+                        if (retVal[0]["IsOpenDayRent"] == "1")
+                            Ext.getCmp('IsOpenDayRent').items.get(0).setValue("on");
+                        if (retVal[0]["IsOpenHourRent"] == "1")
+                            Ext.getCmp('IsOpenHourRent').items.get(0).setValue("on");
+                        if (retVal[0]["IsOpenMonthRent"] == "1")
+                            Ext.getCmp('IsOpenMonthRent').items.get(0).setValue("on");
+                        if (retVal[0]["JsPlatSel"] == "0")
+                            Ext.getCmp('JsPlatSel').items.get(0).setValue(true);
+                        else
+                            Ext.getCmp('JsPlatSel').items.get(1).setValue(true);
+
+                        if (retVal[0]["Image1"] != "" && retVal[0]["Image1"] != null)
+                            picItem.push(retVal[0]["Image1"]);
+                        if (retVal[0]["Image2"] != "" && retVal[0]["Image2"] != null)
+                            picItem.push(retVal[0]["Image2"]);
+                        if (retVal[0]["Image3"] != "" && retVal[0]["Image3"] != null)
+                            picItem.push(retVal[0]["Image3"]);
+                        if (retVal[0]["Image4"] != "" && retVal[0]["Image4"] != null)
+                            picItem.push(retVal[0]["Image4"]);
+                        if (retVal[0]["Image5"] != "" && retVal[0]["Image5"] != null)
+                            picItem.push(retVal[0]["Image5"]);
+
+
+                    }
+                }, CS.onError, id);
+            }
+        }
+    }, CS.onError, 1);
 }
 
 
@@ -780,7 +880,8 @@ function initData() {
 function updateparentinfo(objinfo) {
     if (objinfo.lat != null && objinfo.lat != "" && objinfo.lng != null && objinfo.lng != "") {
         Ext.getCmp("address").setValue(objinfo.province + "," + objinfo.city + "," + objinfo.county);
-        Ext.getCmp("DetailAddress").setValue(objinfo.streetnumber);
+        if (objinfo.streetnumber != null && objinfo.streetnumber != undefined)
+            Ext.getCmp("DetailAddress").setValue(objinfo.streetnumber);
         Ext.getCmp("Province").setValue(objinfo.province);
         Ext.getCmp("City").setValue(objinfo.city);
         Ext.getCmp("County").setValue(objinfo.county);
@@ -827,7 +928,7 @@ Ext.define('phWin', {
                          Ext.getCmp('uploadproductpic').upload('CZCLZ.HotelDB.UploadPicForProduct', function (retVal) {
                              Ext.getCmp('uploadproductpic').add(new SelectImg({
                                  isSelected: retVal.isDefault,
-                                 src: retVal.fileurl,
+                                 src: "approot/r/" + retVal.fileurl,
                                  fileid: retVal.fileurl
                              }));
                              picItem.push(retVal.fileurl);

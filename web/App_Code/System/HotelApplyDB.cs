@@ -65,7 +65,7 @@ public class HotelApplyDB
                 for (int i = 0; i < jsr.ToArray().Length; i++)
                 {
                     int ID = jsr.ToArray()[i].ToInteger();
-                    dbc.ExecuteNonQuery("delete from Lock_HotelApply where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
+                    dbc.ExecuteNonQuery("delete from Lock_Hotel where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
                     dbc.ExecuteNonQuery("delete from Lock_Room where HotelId=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
                 }
                 dbc.CommitTransaction();
@@ -86,21 +86,23 @@ public class HotelApplyDB
         HttpContext context = HttpContext.Current;
         var Server = context.Server;
         string filename = DateTime.Now.ToString("yyyyMMddHHmmssffff") + "." + fds[0].FileName;
-        string truepath = "~/files/" + filename;
+        string truepath = "~/files/Hotel/" + filename;
         if (!Directory.Exists(Server.MapPath("~/files")))
             Directory.CreateDirectory(Server.MapPath("~/files"));
+        if (!Directory.Exists(Server.MapPath("~/files/Hotel")))
+            Directory.CreateDirectory(Server.MapPath("~/files/Hotel"));
         using (Stream iStream = new FileStream(Server.MapPath(truepath),
                        FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
         {
             iStream.Write(fds[0].FileBytes, 0, fds[0].FileBytes.Length);
         }
 
-        return new { fileurl = "approot/r/files/" + filename, isdefault = 0 };
+        return new { fileurl = "files/Hotel/" + filename, isdefault = 0 };
 
     }
 
     [CSMethod("SaveHotel")]
-    public object SaveHotel(JSReader jsr, JSReader file)
+    public object SaveHotel(JSReader jsr, JSReader file, JSReader tagIds, JSReader tagValues)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -128,6 +130,7 @@ public class HotelApplyDB
                 int CheckoutHour = 0;
                 int CheckoutMinute = 0;
                 float MonthRentPrice = 0;
+                float DepositPriceByMonth = 0;
                 int JSCycle = 0;
                 string AlipayAccount = jsr["AlipayAccount"].ToString();
                 string LiableAccount = jsr["LiableAccount"].ToString();
@@ -141,6 +144,9 @@ public class HotelApplyDB
                 int IsOpenDayRent = jsr["IsOpenDayRent"].ToInteger();
                 int IsOpenHourRent = jsr["IsOpenHourRent"].ToInteger();
                 int IsOpenMonthRent = jsr["IsOpenMonthRent"].ToInteger();
+                int ManagementMode = jsr["ManagementMode"].ToInteger();
+                int IsAutoAccept = jsr["IsAutoAccept"].ToInteger();
+                int HandlerKind = jsr["HandlerKind"].ToInteger();
                 int JsPlatSel = jsr["JsPlatSel"].ToInteger();
                 if (jsr["HourRoomTimeLong"].ToString() != "")
                     HourRoomTimeLong = jsr["HourRoomTimeLong"].ToInteger();
@@ -158,13 +164,15 @@ public class HotelApplyDB
                     CheckoutMinute = jsr["CheckoutMinute"].ToInteger();
                 if (jsr["MonthRentPrice"].ToString() != "")
                     MonthRentPrice = jsr["MonthRentPrice"].ToSingle();
+                if (jsr["DepositPriceByMonth"].ToString() != "")
+                    DepositPriceByMonth = jsr["DepositPriceByMonth"].ToSingle();
                 if (jsr["JSCycle"].ToString() != "")
                     JSCycle = jsr["JSCycle"].ToInteger();
                 float DepositPrice = 0;
                 if (jsr["DepositPrice"].ToString() != "")
                     DepositPrice = jsr["DepositPrice"].ToSingle();
 
-                var dtHotel = dbc.GetEmptyDataTable("Lock_HotelApply");
+                var dtHotel = dbc.GetEmptyDataTable("Lock_Hotel");
                 var drHotel = dtHotel.NewRow();
                 DataTableTracker dtt = new DataTableTracker(dtHotel);
                 drHotel["HotelName"] = HotelName;
@@ -202,7 +210,10 @@ public class HotelApplyDB
                 drHotel["IsOpenMonthRent"] = IsOpenMonthRent;
                 drHotel["JsPlatSel"] = JsPlatSel;
                 drHotel["DepositPrice"] = DepositPrice;
-                drHotel["HotelApplyDB"] = DepositPrice;
+                drHotel["ManagementMode"] = ManagementMode;
+                drHotel["IsAutoAccept"] = IsAutoAccept;
+                drHotel["HandlerKind"] = HandlerKind;
+                drHotel["DepositPriceByMonth"] = DepositPriceByMonth;
 
                 drHotel["UserId"] = SystemUser.CurrentUser.UserID;
                 drHotel["UserName"] = SystemUser.CurrentUser.UserName;
@@ -227,6 +238,13 @@ public class HotelApplyDB
                     dtHotel.Rows.Add(drHotel);
                     dbc.UpdateTable(dtHotel, dtt);
                 }
+
+                dbc.ExecuteNonQuery("update Lock_ZDB set Info='' where LX=1");
+                for (int i = 0; i < tagIds.ToArray().Length; i++)
+                {
+                    dbc.ExecuteNonQuery("update Lock_ZDB set Info=" + dbc.ToSqlValue(tagValues.ToArray()[i]) + " where ZDBID=" + Convert.ToInt16(tagIds.ToArray()[i].ToString()));
+                }
+
                 dbc.CommitTransaction();
                 return true;
             }
@@ -245,7 +263,7 @@ public class HotelApplyDB
         {
             try
             {
-                string sqlStr = "select * from Lock_HotelApply where ID=" + ID;
+                string sqlStr = "select * from Lock_Hotel where ID=" + ID;
                 DataTable dt = dbc.ExecuteDataTable(sqlStr);
                 return dt;
             }
@@ -282,7 +300,7 @@ public class HotelApplyDB
             dbc.BeginTransaction();
             try
             {
-                dbc.ExecuteNonQuery("update Lock_HotelApply set UserId=" + UserId + " where ID=" + HotelId);
+                dbc.ExecuteNonQuery("update Lock_Hotel set UserId=" + UserId + " where ID=" + HotelId);
                 dbc.ExecuteNonQuery("update Lock_Room set UserId=" + UserId + " where HotelId=" + HotelId);
                 dbc.CommitTransaction();
                 return true;

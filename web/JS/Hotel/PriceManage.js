@@ -2,7 +2,7 @@
 var RoomId = queryString.id;
 
 function loadData(nPage) {
-    var cx_lx = Ext.getCmp("cx_lx").getValue();
+    //var cx_lx = Ext.getCmp("cx_lx").getValue();
     CS('CZCLZ.RoomDB.GetRoomPriceList', function (retVal) {
         store.setData({
             data: retVal.dt,
@@ -11,7 +11,7 @@ function loadData(nPage) {
             currentPage: retVal.cp
             //sorters: { property: 'a', direction: 'DESC' }
         });
-    }, CS.onError, nPage, pageSize, RoomId, cx_lx);
+    }, CS.onError, nPage, pageSize, RoomId);
 }
 
 //************************************数据源*****************************************
@@ -36,6 +36,16 @@ var store = createSFW4Store({
         loadData(nPage);
     }
 });
+
+function edit(id) {
+    var r = store.findRecord("ID", id).data;
+    var win = new addWin();
+    win.show(null, function () {
+        win.setTitle("修改");
+        var form = Ext.getCmp('addForm');
+        form.form.setValues(r);
+    });
+}
 
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
@@ -168,7 +178,7 @@ Ext.define('addWin', {
 
                                 CS('CZCLZ.RoomDB.SaveRoomPrice', function (retVal) {
                                     if (retVal) {
-                                        Ext.getCmp("addWin").close;
+                                        Ext.getCmp("addWin").close();
                                         loadData(1);
                                     }
                                 }, CS.onError, values, RoomId);
@@ -221,7 +231,7 @@ Ext.onReady(function () {
                           },
                             {
                                 xtype: 'datecolumn',
-                                flex: 1,
+                                flex: 1.6,
                                 format: 'Y-m-d H:i:s',
                                 dataIndex: 'StartDate',
                                 sortable: false,
@@ -231,7 +241,7 @@ Ext.onReady(function () {
                             },
                             {
                                 xtype: 'datecolumn',
-                                flex: 1,
+                                flex: 1.6,
                                 format: 'Y-m-d H:i:s',
                                 dataIndex: 'EndDate',
                                 sortable: false,

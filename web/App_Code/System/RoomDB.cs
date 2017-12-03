@@ -96,12 +96,12 @@ public class RoomDB
         if (lx == 1)
         {
             truepath = "~/files/Room/" + filename;
-            fileurl = "approot/r/files/Room/" + filename;
+            fileurl = "files/Room/" + filename;
         }
         else
         {
             truepath = "~/files/RoomGoods/" + filename;
-            fileurl = "approot/r/files/RoomGoods/" + filename;
+            fileurl = "files/RoomGoods/" + filename;
         }
         if (!Directory.Exists(Server.MapPath("~/files")))
             Directory.CreateDirectory(Server.MapPath("~/files"));
@@ -480,7 +480,7 @@ public class RoomDB
         {
             try
             {
-               
+
                 string sqlStr = "select a.*,b.RoomGuidNumber from Lock_Device a left join Lock_Room b on a.RoomId=b.ID where RoomId=" + RoomId;
                 DataTable dt = dbc.ExecuteDataTable(sqlStr);
                 int wgNum = 0;
@@ -805,7 +805,7 @@ public class RoomDB
     }
 
     [CSMethod("GetRoomPriceList")]
-    public object GetRoomPriceList(int pagnum, int pagesize, int roomId, int priceType)
+    public object GetRoomPriceList(int pagnum, int pagesize, int roomId)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -814,7 +814,7 @@ public class RoomDB
                 int cp = pagnum;
                 int ac = 0;
 
-                string str = "select * from Lock_RoomOtherDayPrice where RoomId=" + roomId + " and priceType=" + priceType + "";
+                string str = "select * from Lock_RoomOtherDayPrice where RoomId=" + roomId;
 
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str + "  order by EndDate desc", pagesize, ref cp, out ac);
@@ -837,9 +837,9 @@ public class RoomDB
             dbc.BeginTransaction();
             try
             {
-                DataTable dt = dbc.ExecuteDataTable("select * from Lock_RoomOtherDayPrice where RoomId=" + roomId + " and (StartDate>='" + jsr["StartDate"].ToDate() + "' and StartDate<='" + jsr["EndDate"].ToDate() + "') or (EndDate>='" + jsr["StartDate"].ToDate() + "' and EndDate<='" + jsr["EndDate"].ToDate() + "')");
-                if (dt.Rows.Count > 0)
-                    throw new Exception("该时间段内有价格设置请重新选择");
+                //DataTable dt = dbc.ExecuteDataTable("select * from Lock_RoomOtherDayPrice where RoomId=" + roomId + " and ((StartDate>='" + jsr["StartDate"].ToString() + "' and StartDate<='" + jsr["EndDate"].ToString() + "') or (EndDate>='" + jsr["StartDate"].ToString() + "' and EndDate<='" + jsr["EndDate"].ToString() + "'))");
+                //if (dt.Rows.Count > 0)
+                //    throw new Exception("该时间段内有价格设置请重新选择");
                 var dtPrice = dbc.GetEmptyDataTable("Lock_RoomOtherDayPrice");
                 DataTableTracker dtt = new DataTableTracker(dtPrice);
                 var drPrice = dtPrice.NewRow();
@@ -857,6 +857,7 @@ public class RoomDB
                 drPrice["HourWeekEndPrice3"] = jsr["HourWeekEndPrice3"].ToSingle();
                 if (ID == "")
                 {
+                    dbc.ExecuteNonQuery("delete from Lock_RoomOtherDayPrice where RoomId=" + roomId);
                     dtPrice.Rows.Add(drPrice);
                     dbc.InsertTable(dtPrice);
                 }

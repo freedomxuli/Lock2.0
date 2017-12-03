@@ -161,7 +161,8 @@ Ext.onReady(function () {
                     {
                         xtype: 'panel',
                         layout: {
-                            type: 'anchor'
+                            type: 'vbox',
+                            align: 'center'
                         },
                         autoScroll: true,
                         items: [
@@ -171,9 +172,10 @@ Ext.onReady(function () {
                                 layout: {
                                     type: 'column'
                                 },
+                                width: 800,
                                 border: true,
                                 // margin: 10,
-                                title: '房间信息',
+                                //title: '房间信息',
                                 items: [
                                         {
                                             xtype: 'textfield',

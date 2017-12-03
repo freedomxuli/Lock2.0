@@ -321,7 +321,7 @@ Ext.onReady(function () {
                                         {
                                             xtype: 'buttongroup',
                                             title: '',
-                                            hidden: true,
+                                            //hidden: true,
                                             items: [
                                                 {
                                                     xtype: 'button',

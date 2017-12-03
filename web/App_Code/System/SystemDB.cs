@@ -379,15 +379,7 @@ public class SystemDB
                 }
                 else
                 {
-                    DataTable dt = dbc.GetEmptyDataTable("Lock_ZDBLX");
-                    DataTableTracker dtt = new DataTableTracker(dt);
-                    DataRow dr = dt.NewRow();
-                    dr["LXID"] = Convert.ToInt16(id);
-                    dr["LXMC"] = LXMC;
-                    //dr["LX"] = LX;
-                    dr["ZT"] = 0;
-                    dt.Rows.Add(dr);
-                    dbc.UpdateTable(dt, dtt);
+                    dbc.ExecuteNonQuery("update Lock_ZDBLX set LXMC=" + dbc.ToSqlValue(LXMC) + " where LXID=" + Convert.ToInt16(id));
                 }
                 return true;
             }
@@ -493,9 +485,10 @@ public class SystemDB
                 else
                 {
                     DataTable dt = dbc.GetEmptyDataTable("Lock_ZDB");
+                    dt.Columns["ZDBID"].ReadOnly = false;
                     DataTableTracker dtt = new DataTableTracker(dt);
                     DataRow dr = dt.NewRow();
-                    dr["ZDBID"] = Convert.ToInt16(id);
+                    dr["ZDBID"] = id;
                     dr["MC"] = MC;
                     dr["LX"] = LX;
                     dr["XH"] = XH;
@@ -913,6 +906,23 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
             }
         }
 
+    }
+
+    [CSMethod("GetZDBById")]
+    public object GetZDBById(int zdbid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select * from Lock_ZDB where LX=" + zdbid+" order by XH";
+                return dbc.ExecuteDataTable(sqlStr);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
 }
