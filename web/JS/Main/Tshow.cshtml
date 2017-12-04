@@ -14,11 +14,11 @@
     	<table width="100%" cellpadding="0"  cellspacing="0" border="1" bordercolor="#cccccc">
             <thead class="fixedHeader" width="100%">
                 <tr>
-                    <th width="15%" height="80"><a href="javascript:void(0);" onclick="selecttime();">选择时间</a></th>
+                    <th width="15%" height="120" style="background-color:#3f6296;"><a href="javascript:void(0);" onclick="selecttime();" style="font-size:16px;color:#ffffff;"><img src="approot/r/Images/index/time.png" style="height:25px;line-height:25px;" />　选择时间</a></th>
                     @{
                         for(int i = 0;i < days.Count;i++)
                         {
-                            <th width="12.14%">@days[i] <br /> @week[i]</th>
+                            <th width="12.14%" style="background-color:#7f96b9;color:#ffffff;font-size:14px;">@days[i] <br /> @week[i]</th>
                         }
                      }
                 </tr>
@@ -40,35 +40,42 @@
                 for(int i = 0;i<dt_room.Rows.Count;i++)
                 {
                     <tr>
-                        <td width="15%" height="80" align="center" style="color:#000000;font-weight:bold;font-size:12px;">房间号：@dt_room.Rows[i]["RoomNo"]</td>
+                        <td width="15%" height="150" align="center" style="background-color:#7f96b9;color:#ffffff;font-weight:bold;font-size:14px;">房间号 <br /> @dt_room.Rows[i]["RoomNo"]</td>
                         @{
                             if (dt_room.Rows[i]["IsClose"].ToString()=="1")
                             { 
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
-                                <td bgcolor="#999"  width="12.14%">
+                                <td bgcolor="#999" align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
+                                    （关房）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
@@ -86,40 +93,43 @@
                                 {
                                     if (drs1[0]["AuthorLiveStatus"].ToString() == "0")
                                     {
-                                        <td bgcolor="#0F0"  align="center" width="12.14%">
+                                        <td align="center" width="12.14%" style="background-color:#06af06;color:#333333;font-size:14px;">
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
-                                            <div>@drs1[0]["RealName"].ToString()</div>
-                                            <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                            <div>@drs1[0]["PlatType"].ToString()</div>
-                                            <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                            <div><img src="approot/r/Images/index/yyd.png" /></div>
+                                            <div style="padding-top:5px;">（已预订）</div>
+                                            <div style="padding-top:5px;">@drs1[0]["RealName"].ToString() (@drs1[0]["AuthorRoomStyle"].ToString())</div>
+                                            <div style="padding-top:5px;">@drs1[0]["PlatType"].ToString()</div>
+                                            <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                         </td>
                                     }
                                     else if (drs1[0]["AuthorLiveStatus"].ToString() == "1" || drs1[0]["AuthorLiveStatus"].ToString() == "2" || drs1[0]["AuthorLiveStatus"].ToString() == "3")
                                     {
                                         if (drs1[0]["ISRZ"].ToString() == "0")
                                         { 
-                                            <td bgcolor="#0FF" align="center"  width="12.14%">
+                                            <td align="center"  width="12.14%" style="background-color:#002e73;color:#ffffff;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
-                                                <div>@drs1[0]["RealName"].ToString()</div>
+                                                <div>（授权已通过）</div>
+                                                @*<div>@drs1[0]["RealName"].ToString()</div>
                                                 <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
                                                 <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
                                             </td>
                                         }
                                         else
                                         {
-                                            <td bgcolor="#FF0"  align="center" width="12.14%">
+                                            <td align="center" width="12.14%" style="background-color:#ffe600;color:#333333;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
-                                                <div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                <div><img src="approot/r/Images/index/yrz.png" /></div>
+                                                <div style="padding-top:5px;">（已入住）</div>
+                                                <div style="padding-top:5px;">@drs1[0]["RealName"].ToString()（@drs1[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs1[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                         }
                                     }
@@ -127,19 +137,16 @@
                                     {
                                         if (drs1[0]["ISSERVICE"].ToString() == "0")
                                         { 
-                                            <td bgcolor="#C9F"  align="center" width="12.14%">
+                                            <td align="center" width="12.14%" style="background-color:#6a0073;color:#ffffff;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
-                                                <div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                <div style="padding-top:5px;">（退房未整理）</div>
                                             </td>
                                         }
                                         else
                                         {
-                                            <td align="center" width="12.14%">
+                                            <td align="center" width="12.14%" style="background-color:#ffffff;color:#333333;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
@@ -712,8 +719,8 @@
             @{
                 for(int i = 0;i<num;i++)
                 {
-                    <tr>
-                        <td width="15%" height="80">&nbsp;</td>
+                    <tr style="background-color:#7f96b9;">
+                        <td width="15%" height="150">&nbsp;</td>
                         <td  width="12.14%">&nbsp;</td>
                         <td  width="12.14%">&nbsp;</td>
                         <td  width="12.14%">&nbsp;</td>

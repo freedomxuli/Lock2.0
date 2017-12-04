@@ -32,6 +32,8 @@ public class DeskTop
         {
             try
             {
+                SystemUser user = SystemUser.CurrentUser;
+
                 List<string> days = new List<string>();
                 for (int i = 0; i < 7; i++)
                     days.Add(Convert.ToDateTime(now_date).AddDays(i).ToString("yyyy-MM-dd"));
@@ -43,7 +45,7 @@ public class DeskTop
                     week.Add(xq);
                 }
 
-                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose FROM Lock_Room WHERE UserId = 1701 ORDER BY ID";
+                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose FROM Lock_Room WHERE UserId = " + user.UserID + " ORDER BY ID";
                 DataTable dt_room = db.ExecuteDataTable(sql);
                 dt_room.Columns.Add("DAY1");
                 dt_room.Columns.Add("DAY2");
@@ -54,6 +56,9 @@ public class DeskTop
                 dt_room.Columns.Add("DAY7");
                 dt_room.Columns.Add("DL");//电量
                 dt_room.Columns.Add("IsCanClose");//是否可关房
+                dt_room.Columns.Add("HOURPRICE");
+                dt_room.Columns.Add("DAYPRICE");
+                dt_room.Columns.Add("MONTHPRICE");
 
                 for (int i = 0; i < dt_room.Rows.Count; i++)
                 {
@@ -94,14 +99,14 @@ public class DeskTop
                                  LEFT JOIN Lock_Room b on a.RoomId = b.ID
                                  WHERE a.FDUsreId = @FDUsreId AND a.AuthorLiveStatus in (0,1,2,3,4,6,16)";
                 SqlCommand cmd = db.CreateCommand(sql_order);
-                cmd.Parameters.AddWithValue("@FDUsreId", 1701);
+                cmd.Parameters.AddWithValue("@FDUsreId", user.UserID);
                 DataTable dt_order = db.ExecuteDataTable(cmd);
                 dt_order.Columns.Add("ISRZ");//是否入住
                 dt_order.Columns.Add("ISSERVICE");//是否服务
 
                 string sql_service = @"SELECT ID,AuthorizeNo,ServiceStatus FROM Lock_ServiceApply WHERE AuthorizeNo IN (SELECT AuthorizeNo FROM Lock_AuthorizeOrder WHERE FDUsreId = @FDUsreId AND AuthorLiveStatus in (4,6))";
                 cmd = db.CreateCommand(sql_service);
-                cmd.Parameters.AddWithValue("@FDUsreId", 1701);
+                cmd.Parameters.AddWithValue("@FDUsreId", user.UserID);
                 DataTable dt_service = db.ExecuteDataTable(cmd);
 
                 for (int i = 0; i < dt_room.Rows.Count; i++)
@@ -110,6 +115,8 @@ public class DeskTop
                     if (drs.Length > 0)
                         dt_room.Rows[i]["IsCanClose"] = 1;
                 }
+
+                string sql_price = "SELECT ";
 
                 for (int i = 0; i < dt_order.Rows.Count; i++)
                 {
@@ -127,9 +134,8 @@ public class DeskTop
                     }
                     else if (dt_order.Rows[i]["AuthorLiveStatus"].ToString() == "4" || dt_order.Rows[i]["AuthorLiveStatus"].ToString() == "6")
                     {
-                        DataRow[] drs = dt_service.Select("AuthorizeNo = '" + dt_order.Rows[i]["AuthorizeNo"].ToString() + "'");
-                        if (drs.Length == 0)
-                            dt_order.Rows[i]["ISSERVICE"] = 0;
+                        DataRow[] drs = dt_room.Select("ID = '" + dt_order.Rows[i]["RoomId"].ToString() + "'");
+                        dt_order.Rows[i]["ISSERVICE"] = drs[0]["IsService"];
                     }
                 }
 
@@ -137,7 +143,7 @@ public class DeskTop
                 int jrrz = 0;//今日入住
                 int jrdtf = 0;//今日待退房
                 int jrkf = 0;//今日空房
-                string sql_hotel = "SELECT HandlerKind,ID FROM Lock_Hotel WHERE ID IN (SELECT HotelId FROM Lock_Room WHERE UserId = 1701)";
+                string sql_hotel = "SELECT HandlerKind,ID FROM Lock_Hotel WHERE ID IN (SELECT HotelId FROM Lock_Room WHERE UserId = " + user.UserID + ")";
                 DataTable dt_hotel = db.ExecuteDataTable(sql_hotel);
                 for (int i = 0; i < dt_hotel.Rows.Count; i++)
                 {
