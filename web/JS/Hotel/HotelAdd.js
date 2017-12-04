@@ -177,7 +177,7 @@ Ext.onReady(function () {
                                                   ]
                                               })
                                           },
-                                         
+
                                          {
                                              xtype: 'panel',
                                              id: 'map',
@@ -442,7 +442,7 @@ Ext.onReady(function () {
                                                          }
                                                     ]
                                                 },
-                                               
+
                                                {
                                                    xtype: 'checkboxgroup',
                                                    id: 'IsHasWeekendPrice',
@@ -740,7 +740,7 @@ Ext.onReady(function () {
                                         else
                                             values["IsAutoAccept"] = 0;
 
-                                       
+
                                         var tagids = [];
                                         var tagvalues = [];
                                         for (var i in tag) {
@@ -783,7 +783,7 @@ Ext.onReady(function () {
 
 
 function initData() {
-    CS('CZCLZ.SystemDB.GetZDBById', function (ret) {
+    CS('CZCLZ.SystemDB.GetTag', function (ret) {
         if (ret) {
             tag = ret;
             var Items = [];
@@ -795,7 +795,7 @@ function initData() {
                     labelWidth: 80,
                     fieldLabel: ret[i].MC,
                     id: ret[i].ZDBID + '',
-                    value: ret[i].Info,
+                    value: ret[i].VALUE,
                     name: ret[i].ZDBID + '',
 
                     columnWidth: 0.4
@@ -872,7 +872,7 @@ function initData() {
                 }, CS.onError, id);
             }
         }
-    }, CS.onError, 1);
+    }, CS.onError, 1, id);
 }
 
 

@@ -36,7 +36,7 @@ public class HotelApplyDB
                 }
 
 
-                string str = @"select a.*,b.CellPhone,b.RealName from Lock_HotelApply a left join aspnet_Members b on a.UserId=b.UserId 
+                string str = @"select a.*,b.CellPhone,b.RealName from Lock_HotelApplyApply a left join aspnet_Members b on a.UserId=b.UserId 
                 where (a.UserId in(select MEUSERID from aspnet_FdAndMdUser where FDUSERID=" + SystemUser.CurrentUser.UserID + ") or a.UserId=" + SystemUser.CurrentUser.UserID + ")";
                 str += where;
 
@@ -65,7 +65,7 @@ public class HotelApplyDB
                 for (int i = 0; i < jsr.ToArray().Length; i++)
                 {
                     int ID = jsr.ToArray()[i].ToInteger();
-                    dbc.ExecuteNonQuery("delete from Lock_Hotel where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
+                    dbc.ExecuteNonQuery("delete from Lock_HotelApply where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
                     dbc.ExecuteNonQuery("delete from Lock_Room where HotelId=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
                 }
                 dbc.CommitTransaction();
@@ -109,6 +109,7 @@ public class HotelApplyDB
             dbc.BeginTransaction();
             try
             {
+                int HotelId;
                 string ID = jsr["ID"].ToString();
                 string HotelName = jsr["HotelName"].ToString();
                 string HotelNo = jsr["HotelNo"].ToString();
@@ -172,7 +173,7 @@ public class HotelApplyDB
                 if (jsr["DepositPrice"].ToString() != "")
                     DepositPrice = jsr["DepositPrice"].ToSingle();
 
-                var dtHotel = dbc.GetEmptyDataTable("Lock_Hotel");
+                var dtHotel = dbc.GetEmptyDataTable("Lock_HotelApply");
                 var drHotel = dtHotel.NewRow();
                 DataTableTracker dtt = new DataTableTracker(dtHotel);
                 drHotel["HotelName"] = HotelName;
@@ -226,12 +227,15 @@ public class HotelApplyDB
                 }
                 if (ID == "")
                 {
+                    HotelId = Convert.ToInt16(dbc.ExecuteScalar("SELECT IDENT_CURRENT('Lock_Room') + IDENT_INCR('Lock_Room')").ToString());
+
                     drHotel["CreateDate"] = DateTime.Now;
                     dtHotel.Rows.Add(drHotel);
                     dbc.InsertTable(drHotel);
                 }
                 else
                 {
+                    HotelId = Convert.ToInt16(ID);
                     drHotel["ID"] = Convert.ToInt16(ID);
                     drHotel["UpdateDate"] = DateTime.Now;
                     dtHotel.Columns["ID"].ReadOnly = false;
@@ -239,11 +243,18 @@ public class HotelApplyDB
                     dbc.UpdateTable(dtHotel, dtt);
                 }
 
-                dbc.ExecuteNonQuery("update Lock_ZDB set Info='' where LX=1");
+                dbc.ExecuteNonQuery("delete from Lock_Tag where PID=" + HotelId + " and ZDLX=1");
+                DataTable dtTag = dbc.GetEmptyDataTable("Lock_Tag");
                 for (int i = 0; i < tagIds.ToArray().Length; i++)
                 {
-                    dbc.ExecuteNonQuery("update Lock_ZDB set Info=" + dbc.ToSqlValue(tagValues.ToArray()[i]) + " where ZDBID=" + Convert.ToInt16(tagIds.ToArray()[i].ToString()));
+                    DataRow drTag = dtTag.NewRow();
+                    drTag["ZDBID"] = Convert.ToInt16(tagIds.ToArray()[i].ToString());
+                    drTag["ZDLX"] = 1;
+                    drTag["VALUE"] = tagValues.ToArray()[i];
+                    drTag["PID"] = HotelId;
+                    dtTag.Rows.Add(drTag);
                 }
+                dbc.InsertTable(dtTag);
 
                 dbc.CommitTransaction();
                 return true;
@@ -263,7 +274,7 @@ public class HotelApplyDB
         {
             try
             {
-                string sqlStr = "select * from Lock_Hotel where ID=" + ID;
+                string sqlStr = "select * from Lock_HotelApply where ID=" + ID;
                 DataTable dt = dbc.ExecuteDataTable(sqlStr);
                 return dt;
             }
@@ -300,7 +311,7 @@ public class HotelApplyDB
             dbc.BeginTransaction();
             try
             {
-                dbc.ExecuteNonQuery("update Lock_Hotel set UserId=" + UserId + " where ID=" + HotelId);
+                dbc.ExecuteNonQuery("update Lock_HotelApply set UserId=" + UserId + " where ID=" + HotelId);
                 dbc.ExecuteNonQuery("update Lock_Room set UserId=" + UserId + " where HotelId=" + HotelId);
                 dbc.CommitTransaction();
                 return true;
