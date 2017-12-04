@@ -915,7 +915,7 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
         {
             try
             {
-                string sqlStr = "select * from Lock_ZDB where LX=" + zdbid+" order by XH";
+                string sqlStr = "select * from Lock_ZDB where LX=" + zdbid + " order by XH";
                 return dbc.ExecuteDataTable(sqlStr);
             }
             catch (Exception ex)
@@ -924,5 +924,28 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
             }
         }
     }
+
+    [CSMethod("GetTag")]
+    public object GetTag(int lx, string pid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "";
+                if (string.IsNullOrEmpty(pid))
+                    sqlStr = "select *,'' VALUE from Lock_ZDB where LX=" + lx + " order by XH";
+                else
+                    sqlStr = "select a.*,b.VALUE from Lock_ZDB a left join Lock_Tag b on a.ZDBID=b.ZDBID and b.ZDLX=" + lx + " and b.PID=" + pid + " where a.LX=" + lx;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
 
 }

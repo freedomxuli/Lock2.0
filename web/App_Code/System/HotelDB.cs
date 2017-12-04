@@ -105,6 +105,7 @@ public class HotelDB
             dbc.BeginTransaction();
             try
             {
+                int HotelId;
                 string ID = jsr["ID"].ToString();
                 string HotelName = jsr["HotelName"].ToString();
                 string HotelNo = jsr["HotelNo"].ToString();
@@ -222,12 +223,15 @@ public class HotelDB
                 }
                 if (ID == "")
                 {
+                    HotelId = Convert.ToInt16(dbc.ExecuteScalar("SELECT IDENT_CURRENT('Lock_Room') + IDENT_INCR('Lock_Room')").ToString());
+
                     drHotel["CreateDate"] = DateTime.Now;
                     dtHotel.Rows.Add(drHotel);
                     dbc.InsertTable(drHotel);
                 }
                 else
                 {
+                    HotelId = Convert.ToInt16(ID);
                     drHotel["ID"] = Convert.ToInt16(ID);
                     drHotel["UpdateDate"] = DateTime.Now;
                     dtHotel.Columns["ID"].ReadOnly = false;
@@ -235,11 +239,18 @@ public class HotelDB
                     dbc.UpdateTable(dtHotel, dtt);
                 }
 
-                dbc.ExecuteNonQuery("update Lock_ZDB set Info='' where LX=1");
+                dbc.ExecuteNonQuery("delete from Lock_Tag where PID=" + HotelId + " and ZDLX=1");
+                DataTable dtTag = dbc.GetEmptyDataTable("Lock_Tag");
                 for (int i = 0; i < tagIds.ToArray().Length; i++)
                 {
-                    dbc.ExecuteNonQuery("update Lock_ZDB set Info=" + dbc.ToSqlValue(tagValues.ToArray()[i]) + " where ZDBID=" + Convert.ToInt16(tagIds.ToArray()[i].ToString()));
+                    DataRow drTag = dtTag.NewRow();
+                    drTag["ZDBID"] = Convert.ToInt16(tagIds.ToArray()[i].ToString());
+                    drTag["ZDLX"] = 1;
+                    drTag["VALUE"] = tagValues.ToArray()[i];
+                    drTag["PID"] = HotelId;
+                    dtTag.Rows.Add(drTag);
                 }
+                dbc.InsertTable(dtTag);
 
                 dbc.CommitTransaction();
                 return true;
@@ -331,5 +342,99 @@ public class HotelDB
         }
     }
 
+    [CSMethod("GetCleanerList")]
+    public object GetCleanerList(int HotelId)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = @"select a.ID,c.* from Lock_BJBelong a inner join aspnet_UsersInRoles b on a.BJUserId=b.UserId
+                                  inner join aspnet_Members c on a.BJUserId=c.UserId
+                                  where b.RoleId='E3EE2BCE-1041-4ABE-9245-70E088A983A2'
+                                  and a.HotelId=" + HotelId + "";
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetCleanerCombo")]
+    public object GetCleanerCombo()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = @"select a.UserId VALUE,RealName TEXT from aspnet_Members a inner join aspnet_UsersInRoles b on a.UserId=b.UserId
+                                  where b.RoleId='E3EE2BCE-1041-4ABE-9245-70E088A983A2'";
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("SaveCleaner")]
+    public object SaveCleaner(int BjId, int HotelId)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                dbc.ExecuteNonQuery("delete from Lock_BJBelong where BJUserId=" + BjId + " and HotelId=" + HotelId);
+
+                DataTable dt = dbc.GetEmptyDataTable("Lock_BJBelong");
+                DataRow dr = dt.NewRow();
+                dr["BJUserId"] = BjId;
+                dr["FDUerId"] = SystemUser.CurrentUser.UserID;
+                dr["HotelId"] = HotelId;
+                dr["CreateTime"] = DateTime.Now;
+                dt.Rows.Add(dr);
+                dbc.InsertTable(dt);
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("DeleteCleaner")]
+    public object DeleteCleaner(JSReader jsr)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            dbc.BeginTransaction();
+            try
+            {
+                for (int i = 0; i < jsr.ToArray().Length; i++)
+                {
+                    int ID = jsr.ToArray()[i].ToInteger();
+                    dbc.ExecuteNonQuery("delete from Lock_BJBelong where ID=" + ID);
+
+                }
+                dbc.CommitTransaction();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbc.RoolbackTransaction();
+                throw ex;
+            }
+        }
+    }
 }

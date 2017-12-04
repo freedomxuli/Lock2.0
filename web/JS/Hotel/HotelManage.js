@@ -28,7 +28,22 @@ var store = createSFW4Store({
     }
 });
 
+var cleanerStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'ID', type: 'string' },
+       { name: 'RealName', type: 'string' },
+       { name: 'CellPhone', type: 'string' }
+    ]
+
+});
+
 var UserStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
+
+var CleanerComnboStore = Ext.create('Ext.data.Store', {
     fields: ['VALUE', 'TEXT'],
     data: [
     ]
@@ -72,6 +87,235 @@ function choseAdmin(id) {
         }, CS.onError);
     })
 }
+
+function bj(id) {
+    hotelId = id;
+    var win = new cleanerWin();
+    win.show(null, function () {
+        CS('CZCLZ.HotelDB.GetCleanerList', function (retVal) {
+            if (retVal.length > 0) {
+                cleanerStore.loadData(retVal);
+            }
+        }, CS.onError, id);
+    })
+}
+
+//************************************物品管理***************************************
+Ext.define('addCleanerWin', {
+    extend: 'Ext.window.Window',
+
+    height: 150,
+    width: 300,
+    layout: {
+        type: 'fit'
+    },
+    id: 'addCleanerWin',
+    closeAction: 'destroy',
+    modal: true,
+    title: '选择保洁',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'addCleanerForm',
+                frame: true,
+                bodyPadding: 10,
+
+                title: '',
+                items: [
+                       {
+                           xtype: 'combobox',
+                           name: 'BJUserId',
+                           id: 'BJUserId',
+                           fieldLabel: '保洁',
+                           editable: false,
+                           labelWidth: 70,
+                           anchor: '100%',
+                           store: CleanerComnboStore,
+                           queryMode: 'local',
+                           displayField: 'TEXT',
+                           valueField: 'VALUE',
+                           allowBlank: false,
+                           value: ''
+                       }
+
+                ],
+                buttonAlign: 'center',
+                buttons: [
+
+                    {
+                        text: '保存',
+                        handler: function () {
+                            var form = Ext.getCmp('addCleanerForm');
+                            if (form.form.isValid()) {
+                                //取得表单中的内容
+                                var bjid = Ext.getCmp("BJUserId").getValue();
+                                CS('CZCLZ.HotelDB.SaveCleaner', function (ret) {
+                                    if (ret) {
+                                        CS('CZCLZ.HotelDB.GetCleanerList', function (retVal) {
+                                            if (retVal.length > 0) {
+                                                cleanerStore.loadData(retVal);
+                                            }
+                                        }, CS.onError, hotelId);
+                                        Ext.getCmp("addCleanerWin").close();
+                                    }
+                                }, CS.onError, bjid, hotelId);
+                            }
+                        }
+                    },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
+
+Ext.define('cleanerWin', {
+    extend: 'Ext.window.Window',
+
+    height: 300,
+    width: 600,
+    layout: {
+        type: 'fit'
+    },
+    closeAction: 'destroy',
+    modal: true,
+    title: '保洁列表',
+    id: 'cleanerWin',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'gridpanel',
+                margin: '0 0 0 0',
+                id: 'cleanergrid',
+                store: cleanerStore,
+                columnLines: true,
+                border: true,
+                autoscroll: true,
+                selModel: Ext.create('Ext.selection.CheckboxModel', {
+
+                }),
+                columns: [
+                     {
+                         xtype: 'gridcolumn',
+                         dataIndex: 'ID',
+                         align: 'center',
+                         hidden: true,
+                         flex: 1,
+                         sortable: false,
+                         menuDisabled: true
+                     },
+                     {
+                         xtype: 'gridcolumn',
+                         dataIndex: 'RealName',
+                         align: 'center',
+                         text: '保洁姓名',
+                         flex: 1,
+                         sortable: false,
+                         menuDisabled: true
+                     },
+
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'CellPhone',
+                        align: 'center',
+                        text: '保洁手机',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true
+                    }
+
+                ],
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        items: [
+                               {
+                                   xtype: 'buttongroup',
+                                   title: '',
+                                   items: [
+                                       {
+                                           xtype: 'button',
+                                           iconCls: 'add',
+                                           text: '新增',
+                                           handler: function () {
+                                               var win = new addCleanerWin();
+                                               win.show(null, function () {
+
+                                               });
+                                           }
+                                       },
+                                        {
+                                            xtype: 'button',
+                                            iconCls: 'delete',
+                                            text: '删除',
+                                            handler: function () {
+                                                var idlist = [];
+                                                var grid = Ext.getCmp("cleanergrid");
+                                                var rds = grid.getSelectionModel().getSelection();
+                                                if (rds.length == 0) {
+                                                    Ext.Msg.show({
+                                                        title: '提示',
+                                                        msg: '请选择至少一条要删除的记录!',
+                                                        buttons: Ext.MessageBox.OK,
+                                                        icon: Ext.MessageBox.INFO
+                                                    });
+                                                    return;
+                                                }
+
+                                                Ext.MessageBox.confirm('删除提示', '是否要删除数据!', function (obj) {
+                                                    if (obj == "yes") {
+                                                        for (var n = 0, len = rds.length; n < len; n++) {
+                                                            var rd = rds[n];
+
+                                                            idlist.push(rd.get("ID"));
+                                                        }
+
+                                                        CS('CZCLZ.HotelDB.DeleteCleaner', function (retVal) {
+                                                            if (retVal) {
+                                                                CS('CZCLZ.HotelDB.GetCleanerList', function (retVal) {
+                                                                    if (retVal.length > 0) {
+                                                                        cleanerStore.loadData(retVal);
+                                                                    }
+                                                                }, CS.onError, hotelId);
+                                                            }
+                                                        }, CS.onError, idlist);
+                                                    }
+                                                    else {
+                                                        return;
+                                                    }
+                                                });
+                                            }
+                                        }
+                                   ]
+                               }
+                        ]
+                    }
+                ],
+                buttonAlign: 'center',
+                buttons: [
+
+                    {
+                        text: '关闭',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
 
 Ext.define('choseWin', {
     extend: 'Ext.window.Window',
@@ -269,7 +513,7 @@ Ext.onReady(function () {
 
                             {
                                 text: '操作',
-                                width: 120,
+                                width: 200,
                                 align: 'center',
                                 sortable: false,
                                 menuDisabled: true,
@@ -277,6 +521,7 @@ Ext.onReady(function () {
                                     var str;
                                     str = "<a href='#' onclick='edit(\"" + record.data.ID + "\")'>编辑</a>";
                                     str += "|<a href='#' onclick='choseAdmin(\"" + record.data.ID + "\")'>选择管理员</a>";
+                                    str += "|<a href='#' onclick='bj(\"" + record.data.ID + "\")'>保洁管理</a>";
                                     return str;
                                 }
                             }
@@ -327,7 +572,7 @@ Ext.onReady(function () {
                                                     xtype: 'button',
                                                     iconCls: 'add',
                                                     text: '新增',
-                                                   
+
                                                     handler: function () {
                                                         FrameStack.pushFrame({
                                                             url: "HotelAdd.html",
@@ -401,6 +646,12 @@ Ext.onReady(function () {
     });
 
     new mainView();
+
+    CS('CZCLZ.HotelDB.GetCleanerCombo', function (retVal) {
+        if (retVal) {
+            CleanerComnboStore.loadData(retVal, false);
+        }
+    }, CS.onError);
 
     loadData(1);
 })

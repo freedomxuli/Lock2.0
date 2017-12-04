@@ -176,6 +176,7 @@ public class RoomDB
                 drRoom["RoomSequence"] = 0;
                 drRoom["LockStatus"] = 0;
                 drRoom["IsClose"] = 0;
+                drRoom["IsService"] = 1;
 
                 drRoom["UserId"] = SystemUser.CurrentUser.UserID;
                 drRoom["UserName"] = SystemUser.CurrentUser.UserName;
@@ -314,6 +315,7 @@ public class RoomDB
 
                 drRoom["LockStatus"] = 0;
                 drRoom["IsClose"] = 0;
+                drRoom["IsService"] = 1;
 
                 drRoom["UserId"] = SystemUser.CurrentUser.UserID;
                 drRoom["UserName"] = SystemUser.CurrentUser.UserName;

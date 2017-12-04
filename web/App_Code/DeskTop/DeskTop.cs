@@ -45,7 +45,7 @@ public class DeskTop
                     week.Add(xq);
                 }
 
-                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose FROM Lock_Room WHERE UserId = " + user.UserID + " ORDER BY ID";
+                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose,IsService FROM Lock_Room WHERE UserId = " + user.UserID + " ORDER BY ID";
                 DataTable dt_room = db.ExecuteDataTable(sql);
                 dt_room.Columns.Add("DAY1");
                 dt_room.Columns.Add("DAY2");
@@ -116,8 +116,6 @@ public class DeskTop
                         dt_room.Rows[i]["IsCanClose"] = 1;
                 }
 
-                string sql_price = "SELECT ";
-
                 for (int i = 0; i < dt_order.Rows.Count; i++)
                 {
                     dt_order.Rows[i]["ISRZ"] = 0;//默认未入住
@@ -135,7 +133,8 @@ public class DeskTop
                     else if (dt_order.Rows[i]["AuthorLiveStatus"].ToString() == "4" || dt_order.Rows[i]["AuthorLiveStatus"].ToString() == "6")
                     {
                         DataRow[] drs = dt_room.Select("ID = '" + dt_order.Rows[i]["RoomId"].ToString() + "'");
-                        dt_order.Rows[i]["ISSERVICE"] = drs[0]["IsService"];
+                        if(drs.Length>0)
+                            dt_order.Rows[i]["ISSERVICE"] = drs[0]["IsService"];
                     }
                 }
 
