@@ -30,7 +30,7 @@ Ext.onReady(function () {
                 items: [
                     {
                         xtype: 'gridpanel',
-                        columnLine:1,
+                        columnLines:1,
                         border:1,
                         store: FinanceStore,
                         columns: [
@@ -55,7 +55,7 @@ Ext.onReady(function () {
                             {
                                 xtype: 'gridcolumn',
                                 dataIndex: 'HotelName',
-                                flex: 1,
+                                flex: 2,
                                 sortable: false,
                                 menuDisabled: true,
                                 text: '宾馆名称'
@@ -67,8 +67,11 @@ Ext.onReady(function () {
                                 sortable: false,
                                 menuDisabled: true,
                                 text: '状态',
-                                handler: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                    return "";
+                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                    if(value=="1")
+                                        return "未出账";
+                                    else
+                                        return "已出帐";
                                 }
                             },
                             {
@@ -94,7 +97,7 @@ Ext.onReady(function () {
                                 sortable: false,
                                 menuDisabled: true,
                                 text: '操作',
-                                handler: function (value, cellmeta, record, rowIndex, columnIndex, store)
+                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store)
                                 {
                                     return "";
                                 }
@@ -112,13 +115,18 @@ Ext.onReady(function () {
                                         displayField: 'HotelName',
                                         editable:false,
                                         queryMode: 'local',
-                                        labelWidth:80,
+                                        labelWidth: 80,
+                                        width:320,
+                                        id:'HotelSelect',
                                         fieldLabel: '门店选择'
                                     },
                                     {
                                         xtype: 'button',
                                         iconCls: 'search',
-                                        text: '查看'
+                                        text: '查看',
+                                        handler: function () {
+                                            loadData(1);
+                                        }
                                     }
                                 ]
                             },
@@ -141,22 +149,35 @@ Ext.onReady(function () {
 
     var mainView = new FinanceList();
 
-    //loadData(1);
     getHotel();
 
 });
 
 function getHotel()
 {
-    CS('', function (retVal) {
+    CS('CZCLZ.FinanceDB.GetHotelCombobox', function (retVal) {
         if (retVal)
         {
-
+            hotelStore.loadData(retVal);
+            if (hotelStore.data.length > 0) {
+                Ext.getCmp('HotelSelect').setValue(hotelStore.data.items[0].data.ID);
+                loadData(1);
+            }
         }
     },CS.onError)
 }
 
-function loadData(page)
+function loadData(nPage)
 {
-    
+    CS('CZCLZ.FinanceDB.GetFinanceList', function (retVal) {
+        if (retVal)
+        {
+            FinanceStore.setData({
+                data: retVal.dt,
+                pageSize: pageSize,
+                total: retVal.ac,
+                currentPage: retVal.cp
+            });
+        }
+    }, CS.onError, nPage, pageSize, Ext.getCmp('HotelSelect').getValue())
 }
