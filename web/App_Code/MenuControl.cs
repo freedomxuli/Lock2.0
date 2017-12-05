@@ -69,9 +69,24 @@ public class MenuControl
             <Menu Name='门店管理员'> 
                  <Item Name='门店管理员'>
                    <Tab p='' Name='门店管理员'>approot/r/page/System/ManagerList.html</Tab>
-                 
-                
                 </Item>
+            </Menu>
+            <Menu Name='财务管理'> 
+                 <Item Name='财务查看'>
+                   <Tab p='' Name='财务查看'>approot/r/page/Finance/FinanceList.html</Tab>
+                 </Item>
+                 <Item Name='账单确认'>
+                   <Tab p='' Name='账单确认'>approot/r/page/Finance/FinanceConfirm.html</Tab>
+                 </Item>
+                 <Item Name='新增提现'>
+                   <Tab p='' Name='新增提现'>approot/r/page/Finance/AddFinance.html</Tab>
+                 </Item>
+                 <Item Name='提现待处理'>
+                   <Tab p='' Name='提现待处理'>approot/r/page/Finance/FinanceHandler.html</Tab>
+                 </Item>
+                 <Item Name='提现已完成'>
+                   <Tab p='' Name='提现已完成'>approot/r/page/Finance/FinanceEnd.html</Tab>
+                 </Item>
             </Menu>
             <Menu Name='系统管理'>            
                 <Item Name='门店管理'>
