@@ -98,7 +98,7 @@ public class HotelDB
     }
 
     [CSMethod("SaveHotel")]
-    public object SaveHotel(JSReader jsr, JSReader file, JSReader tagIds, JSReader tagValues)
+    public object SaveHotel(JSReader jsr, JSReader file, JSReader tagIds, JSReader tagValues, string imgs)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -214,12 +214,34 @@ public class HotelDB
 
                 drHotel["UserId"] = SystemUser.CurrentUser.UserID;
                 drHotel["UserName"] = SystemUser.CurrentUser.UserName;
-                for (int i = 1; i < 6; i++)
+                //for (int i = 1; i < 6; i++)
+                //{
+                //    if (file.ToArray().Length >= i)
+                //        drHotel["Image" + i] = file.ToArray()[i - 1].ToString();
+                //    else
+                //        drHotel["Image" + i] = "";
+                //}
+                if (!string.IsNullOrEmpty(imgs))
                 {
-                    if (file.ToArray().Length >= i)
-                        drHotel["Image" + i] = file.ToArray()[i - 1].ToString();
-                    else
+                    string[] imglist = imgs.Split(new char[] { ',' });
+                    for (int i = 1; i < 6; i++)
+                    {
+                        if (imglist.Count() >= i)
+                        {
+                            string newfilename = GetNewFilePath(imglist[i - 1], "~/files/Hotel/");
+                            drHotel["Image" + i] = newfilename.Substring(2, newfilename.Length - 2);
+                        }
+                        else
+                            drHotel["Image" + i] = "";
+                    }
+                  
+                }
+                else
+                {
+                    for (int i = 1; i < 6; i++)
+                    {
                         drHotel["Image" + i] = "";
+                    }
                 }
                 if (ID == "")
                 {
@@ -260,6 +282,29 @@ public class HotelDB
                 dbc.RoolbackTransaction();
                 throw ex;
             }
+        }
+    }
+
+    public static string GetNewFilePath(string oldfilename, string newpath)
+    {
+        try
+        {
+            if (File.Exists(HttpContext.Current.Server.MapPath(oldfilename)))
+            {
+                FileInfo fileinfo = new FileInfo(HttpContext.Current.Server.MapPath(oldfilename));
+                string dirfilename = HttpContext.Current.Server.MapPath(newpath) + fileinfo.Name;
+                if (!Directory.Exists(HttpContext.Current.Server.MapPath(newpath)))
+                    Directory.CreateDirectory(HttpContext.Current.Server.MapPath(newpath));
+                if (!File.Exists(dirfilename))
+                    fileinfo.CopyTo(dirfilename);
+                return newpath + fileinfo.Name;
+            }
+            else
+                return "";
+        }
+        catch
+        {
+            return "";
         }
     }
 

@@ -34,7 +34,7 @@ function tp() {
 }
 
 function getUserInfo(phone) {
-    CS('CZCLZ.HotelApplyDB.getUserInfo', function (retVal) {
+    CS('CZCLZ.Lock_HotelApply.getUserInfo', function (retVal) {
         if (retVal.length > 0) {
             var win = new UserWin();
             win.show(null, function () {
@@ -77,7 +77,7 @@ Ext.onReady(function () {
                                     type: 'column'
                                 },
                                 border: true,
-                                width: 800,
+                                width: 850,
                                 // margin: 10,
 
                                 items: [
@@ -239,14 +239,14 @@ Ext.onReady(function () {
                                                fieldLabel: '经度',
                                                hidden: true
                                            },
-                                            {
-                                                xtype: 'displayfield',
-                                                value: '<a href="#" onclick="tp()">上传</a>',
-                                                margin: '10 10 10 10',
-                                                fieldLabel: '门店图片',
-                                                columnWidth: 0.5,
-                                                labelWidth: 80
-                                            },
+                                            //{
+                                            //    xtype: 'displayfield',
+                                            //    value: '<a href="#" onclick="tp()">上传</a>',
+                                            //    margin: '10 10 10 10',
+                                            //    fieldLabel: '门店图片',
+                                            //    columnWidth: 0.5,
+                                            //    labelWidth: 80
+                                            //},
                                             //{
                                             //    xtype: 'displayfield',
                                             //    value: ' <div id="inputBox"><input type="file" title="请选择图片" id="file" multiple accept="image/png,image/jpg,image/gif,image/JPEG"/>点击选择图片</div>',
@@ -257,8 +257,10 @@ Ext.onReady(function () {
                                             //},
                                              {
                                                  xtype: 'displayfield',
-                                                 value: '<div id="imgBox"></div>',
+                                                 id: 'tp',
+                                                 value: ' <div id="fileList"><div id="filePicker" style="float:left;margin-right:10px;margin-bottom:5px;width:50px;height:50px;">点击选择图片</div></div>',
                                                  margin: '10 10 10 10',
+                                                 fieldLabel: '门店图片',
                                                  columnWidth: 1,
                                                  labelWidth: 80
                                              },
@@ -751,14 +753,22 @@ Ext.onReady(function () {
                                             }
                                         }
 
-                                        CS('CZCLZ.HotelApplyDB.SaveHotel', function (retVal) {
+                                        var imglist = "";
+                                        $("#fileList .file-item").each(function () {
+                                            imglist += $(this).attr("imageurl") + ",";
+                                        })
+
+                                        if (imglist.length > 0)
+                                            imglist = imglist.substr(0, imglist.length - 1);
+
+                                        CS('CZCLZ.Lock_HotelApply.SaveHotel', function (retVal) {
                                             if (retVal) {
                                                 Ext.MessageBox.alert("提示", "保存成功!", function () {
                                                     FrameStack.popFrame();
                                                 });
 
                                             }
-                                        }, CS.onError, values, picItem, tagids, tagvalues);
+                                        }, CS.onError, values, picItem, tagids, tagvalues, imglist);
                                     }
                                 }
 
@@ -779,6 +789,8 @@ Ext.onReady(function () {
 
     });
     new add();
+
+    initwebupload("filePicker", "fileList", 5);
 });
 
 
@@ -812,7 +824,7 @@ function initData() {
             }
             Ext.getCmp("tagGroup").add(Items);
             if (id != null && id != "") {
-                CS('CZCLZ.HotelApplyDB.GetHotelInfo', function (retVal) {
+                CS('CZCLZ.Lock_HotelApply.GetHotelInfo', function (retVal) {
                     if (retVal) {
                         var lat;
                         var lng
@@ -856,17 +868,18 @@ function initData() {
                         else
                             Ext.getCmp('JsPlatSel').items.get(1).setValue(true);
 
+                        var html = "";
                         if (retVal[0]["Image1"] != "" && retVal[0]["Image1"] != null)
-                            picItem.push(retVal[0]["Image1"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal[0]["Image1"] + '"><img src="approot/r/' + retVal[0]["Image1"] + '" width="100px" height="100px"/></div>';
                         if (retVal[0]["Image2"] != "" && retVal[0]["Image2"] != null)
-                            picItem.push(retVal[0]["Image2"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal[0]["Image2"] + '"><img src="approot/r/' + retVal[0]["Image2"] + '" width="100px" height="100px"/></div>';
                         if (retVal[0]["Image3"] != "" && retVal[0]["Image3"] != null)
-                            picItem.push(retVal[0]["Image3"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal[0]["Image3"] + '"><img src="approot/r/' + retVal[0]["Image3"] + '" width="100px" height="100px"/></div>';
                         if (retVal[0]["Image4"] != "" && retVal[0]["Image4"] != null)
-                            picItem.push(retVal[0]["Image4"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal[0]["Image4"] + '"><img src="approot/r/' + retVal[0]["Image4"] + '" width="100px" height="100px"/></div>';
                         if (retVal[0]["Image5"] != "" && retVal[0]["Image5"] != null)
-                            picItem.push(retVal[0]["Image5"]);
-
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal[0]["Image5"] + '"><img src="approot/r/' + retVal[0]["Image5"] + '" width="100px" height="100px"/></div>';
+                        $("#fileList").append(html);
 
                     }
                 }, CS.onError, id);
@@ -925,7 +938,7 @@ Ext.define('phWin', {
                      text: '上传',
                      iconCls: 'upload',
                      handler: function () {
-                         Ext.getCmp('uploadproductpic').upload('CZCLZ.HotelApplyDB.UploadPicForProduct', function (retVal) {
+                         Ext.getCmp('uploadproductpic').upload('CZCLZ.Lock_HotelApply.UploadPicForProduct', function (retVal) {
                              Ext.getCmp('uploadproductpic').add(new SelectImg({
                                  isSelected: retVal.isDefault,
                                  src: "approot/r/" + retVal.fileurl,

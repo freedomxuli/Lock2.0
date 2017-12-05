@@ -17,26 +17,18 @@ public class MenuControl
     public static String xmlMenu = @"
         <MainMenu>
             <Menu Name='订单管理'>            
-                <Item Name='待授权'>
-                   <Tab p='' Name='待授权'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=1</Tab>
+               <Item Name='待确认'>
+                   <Tab p='' Name='待确认'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=1</Tab>
                 </Item>
-                <Item Name='已授权'>
-                   <Tab p='' Name='已授权'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=2</Tab>
+                <Item Name='待审核'>
+                   <Tab p='' Name='待审核'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=2</Tab>
                 </Item>
-                 <Item Name='授权失败'>
-                   <Tab p='' Name='授权失败'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=3</Tab>
+                 <Item Name='待结算'>
+                   <Tab p='' Name='待结算'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=3</Tab>
                 </Item>
-                 <Item Name='授权挂起'>
-                   <Tab p='' Name='授权挂起'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=5</Tab>
-                </Item>
-                <Item Name='授权关闭'>
-                   <Tab p='' Name='授权关闭'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=6</Tab>
-                </Item>
-                <Item Name='授权取消'>
-                   <Tab p='' Name='授权取消'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=7</Tab>
-                </Item>
+                
                 <Item Name='所有订单'>
-                   <Tab p='' Name='所有订单'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=</Tab>
+                   <Tab p='' Name='所有订单'>approot/r/page/AuthorizeOrder/AuthorizeOrderList.html?zt=0</Tab>
                 </Item>
             </Menu>
             <Menu Name='任务管理'> 

@@ -46,7 +46,7 @@ function loadData(nPage) {
             currentPage: retVal.cp
             //sorters: { property: 'a', direction: 'DESC' }
         });
-    }, CS.onError, nPage, pageSize, cx_mc, cx_no, cx_fjh, cx_bgmc, cx_sqzt);
+    }, CS.onError, nPage, pageSize, cx_mc, cx_no, cx_fjh, cx_bgmc, cx_sqzt, zt);
 
 }
 
@@ -365,7 +365,7 @@ Ext.onReady(function () {
 
     new mainView();
 
-    Ext.getCmp("cx_sqzt").setValue(zt);
+    //Ext.getCmp("cx_sqzt").setValue(zt);
     loadData(1);
 })
 //************************************主界面*****************************************
