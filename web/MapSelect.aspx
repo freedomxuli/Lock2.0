@@ -48,8 +48,9 @@
             citylocation = new qq.maps.CityService({
                 complete: function (result) {
                     var center;
-                    if (lat != null && lat != undefined)
+                    if (lat != null && lat != undefined && lat != "") {
                         center = new qq.maps.LatLng(lat, lng);
+                    }
                     else
                         center = result.detail.latLng;
 

@@ -120,7 +120,7 @@ public class RoomDB
     }
 
     [CSMethod("SaveRoom")]
-    public object SaveRoom(JSReader jsr, JSReader roomPic, JSReader goodsPic, JSReader tagIds, JSReader tagValues)
+    public object SaveRoom(JSReader jsr, JSReader roomPic, JSReader goodsPic, JSReader tagIds, JSReader tagValues, string imgs)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -180,15 +180,37 @@ public class RoomDB
 
                 drRoom["UserId"] = SystemUser.CurrentUser.UserID;
                 drRoom["UserName"] = SystemUser.CurrentUser.UserName;
-                for (int i = 1; i < 6; i++)
+                //for (int i = 1; i < 6; i++)
+                //{
+                //    if (roomPic.ToArray().Length >= i)
+                //        drRoom["Image" + i] = roomPic.ToArray()[i - 1].ToString();
+                //}
+                //for (int i = 1; i < 6; i++)
+                //{
+                //    if (goodsPic.ToArray().Length >= i)
+                //        drRoom["GoodsImage" + i] = goodsPic.ToArray()[i - 1].ToString();
+                //}
+
+                if (!string.IsNullOrEmpty(imgs))
                 {
-                    if (roomPic.ToArray().Length >= i)
-                        drRoom["Image" + i] = roomPic.ToArray()[i - 1].ToString();
+                    string[] imglist = imgs.Split(new char[] { ',' });
+                    for (int i = 1; i < 6; i++)
+                    {
+                        if (imglist.Count() >= i)
+                        {
+                            string newfilename = GetNewFilePath(imglist[i - 1], "~/files/Room/");
+                            drRoom["Image" + i] = newfilename.Substring(2, newfilename.Length - 2);
+                        }
+                        else
+                            drRoom["Image" + i] = "";
+                    }
                 }
-                for (int i = 1; i < 6; i++)
+                else
                 {
-                    if (goodsPic.ToArray().Length >= i)
-                        drRoom["GoodsImage" + i] = goodsPic.ToArray()[i - 1].ToString();
+                    for (int i = 1; i < 6; i++)
+                    {
+                        drRoom["Image" + i] = "";
+                    }
                 }
                 if (ID == "")
                 {
@@ -237,6 +259,29 @@ public class RoomDB
         }
     }
 
+    public static string GetNewFilePath(string oldfilename, string newpath)
+    {
+        try
+        {
+            if (File.Exists(HttpContext.Current.Server.MapPath(oldfilename)))
+            {
+                FileInfo fileinfo = new FileInfo(HttpContext.Current.Server.MapPath(oldfilename));
+                string dirfilename = HttpContext.Current.Server.MapPath(newpath) + fileinfo.Name;
+                if (!Directory.Exists(HttpContext.Current.Server.MapPath(newpath)))
+                    Directory.CreateDirectory(HttpContext.Current.Server.MapPath(newpath));
+                if (!File.Exists(dirfilename))
+                    fileinfo.CopyTo(dirfilename);
+                return newpath + fileinfo.Name;
+            }
+            else
+                return "";
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
     [CSMethod("GetChildRoomList")]
     public object GetChildRoomList(int pagnum, int pagesize, int parentId)
     {
@@ -267,7 +312,7 @@ public class RoomDB
     }
 
     [CSMethod("SaveChildRoom")]
-    public object SaveChildRoom(JSReader jsr, JSReader roomPic, JSReader goodsPic, int parentId, int hotelId, string roomGuid, JSReader tagIds, JSReader tagValues)
+    public object SaveChildRoom(JSReader jsr, JSReader roomPic, JSReader goodsPic, int parentId, int hotelId, string roomGuid, JSReader tagIds, JSReader tagValues, string imgs)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -319,15 +364,36 @@ public class RoomDB
 
                 drRoom["UserId"] = SystemUser.CurrentUser.UserID;
                 drRoom["UserName"] = SystemUser.CurrentUser.UserName;
-                for (int i = 1; i < 6; i++)
+                //for (int i = 1; i < 6; i++)
+                //{
+                //    if (roomPic.ToArray().Length >= i)
+                //        drRoom["Image" + i] = roomPic.ToArray()[i - 1].ToString();
+                //}
+                //for (int i = 1; i < 6; i++)
+                //{
+                //    if (goodsPic.ToArray().Length >= i)
+                //        drRoom["GoodsImage" + i] = goodsPic.ToArray()[i - 1].ToString();
+                //}
+                if (!string.IsNullOrEmpty(imgs))
                 {
-                    if (roomPic.ToArray().Length >= i)
-                        drRoom["Image" + i] = roomPic.ToArray()[i - 1].ToString();
+                    string[] imglist = imgs.Split(new char[] { ',' });
+                    for (int i = 1; i < 6; i++)
+                    {
+                        if (imglist.Count() >= i)
+                        {
+                            string newfilename = GetNewFilePath(imglist[i - 1], "~/files/Room/");
+                            drRoom["Image" + i] = newfilename.Substring(2, newfilename.Length - 2);
+                        }
+                        else
+                            drRoom["Image" + i] = "";
+                    }
                 }
-                for (int i = 1; i < 6; i++)
+                else
                 {
-                    if (goodsPic.ToArray().Length >= i)
-                        drRoom["GoodsImage" + i] = goodsPic.ToArray()[i - 1].ToString();
+                    for (int i = 1; i < 6; i++)
+                    {
+                        drRoom["Image" + i] = "";
+                    }
                 }
                 if (ID == "")
                 {
@@ -582,7 +648,7 @@ public class RoomDB
     }
 
     [CSMethod("SaveRoomGoods")]
-    public object SaveRoomGoods(JSReader jsr, int RoomId)
+    public object SaveRoomGoods(JSReader jsr, int RoomId, string imgs)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -603,6 +669,29 @@ public class RoomDB
                 drRG["Brand"] = jsr["Brand"].ToInteger();
                 drRG["LossPrice"] = jsr["LossPrice"].ToString();
                 drRG["Condition"] = jsr["Condition"].ToString();
+
+                if (!string.IsNullOrEmpty(imgs))
+                {
+                    string[] imglist = imgs.Split(new char[] { ',' });
+                    for (int i = 1; i < 2; i++)
+                    {
+                        if (imglist.Count() >= i)
+                        {
+                            string newfilename = GetNewFilePath(imglist[i - 1], "~/files/Room/");
+                            drRG["Image" + i] = newfilename.Substring(2, newfilename.Length - 2);
+                        }
+                        else
+                            drRG["Image" + i] = "";
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i < 2; i++)
+                    {
+                        drRG["Image" + i] = "";
+                    }
+                }
+
                 if (ID == "")
                 {
                     dtRG.Rows.Add(drRG);

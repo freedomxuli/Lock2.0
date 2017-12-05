@@ -103,8 +103,14 @@ function editGoods(id) {
     var win = new addGoodsWin();
     win.show(null, function () {
         CS('CZCLZ.RoomDB.GetRoomGoodsInfo', function (retVal) {
+            initwebupload("filePicker", "fileList", 1);
             var form = Ext.getCmp("addGoodsForm");
             form.form.setValues(retVal[0]);
+            var html = "";
+            if (retVal[0]["Image1"] != "" && retVal[0]["Image1"] != null)
+                html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal[0]["Image1"] + '"><img src="approot/r/' + retVal[0]["Image1"] + '" width="100px" height="100px"/></div>';
+
+            $("#fileList").append(html);
         }, CS.onError, id);
     });
 }
@@ -483,13 +489,12 @@ Ext.define('deviceWin', {
 Ext.define('addGoodsWin', {
     extend: 'Ext.window.Window',
 
-    height: 250,
+    height: 400,
     width: 400,
     layout: {
         type: 'fit'
     },
     id: 'addGoodsWin',
-    closeAction: 'destroy',
     modal: true,
     title: '添加物品',
     initComponent: function () {
@@ -511,6 +516,34 @@ Ext.define('addGoodsWin', {
                          labelWidth: 70,
                          anchor: '100%'
                      },
+                      {
+                          xtype: 'combobox',
+                          name: 'Type',
+                          fieldLabel: '物品类型',
+                          editable: false,
+                          allowBlank: false,
+                          labelWidth: 70,
+                          anchor: '100%',
+                          store: TypeStore,
+                          queryMode: 'local',
+                          displayField: 'TEXT',
+                          valueField: 'VALUE',
+                          value: ''
+                      },
+                      {
+                          xtype: 'combobox',
+                          name: 'Brand',
+                          fieldLabel: '物品品牌',
+                          editable: false,
+                          allowBlank: false,
+                          labelWidth: 70,
+                          anchor: '100%',
+                          store: BrandStore,
+                          queryMode: 'local',
+                          displayField: 'TEXT',
+                          valueField: 'VALUE',
+                          value: ''
+                      },
                     {
                         xtype: 'textfield',
                         name: 'Name',
@@ -543,6 +576,22 @@ Ext.define('addGoodsWin', {
                         allowBlank: false,
                         anchor: '100%'
                     },
+                      {
+                          xtype: 'numberfield',
+                          name: 'LossPrice',
+                          fieldLabel: '物品损价',
+                          labelWidth: 70,
+                          allowBlank: false,
+                          anchor: '100%'
+                      },
+                       {
+                           xtype: 'textfield',
+                           name: 'Condition',
+                           fieldLabel: '物品成色',
+                           labelWidth: 70,
+                           allowBlank: false,
+                           anchor: '100%'
+                       },
                     {
                         xtype: 'numberfield',
                         name: 'Sort',
@@ -550,7 +599,15 @@ Ext.define('addGoodsWin', {
                         labelWidth: 70,
                         allowBlank: false,
                         anchor: '100%'
-                    }
+                    },
+                      {
+                          xtype: 'displayfield',
+                          id: 'tp',
+                          value: ' <div id="fileList"><div id="filePicker" style="float:left;margin-right:10px;margin-bottom:5px;width:50px;height:50px;">点击选择图片</div></div>',
+                          fieldLabel: '门店图片',
+                          anchor: '100%',
+                          labelWidth: 70
+                      }
                 ],
                 buttonAlign: 'center',
                 buttons: [
@@ -561,7 +618,13 @@ Ext.define('addGoodsWin', {
                             if (form.form.isValid()) {
                                 //取得表单中的内容
                                 var values = form.form.getValues(false);
+                                var imglist = "";
+                                $("#fileList .file-item").each(function () {
+                                    imglist += $(this).attr("imageurl") + ",";
+                                })
 
+                                if (imglist.length > 0)
+                                    imglist = imglist.substr(0, imglist.length - 1);
                                 CS('CZCLZ.RoomDB.SaveRoomGoods', function (retVal) {
                                     if (retVal) {
                                         CS('CZCLZ.RoomDB.GetRoomGoods', function (retVal) {
@@ -570,7 +633,7 @@ Ext.define('addGoodsWin', {
                                     }
 
                                     Ext.getCmp('addGoodsWin').close()
-                                }, CS.onError, values, RoomId);
+                                }, CS.onError, values, RoomId, imglist);
                             }
                         }
                     },
@@ -594,7 +657,6 @@ Ext.define('goodsWin', {
     layout: {
         type: 'fit'
     },
-    closeAction: 'destroy',
     modal: true,
     title: '物品列表',
     id: 'goodsWin',
@@ -679,8 +741,11 @@ Ext.define('goodsWin', {
                                            iconCls: 'add',
                                            text: '新增',
                                            handler: function () {
+
                                                var win = new addGoodsWin();
-                                               win.show();
+                                               win.show(false, function () {
+                                                   initwebupload("filePicker", "fileList", 1);
+                                               });
                                            }
                                        },
                                         {

@@ -78,27 +78,19 @@ function initData() {
                     if (retVal) {
                         Ext.getCmp('addform').form.setValues(retVal.dt[0]);
 
+                        var html = "";
                         if (retVal.dt[0]["Image1"] != "" && retVal.dt[0]["Image1"] != null)
-                            roomPic.push(retVal.dt[0]["Image1"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal.dt[0]["Image1"] + '"><img src="approot/r/' + retVal.dt[0]["Image1"] + '" width="100px" height="100px"/></div>';
                         if (retVal.dt[0]["Image2"] != "" && retVal.dt[0]["Image2"] != null)
-                            roomPic.push(retVal.dt[0]["Image2"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal.dt[0]["Image2"] + '"><img src="approot/r/' + retVal.dt[0]["Image2"] + '" width="100px" height="100px"/></div>';
                         if (retVal.dt[0]["Image3"] != "" && retVal.dt[0]["Image3"] != null)
-                            roomPic.push(retVal.dt[0]["Image3"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal.dt[0]["Image3"] + '"><img src="approot/r/' + retVal.dt[0]["Image3"] + '" width="100px" height="100px"/></div>';
                         if (retVal.dt[0]["Image4"] != "" && retVal.dt[0]["Image4"] != null)
-                            roomPic.push(retVal.dt[0]["Image4"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal.dt[0]["Image4"] + '"><img src="approot/r/' + retVal.dt[0]["Image4"] + '" width="100px" height="100px"/></div>';
                         if (retVal.dt[0]["Image5"] != "" && retVal.dt[0]["Image5"] != null)
-                            roomPic.push(retVal.dt[0]["Image5"]);
+                            html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal.dt[0]["Image5"] + '"><img src="approot/r/' + retVal.dt[0]["Image5"] + '" width="100px" height="100px"/></div>';
+                        $("#fileList").append(html);
 
-                        if (retVal.dt[0]["GoodsImage1"] != "" && retVal.dt[0]["GoodsImage1"] != null)
-                            goodsPic.push(retVal.dt[0]["GoodsImage1"]);
-                        if (retVal.dt[0]["GoodsImage2"] != "" && retVal.dt[0]["GoodsImage2"] != null)
-                            goodsPic.push(retVal.dt[0]["GoodsImage2"]);
-                        if (retVal.dt[0]["GoodsImage3"] != "" && retVal.dt[0]["GoodsImage3"] != null)
-                            goodsPic.push(retVal.dt[0]["GoodsImage3"]);
-                        if (retVal.dt[0]["GoodsImage4"] != "" && retVal.dt[0]["GoodsImage4"] != null)
-                            goodsPic.push(retVal.dt[0]["GoodsImage4"]);
-                        if (retVal.dt[0]["GoodsImage5"] != "" && retVal.dt[0]["GoodsImage5"] != null)
-                            goodsPic.push(retVal.dt[0]["GoodsImage5"]);
 
                         var tagdata = retVal.dt1;
                         for (var i in tagdata) {
@@ -138,7 +130,7 @@ Ext.onReady(function () {
                                 layout: {
                                     type: 'column'
                                 },
-                                width: 800,
+                                width: 850,
                                 border: true,
                                 // margin: 10,
                                 //title: '房间信息',
@@ -213,22 +205,15 @@ Ext.onReady(function () {
                                               labelWidth: 80
 
                                           },
-                                            {
-                                                xtype: 'displayfield',
-                                                value: '<a href="#" onclick="tp(1)">上传</a>',
-                                                margin: '10 10 10 10',
-                                                fieldLabel: '房间图片',
-                                                columnWidth: 0.5,
-                                                labelWidth: 80
-                                            },
-                                            {
-                                                xtype: 'displayfield',
-                                                value: '<a href="#" onclick="tp(2)">上传</a>',
-                                                margin: '10 10 10 10',
-                                                fieldLabel: '物品图片',
-                                                columnWidth: 0.5,
-                                                labelWidth: 80
-                                            },
+                                           
+                                            //{
+                                            //    xtype: 'displayfield',
+                                            //    value: '<a href="#" onclick="tp(2)">上传</a>',
+                                            //    margin: '10 10 10 10',
+                                            //    fieldLabel: '物品图片',
+                                            //    columnWidth: 0.5,
+                                            //    labelWidth: 80
+                                            //},
 
                                                 {
                                                     xtype: 'combobox',
@@ -250,6 +235,15 @@ Ext.onReady(function () {
                                                     }),
                                                     value: 1
                                                 },
+                                                  {
+                                                      xtype: 'displayfield',
+                                                      id: 'tp',
+                                                      value: ' <div id="fileList"><div id="filePicker" style="float:left;margin-right:10px;margin-bottom:5px;width:50px;height:50px;">点击选择图片</div></div>',
+                                                      margin: '10 10 10 10',
+                                                      fieldLabel: '门店图片',
+                                                      columnWidth: 1,
+                                                      labelWidth: 80
+                                                  },
                                                  {
                                                      xtype: 'combobox',
                                                      margin: '10 10 10 10',
@@ -332,13 +326,22 @@ Ext.onReady(function () {
                                                 tagvalues.push(tagvalue);
                                             }
                                         }
+
+                                        var imglist = "";
+                                        $("#fileList .file-item").each(function () {
+                                            imglist += $(this).attr("imageurl") + ",";
+                                        })
+
+                                        if (imglist.length > 0)
+                                            imglist = imglist.substr(0, imglist.length - 1);
+
                                         CS('CZCLZ.RoomDB.SaveRoom', function (retVal) {
                                             if (retVal) {
                                                 Ext.MessageBox.alert("提示", "保存成功!", function () {
                                                     FrameStack.popFrame();
                                                 });
                                             }
-                                        }, CS.onError, values, roomPic, goodsPic, tagids, tagvalues);
+                                        }, CS.onError, values, roomPic, goodsPic, tagids, tagvalues, imglist);
                                     }
                                 }
 
@@ -359,6 +362,8 @@ Ext.onReady(function () {
 
     });
     new add();
+
+    initwebupload("filePicker", "fileList", 5);
 
     CS('CZCLZ.RoomDB.GetHotelCombobox', function (retVal) {
         if (retVal) {

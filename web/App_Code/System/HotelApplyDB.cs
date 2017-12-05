@@ -66,7 +66,7 @@ public class HotelApplyDB
                 {
                     int ID = jsr.ToArray()[i].ToInteger();
                     dbc.ExecuteNonQuery("delete from Lock_HotelApply where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
-                    dbc.ExecuteNonQuery("delete from Lock_Room where HotelId=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
+                    dbc.ExecuteNonQuery("delete from Lock_HotelApply where HotelId=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
                 }
                 dbc.CommitTransaction();
                 return true;
@@ -102,7 +102,7 @@ public class HotelApplyDB
     }
 
     [CSMethod("SaveHotel")]
-    public object SaveHotel(JSReader jsr, JSReader file, JSReader tagIds, JSReader tagValues)
+    public object SaveHotel(JSReader jsr, JSReader file, JSReader tagIds, JSReader tagValues, string imgs)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -173,7 +173,7 @@ public class HotelApplyDB
                 if (jsr["DepositPrice"].ToString() != "")
                     DepositPrice = jsr["DepositPrice"].ToSingle();
 
-                var dtHotel = dbc.GetEmptyDataTable("Lock_HotelApply");
+                var dtHotel = dbc.GetEmptyDataTable("Lock_Hotel");
                 var drHotel = dtHotel.NewRow();
                 DataTableTracker dtt = new DataTableTracker(dtHotel);
                 drHotel["HotelName"] = HotelName;
@@ -218,16 +218,38 @@ public class HotelApplyDB
 
                 drHotel["UserId"] = SystemUser.CurrentUser.UserID;
                 drHotel["UserName"] = SystemUser.CurrentUser.UserName;
-                for (int i = 1; i < 6; i++)
+                //for (int i = 1; i < 6; i++)
+                //{
+                //    if (file.ToArray().Length >= i)
+                //        drHotel["Image" + i] = file.ToArray()[i - 1].ToString();
+                //    else
+                //        drHotel["Image" + i] = "";
+                //}
+                if (!string.IsNullOrEmpty(imgs))
                 {
-                    if (file.ToArray().Length >= i)
-                        drHotel["Image" + i] = file.ToArray()[i - 1].ToString();
-                    else
+                    string[] imglist = imgs.Split(new char[] { ',' });
+                    for (int i = 1; i < 6; i++)
+                    {
+                        if (imglist.Count() >= i)
+                        {
+                            string newfilename = GetNewFilePath(imglist[i - 1], "~/files/Hotel/");
+                            drHotel["Image" + i] = newfilename.Substring(2, newfilename.Length - 2);
+                        }
+                        else
+                            drHotel["Image" + i] = "";
+                    }
+
+                }
+                else
+                {
+                    for (int i = 1; i < 6; i++)
+                    {
                         drHotel["Image" + i] = "";
+                    }
                 }
                 if (ID == "")
                 {
-                    HotelId = Convert.ToInt16(dbc.ExecuteScalar("SELECT IDENT_CURRENT('Lock_Room') + IDENT_INCR('Lock_Room')").ToString());
+                    HotelId = Convert.ToInt16(dbc.ExecuteScalar("SELECT IDENT_CURRENT('Lock_HotelApply') + IDENT_INCR('Lock_HotelApply')").ToString());
 
                     drHotel["CreateDate"] = DateTime.Now;
                     dtHotel.Rows.Add(drHotel);
@@ -264,6 +286,29 @@ public class HotelApplyDB
                 dbc.RoolbackTransaction();
                 throw ex;
             }
+        }
+    }
+
+    public static string GetNewFilePath(string oldfilename, string newpath)
+    {
+        try
+        {
+            if (File.Exists(HttpContext.Current.Server.MapPath(oldfilename)))
+            {
+                FileInfo fileinfo = new FileInfo(HttpContext.Current.Server.MapPath(oldfilename));
+                string dirfilename = HttpContext.Current.Server.MapPath(newpath) + fileinfo.Name;
+                if (!Directory.Exists(HttpContext.Current.Server.MapPath(newpath)))
+                    Directory.CreateDirectory(HttpContext.Current.Server.MapPath(newpath));
+                if (!File.Exists(dirfilename))
+                    fileinfo.CopyTo(dirfilename);
+                return newpath + fileinfo.Name;
+            }
+            else
+                return "";
+        }
+        catch
+        {
+            return "";
         }
     }
 
@@ -312,7 +357,7 @@ public class HotelApplyDB
             try
             {
                 dbc.ExecuteNonQuery("update Lock_HotelApply set UserId=" + UserId + " where ID=" + HotelId);
-                dbc.ExecuteNonQuery("update Lock_Room set UserId=" + UserId + " where HotelId=" + HotelId);
+                dbc.ExecuteNonQuery("update Lock_HotelApply set UserId=" + UserId + " where HotelId=" + HotelId);
                 dbc.CommitTransaction();
                 return true;
             }

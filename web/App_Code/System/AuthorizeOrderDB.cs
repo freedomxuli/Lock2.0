@@ -15,7 +15,7 @@ using System.Web;
 public class AuthorizeOrderDB
 {
     [CSMethod("GetAuthorizeOrderList")]
-    public object GetAuthorizeOrderList(int pagnum, int pagesize, string mc, string no, string fjh, string bgmc, int sqzt)
+    public object GetAuthorizeOrderList(int pagnum, int pagesize, string mc, string no, string fjh, string bgmc, string sqzt, int type)
     {
         using (DBConnection dbc = new DBConnection())
         {
@@ -33,13 +33,31 @@ public class AuthorizeOrderDB
                     mStr += " and " + dbc.C_Like("a.RoomNo", fjh.Trim(), LikeStyle.LeftAndRightLike);
                 if (!string.IsNullOrEmpty(bgmc))
                     mStr += " and " + dbc.C_Like("a.HotelName", bgmc.Trim(), LikeStyle.LeftAndRightLike);
-                if (sqzt != 0)
+                if (!string.IsNullOrEmpty(bgmc))
                     mStr += " and AuthorStatus=" + sqzt;
 
 
                 string sqlStr = @"select a.*,b.HotelName,b.Mobile,b.CompleteAddress from Lock_AuthorizeOrder a
                                  left join Lock_Hotel b on a.HotelId=b.ID
                                  where 1=1 " + mStr + " and FDUsreId=" + SystemUser.CurrentUser.UserID + "  order by a.ID desc";
+                if (type == 1)
+                {
+                    sqlStr = @"select a.*,b.HotelName,b.Mobile,b.CompleteAddress from Lock_AuthorizeOrder a
+                                 left join Lock_Hotel b on a.HotelId=b.ID
+                                 where AuthorStatus=1 and AuthorizeBookStatus=1 " + mStr + " and FDUsreId=" + SystemUser.CurrentUser.UserID + "  order by a.ID desc";
+                }
+                if (type == 2)
+                {
+                    sqlStr = @"select a.*,b.HotelName,b.Mobile,b.CompleteAddress from Lock_AuthorizeOrder a
+                                 left join Lock_Hotel b on a.HotelId=b.ID
+                                 where HandlerKind=1 and OrderUserState=0 and AuthorLiveStatus=1 " + mStr + " and FDUsreId=" + SystemUser.CurrentUser.UserID + "  order by a.ID desc";
+                }
+                if (type == 3)
+                {
+                    sqlStr = @"select a.*,b.HotelName,b.Mobile,b.CompleteAddress from Lock_AuthorizeOrder a
+                                 left join Lock_Hotel b on a.HotelId=b.ID
+                                 where AuthorStatus=3  and AuthorLiveStatus=6 " + mStr + " and FDUsreId=" + SystemUser.CurrentUser.UserID + "  order by a.ID desc";
+                }
                 DataTable dtPage = dbc.GetPagedDataTable(sqlStr, pagesize, ref cp, out ac);
                 return new { dt = dtPage, cp = cp, ac = ac };
             }
@@ -350,7 +368,7 @@ public class AuthorizeOrderDB
                 DataTable dt1 = dbc.ExecuteDataTable(sqlStr);
                 sqlStr = "select b.*,a.TagDec from Lock_RoomGoodsTag a left join Lock_GoodsTag b on a.TagId=b.ID where a.RoomId=" + RoomId + "";
                 DataTable dt2 = dbc.ExecuteDataTable(sqlStr);
-                sqlStr = "select * from Lock_AuthorizeOrder where AuthorStatus>0 and AuthorStatus<=6 and RoomId=" + RoomId+" order by ID desc";
+                sqlStr = "select * from Lock_AuthorizeOrder where AuthorStatus>0 and AuthorStatus<=6 and RoomId=" + RoomId + " order by ID desc";
                 DataTable dt3 = dbc.ExecuteDataTable(sqlStr);
                 return new { dt1 = dt1, dt2 = dt2, dt3 = dt3 };
             }
