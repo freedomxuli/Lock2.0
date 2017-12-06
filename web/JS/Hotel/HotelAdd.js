@@ -184,7 +184,8 @@ Ext.onReady(function () {
                                              margin: '10 10 10 10',
                                              fieldLabel: '地点标注',
                                              columnWidth: 1,
-                                             labelWidth: 80
+                                             labelWidth: 80,
+                                             value: '<iframe src="approot/r/MapSelect.aspx?v=122" frameborder="0" scrolling="no" width="100%" height="300px"></iframe>'
 
                                          },
                                          {
@@ -789,7 +790,7 @@ Ext.onReady(function () {
 
     });
     new add();
-   
+
     initwebupload("filePicker", "fileList", 5);
 });
 
@@ -883,6 +884,9 @@ function initData() {
 
                     }
                 }, CS.onError, id);
+            }
+            else {
+                Ext.getCmp("map").update('<iframe src="approot/r/MapSelect.aspx?v=122" frameborder="0" scrolling="no" width="100%" height="300px"></iframe>');
             }
         }
     }, CS.onError, 1, id);

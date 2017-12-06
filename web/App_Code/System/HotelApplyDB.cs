@@ -36,7 +36,7 @@ public class HotelApplyDB
                 }
 
 
-                string str = @"select a.*,b.CellPhone,b.RealName from Lock_HotelApplyApply a left join aspnet_Members b on a.UserId=b.UserId 
+                string str = @"select a.*,b.CellPhone,b.RealName from Lock_HotelApply a left join aspnet_Members b on a.UserId=b.UserId 
                 where (a.UserId in(select MEUSERID from aspnet_FdAndMdUser where FDUSERID=" + SystemUser.CurrentUser.UserID + ") or a.UserId=" + SystemUser.CurrentUser.UserID + ")";
                 str += where;
 
@@ -173,7 +173,7 @@ public class HotelApplyDB
                 if (jsr["DepositPrice"].ToString() != "")
                     DepositPrice = jsr["DepositPrice"].ToSingle();
 
-                var dtHotel = dbc.GetEmptyDataTable("Lock_Hotel");
+                var dtHotel = dbc.GetEmptyDataTable("Lock_HotelApply");
                 var drHotel = dtHotel.NewRow();
                 DataTableTracker dtt = new DataTableTracker(dtHotel);
                 drHotel["HotelName"] = HotelName;
@@ -218,6 +218,8 @@ public class HotelApplyDB
 
                 drHotel["UserId"] = SystemUser.CurrentUser.UserID;
                 drHotel["UserName"] = SystemUser.CurrentUser.UserName;
+                drHotel["SHZT"] = 1;
+
                 //for (int i = 1; i < 6; i++)
                 //{
                 //    if (file.ToArray().Length >= i)
@@ -265,8 +267,8 @@ public class HotelApplyDB
                     dbc.UpdateTable(dtHotel, dtt);
                 }
 
-                dbc.ExecuteNonQuery("delete from Lock_Tag where PID=" + HotelId + " and ZDLX=1");
-                DataTable dtTag = dbc.GetEmptyDataTable("Lock_Tag");
+                dbc.ExecuteNonQuery("delete from Lock_ApplyTag where PID=" + HotelId + " and ZDLX=1");
+                DataTable dtTag = dbc.GetEmptyDataTable("Lock_ApplyTag");
                 for (int i = 0; i < tagIds.ToArray().Length; i++)
                 {
                     DataRow drTag = dtTag.NewRow();
@@ -382,6 +384,28 @@ public class HotelApplyDB
   left join aspnet_Roles d on c.RoleId=d.RoleId
   where a.CellPhone= " + dbc.ToSqlValue(phone) + "  order by d.RoleName desc";
                 DataTable dt = dbc.ExecuteDataTable(sql);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetTag")]
+    public object GetTag(int lx, string pid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "";
+                if (string.IsNullOrEmpty(pid))
+                    sqlStr = "select *,'' VALUE from Lock_ZDB where LX=" + lx + " order by XH";
+                else
+                    sqlStr = "select a.*,b.VALUE from Lock_ZDB a left join Lock_ApplyTag b on a.ZDBID=b.ZDBID and b.ZDLX=" + lx + " and b.PID=" + pid + " where a.LX=" + lx;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
                 return dt;
             }
             catch (Exception ex)
