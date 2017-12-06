@@ -179,7 +179,21 @@ function loadData(nPage) {
 }
 
 function Confirm(id) {
-    FrameStack.pushFrame({
-        url: 'FinanceMX.html?id=' + id + "&hotelid=" + Ext.getCmp('HotelSelect').getValue()
+    Ext.Msg.confirm("提示", "是否确认账单？", function (btn) {
+        if (btn == "yes")
+        {
+            CS('CZCLZ.FinanceDB.ConfirmFinance', function (retVal) {
+                if (retVal) {
+                    if (retVal.status == "ok") {
+                        Ext.MessageBox.alert("提示", "确认成功！", function () {
+                            loadData(1);
+                        });
+                    }
+                }
+                else {
+                    Ext.MessageBox.alert("提示", "确认失败！");
+                }
+            }, CS.onError, id)
+        }
     });
 }

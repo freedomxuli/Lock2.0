@@ -58,7 +58,7 @@ Ext.onReady(function () {
                                 flex: 2,
                                 sortable: false,
                                 menuDisabled: true,
-                                text: '宾馆名称'
+                                text: '门店名称'
                             },
                             {
                                 xtype: 'gridcolumn',
