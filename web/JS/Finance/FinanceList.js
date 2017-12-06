@@ -99,7 +99,7 @@ Ext.onReady(function () {
                                 text: '操作',
                                 renderer: function (value, cellmeta, record, rowIndex, columnIndex, store)
                                 {
-                                    return "";
+                                    return "<a href='javascript:void(0);' onclick='ShowMX(\"" + value + "\");'>查看明细</a>";
                                 }
                             }
                         ],
@@ -180,4 +180,10 @@ function loadData(nPage)
             });
         }
     }, CS.onError, nPage, pageSize, Ext.getCmp('HotelSelect').getValue())
+}
+
+function ShowMX(id) {
+    FrameStack.pushFrame({
+        url: 'FinanceMX.html?id=' + id + "&hotelid=" + Ext.getCmp('HotelSelect').getValue()
+    });
 }

@@ -42,6 +42,25 @@ public class FinanceDB
         }
     }
 
+    [CSMethod("GetHotelComboboxByUserId")]
+    public object GetHotelComboboxByUserId()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                SystemUser user = SystemUser.CurrentUser;
+                string sqlStr = @"select ID,HotelName,UserId from [zhisuroom].[dbo].[Lock_Hotel] where UserId= '" + user.UserID + @"'";
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
     [CSMethod("GetFinanceList")]
     public object GetFinanceList(int pagnum, int pagesize, string HotelID)
     {
@@ -69,6 +88,23 @@ public class FinanceDB
             {
                 throw ex;
             }
+        }
+    }
+
+    [CSMethod("GetFinanceDetail")]
+    public DataTable GetFinanceDetail(string parentid,string hotelid)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            string sql_hotel = "select UserId from Lock_Hotel where ID = '" + hotelid + "'";
+            DataTable dt_hotel = dbc.ExecuteDataTable(sql_hotel);
+            string where = "";
+            if (!string.IsNullOrEmpty(parentid) && Int32.Parse(parentid) > 0)
+                where += " And detail.ParentFinanceID=" + parentid;
+            where += " And detail.UserId=" + dt_hotel.Rows[0]["UserId"].ToString();
+            string sql = "select detail.*,h.HotelName from Lock_FinanceList as list,Lock_FinanceDetail as detail,Lock_Hotel as h where list.ID=detail.ParentFinanceID and detail.HotelId=h.ID " + where + " order by detail.ID desc";
+            DataTable dt = dbc.ExecuteDataTable(sql);
+            return dt;
         }
     }
 }
