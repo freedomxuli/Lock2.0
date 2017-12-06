@@ -200,13 +200,13 @@ Ext.onReady(function () {
                                  align: 'center',
                                  text: "审核状态",
                                  renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                     if (value == 0)
+                                     if (value == 1)
                                          return "经纪人审核中";
-                                     else if (value == 1)
-                                         return "管理员审核中";
                                      else if (value == 2)
-                                         return "申请成功";
+                                         return "管理员审核中";
                                      else if (value == 3)
+                                         return "申请成功";
+                                     else if (value == 4)
                                          return "申请失败";
                                  }
                              },
@@ -215,6 +215,7 @@ Ext.onReady(function () {
                                 text: '操作',
                                 width: 120,
                                 align: 'center',
+                                hidden: true,
                                 sortable: false,
                                 menuDisabled: true,
                                 renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
@@ -239,12 +240,12 @@ Ext.onReady(function () {
                                             id: 'cx_mc',
                                             width: 180,
                                             labelWidth: 80,
-                                            fieldLabel: '宾馆名称'
+                                            fieldLabel: '门店名称'
                                         },
                                         {
                                             xtype: 'combobox',
                                             id: 'cx_zt',
-                                            fieldLabel: '宾馆状态',
+                                            fieldLabel: '门店状态',
                                             width: 180,
                                             labelWidth: 60,
                                             queryMode: 'local',
@@ -260,7 +261,7 @@ Ext.onReady(function () {
                                                     ['申请失败', '4']
                                                 ]
                                             }),
-                                            value:'1'
+                                            value: '1'
                                         },
                                         {
                                             xtype: 'buttongroup',
@@ -291,7 +292,7 @@ Ext.onReady(function () {
                                                     text: '新增',
                                                     handler: function () {
                                                         FrameStack.pushFrame({
-                                                            url: "HotelAdd.html",
+                                                            url: "HotelApplyAdd.html",
                                                             onClose: function (ret) {
                                                                 loadData(1);
                                                             }

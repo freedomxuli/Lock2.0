@@ -34,7 +34,7 @@ function tp() {
 }
 
 function getUserInfo(phone) {
-    CS('CZCLZ.Lock_HotelApply.getUserInfo', function (retVal) {
+    CS('CZCLZ.HotelApplyDB.getUserInfo', function (retVal) {
         if (retVal.length > 0) {
             var win = new UserWin();
             win.show(null, function () {
@@ -761,7 +761,7 @@ Ext.onReady(function () {
                                         if (imglist.length > 0)
                                             imglist = imglist.substr(0, imglist.length - 1);
 
-                                        CS('CZCLZ.Lock_HotelApply.SaveHotel', function (retVal) {
+                                        CS('CZCLZ.HotelApplyDB.SaveHotel', function (retVal) {
                                             if (retVal) {
                                                 Ext.MessageBox.alert("提示", "保存成功!", function () {
                                                     FrameStack.popFrame();
@@ -795,7 +795,7 @@ Ext.onReady(function () {
 
 
 function initData() {
-    CS('CZCLZ.SystemDB.GetTag', function (ret) {
+    CS('CZCLZ.HotelApplyDB.GetTag', function (ret) {
         if (ret) {
             tag = ret;
             var Items = [];
@@ -824,7 +824,7 @@ function initData() {
             }
             Ext.getCmp("tagGroup").add(Items);
             if (id != null && id != "") {
-                CS('CZCLZ.Lock_HotelApply.GetHotelInfo', function (retVal) {
+                CS('CZCLZ.HotelApplyDB.GetHotelInfo', function (retVal) {
                     if (retVal) {
                         var lat;
                         var lng
@@ -884,6 +884,9 @@ function initData() {
                     }
                 }, CS.onError, id);
             }
+            else {
+                Ext.getCmp("map").update('<iframe src="approot/r/MapSelect.aspx?v=122" frameborder="0" scrolling="no" width="100%" height="300px"></iframe>');
+            }
         }
     }, CS.onError, 1, id);
 }
@@ -938,7 +941,7 @@ Ext.define('phWin', {
                      text: '上传',
                      iconCls: 'upload',
                      handler: function () {
-                         Ext.getCmp('uploadproductpic').upload('CZCLZ.Lock_HotelApply.UploadPicForProduct', function (retVal) {
+                         Ext.getCmp('uploadproductpic').upload('CZCLZ.HotelApplyDB.UploadPicForProduct', function (retVal) {
                              Ext.getCmp('uploadproductpic').add(new SelectImg({
                                  isSelected: retVal.isDefault,
                                  src: "approot/r/" + retVal.fileurl,

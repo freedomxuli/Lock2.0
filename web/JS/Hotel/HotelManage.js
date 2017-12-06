@@ -541,7 +541,7 @@ Ext.onReady(function () {
                                             id: 'cx_mc',
                                             width: 180,
                                             labelWidth: 80,
-                                            fieldLabel: '宾馆名称'
+                                            fieldLabel: '门店名称'
                                         },
 
                                         {
