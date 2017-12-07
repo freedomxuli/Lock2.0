@@ -379,4 +379,41 @@ public class AuthorizeOrderDB
         }
     }
 
+    [CSMethod("GetHotelAndRoomDetails")]
+    public object GetHotelAndRoomDetails(int RoomId)
+    {
+        using (var db = new DBConnection())
+        {
+            try
+            {
+                string sql = "select ID VALUE,RoomNo TEXT from Lock_Room where ID = '" + RoomId + "'";
+                DataTable dt_room = db.ExecuteDataTable(sql);
+
+                sql = "select ID VALUE,HotelName TEXT from Lock_Hotel where ID = (select HotelId from Lock_Room where ID = '" + RoomId + "')";
+                DataTable dt_hotel = db.ExecuteDataTable(sql);
+
+                return new { dt_room = dt_room, dt_hotel = dt_hotel };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("CalculateTimeAndPrice")]
+    public object CalculateTimeAndPrice(int hotelid,int roomid,string startTime,string startHour,int days,int hours,int months)
+    {
+        using (var db = new DBConnection())
+        {
+            try
+            {
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
 }

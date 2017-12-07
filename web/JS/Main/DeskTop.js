@@ -162,7 +162,7 @@ Ext.define('Buttons', {
                             text: '新增授权',
                             handler: function () {
                                 FrameStack.pushFrame({
-                                    url: "approot/r/page/AuthorizeOrder/AuthorizeOrderAdd.html",
+                                    url: "approot/r/page/AuthorizeOrder/AuthorizeOrderAddByDesk.html?roomid=" + me.roomid,
                                     onClose: function (ret) {
                                         dataBind();
                                     }
@@ -440,7 +440,6 @@ Ext.define('fjxxWin', {
                 ],
                 buttonAlign: 'center',
                 buttons: [
-
                     {
                         text: '关闭',
                         handler: function () {
