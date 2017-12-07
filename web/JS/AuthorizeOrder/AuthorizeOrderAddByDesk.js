@@ -130,8 +130,8 @@ Ext.onReady(function () {
                                             data: [
                                                 ['全天房', 1],
                                                 ['钟点房', 2],
-                                                ['月租房', 4],
-                                                ['看房', 3]
+                                                ['月租房', 4]
+                                                //['看房', 3]
                                             ]
                                         }),
                                         value: 1,
@@ -206,8 +206,8 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'numberfield',
-                                        id: 'LiveDays',
-                                        name: 'LiveDays',
+                                        id: 'LiveMonths',
+                                        name: 'LiveMonths',
                                         hidden: true,
                                         margin: '10 10 10 10',
                                         fieldLabel: '入住月数',
@@ -243,6 +243,30 @@ Ext.onReady(function () {
 
                                     },
                                     {
+                                        xtype: 'datefield',
+                                        allowBlank: false,
+                                        id: 'LatestDate',
+                                        name: 'LatestDate',
+                                        format: 'Y-m-d',
+                                        margin: '10 10 10 10',
+                                        fieldLabel: '最晚到店时间',
+                                        columnWidth: 0.25,
+                                        labelWidth: 80
+
+                                    },
+                                    {
+                                        xtype: 'timefield',
+                                        id: 'LatestHour',
+                                        name: 'LatestHour',
+                                        allowBlank: false,
+                                        format: 'H:i',
+                                        increment: 1,
+                                        margin: '10 10 10 0',
+                                        columnWidth: 0.25,
+                                        value: '0'
+
+                                    },
+                                    {
                                         xtype: 'textfield',
                                         name: 'RealName',
                                         allowBlank: false,
@@ -263,8 +287,10 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'datefield',
+                                        id: 'EarliestDate',
                                         name: 'EarliestDate',
                                         allowBlank: false,
+                                        hidden:true,
                                         format: 'Y-m-d',
                                         margin: '10 10 10 10',
                                         fieldLabel: '最早到店时间',
@@ -277,29 +303,7 @@ Ext.onReady(function () {
                                         id: 'EarliestHour',
                                         name: 'EarliestHour',
                                         allowBlank: false,
-                                        format: 'H:i',
-                                        increment: 1,
-                                        margin: '10 10 10 0',
-                                        columnWidth: 0.25,
-                                        value: '0'
-
-                                    },
-                                    {
-                                        xtype: 'datefield',
-                                        allowBlank: false,
-                                        name: 'LatestDate',
-                                        format: 'Y-m-d',
-                                        margin: '10 10 10 10',
-                                        fieldLabel: '最晚到店时间',
-                                        columnWidth: 0.25,
-                                        labelWidth: 80
-
-                                    },
-                                    {
-                                        xtype: 'timefield',
-                                        id: 'LatestHour',
-                                        name: 'LatestHour',
-                                        allowBlank: false,
+                                        hidden: true,
                                         format: 'H:i',
                                         increment: 1,
                                         margin: '10 10 10 0',
@@ -349,6 +353,7 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'numberfield',
+                                        id: 'UnitPrice',
                                         name: 'UnitPrice',
                                         margin: '10 10 10 10',
                                         fieldLabel: '房费(单价)',
@@ -359,6 +364,7 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'numberfield',
+                                        id: 'LiveTotalPrice',
                                         name: 'LiveTotalPrice',
                                         margin: '10 10 10 10',
                                         fieldLabel: '房费(总价)',
@@ -369,6 +375,7 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'numberfield',
+                                        id: 'DepositPrice',
                                         name: 'DepositPrice',
                                         margin: '10 10 10 10',
                                         allowBlank: false,
@@ -466,9 +473,18 @@ Ext.onReady(function () {
             Ext.getCmp("LiveStartHour").setValue(new Date().Format("hh:mm"));
             CS("CZCLZ.AuthorizeOrderDB.CalculateTimeAndPrice", function (ret) {
                 if (ret) {
-
+                    Ext.getCmp("LiveEndDate").setValue(new Date(ret.LiveEndDate));
+                    Ext.getCmp("LiveEndHour").setValue("12:00");
+                    Ext.getCmp("EarliestDate").setValue(new Date(ret.EarliestDate));
+                    Ext.getCmp("EarliestHour").setValue(new Date(ret.EarliestDate).Format("hh:mm"));
+                    Ext.getCmp("LatestDate").setValue(new Date(ret.LatestDate));
+                    Ext.getCmp("LatestHour").setValue("11:00");
+                    Ext.getCmp("UnitPrice").setValue(ret.UnitPrice);
+                    Ext.getCmp("DepositPrice").setValue(ret.DepositPrice);
+                    Ext.getCmp("LiveTotalPrice").setValue(ret.LiveTotalPrice);
+                    Ext.getCmp("ActualTotalPrice").setValue(ret.ActualTotalPrice);
                 }
-            }, CS.onError, retVal.dt_hotel[0]["VALUE"], roomid, Ext.getCmp("LiveStartDate").getValue(), Ext.getCmp("LiveStartHour").getValue(), Ext.getCmp("LiveDays").getValue(), Ext.getCmp("LiveHour").getValue(), Ext.getCmp("LiveMonth").getValue());
+            }, CS.onError, retVal.dt_hotel[0]["VALUE"], roomid, Ext.getCmp("LiveStartDate").getValue(), new Date(Ext.getCmp("LiveStartHour").getValue()).Format("hh:mm"), Ext.getCmp("LiveDays").getValue(), Ext.getCmp("LiveHour").getValue(), Ext.getCmp("LiveMonths").getValue());
         }
     }, CS.onError, roomid);
 });

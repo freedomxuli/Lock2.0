@@ -401,14 +401,81 @@ public class AuthorizeOrderDB
         }
     }
 
+    public string[] Day = new string[] { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
+
     [CSMethod("CalculateTimeAndPrice")]
-    public object CalculateTimeAndPrice(int hotelid,int roomid,string startTime,string startHour,int days,int hours,int months)
+    public object CalculateTimeAndPrice(int hotelid, int roomid, string startTime, string startHour, string days, string hours, string months)
     {
         using (var db = new DBConnection())
         {
             try
             {
-                return true;
+                string sql = "select * from Lock_Hotel where ID = '" + hotelid + "'";
+                DataTable dt_hotel = db.ExecuteDataTable(sql);
+
+                sql = "select * from Lock_RoomOtherDayPrice where RoomId = '" + roomid + "' and StartDate <= '" + Convert.ToDateTime(startTime) + "' and EndDate > '" + Convert.ToDateTime(startTime) + "'";
+                DataTable dt_price = db.ExecuteDataTable(sql);
+
+                string week = Day[Convert.ToInt32(Convert.ToDateTime(startTime).DayOfWeek.ToString("d"))].ToString();
+
+                //如果有周末价
+                bool IsUseWeekPrice = false;//是否使用周末价（默认不使用）
+                if (dt_hotel.Rows[0]["IsHasWeekendPrice"].ToString() == "1")
+                {
+                    if (week == "周五")
+                    {
+                        if (dt_hotel.Rows[0]["WeekendConatin5"].ToString() == "1")
+                            IsUseWeekPrice = true;
+                    }
+                    else if (week == "周六")
+                    {
+                        if (dt_hotel.Rows[0]["WeekendConatin6"].ToString() == "1")
+                            IsUseWeekPrice = true;
+                    }
+                    else if (week == "周日")
+                    {
+                        if (dt_hotel.Rows[0]["WeekendConatin7"].ToString() == "1")
+                            IsUseWeekPrice = true;
+                    }
+                }
+
+                DateTime LiveEndDate; //结束时间
+                DateTime EarliestDate;//预计保留时间（当前时间）
+                DateTime LatestDate;//最晚到店时间（结束前一小时）
+                decimal UnitPrice;//单价
+                decimal DepositPrice;//押金
+                decimal LiveTotalPrice;//房费总价
+                decimal ActualTotalPrice;//总价
+
+                if (!string.IsNullOrEmpty(days))//当为全天房时
+                {
+                    //计算结束时间
+                    LiveEndDate = GetLiveDayEndTime(startTime, startHour, Int32.Parse(days), 6, 0);//写死每天6点为开始时间
+                    EarliestDate = DateTime.Now;
+                    LatestDate = LiveEndDate;
+                    //计算金额
+                    if (IsUseWeekPrice)//如果是周末价
+                        UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["WeekEndPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["WeekEndPrice"].ToString());
+                    else //如果是平常价格
+                        UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["Price"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["Price"].ToString());
+                    DepositPrice = string.IsNullOrEmpty(dt_hotel.Rows[0]["DepositPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_hotel.Rows[0]["DepositPrice"].ToString());
+                    LiveTotalPrice = UnitPrice * Int32.Parse(days);
+                    ActualTotalPrice = LiveTotalPrice + DepositPrice;
+
+                    return new { LiveEndDate = LiveEndDate, EarliestDate = EarliestDate, LatestDate = LatestDate, UnitPrice = UnitPrice, DepositPrice = DepositPrice, LiveTotalPrice = LiveTotalPrice, ActualTotalPrice = ActualTotalPrice };
+                }
+                else
+                {
+                    return true;
+                }
+                //else if (!string.IsNullOrEmpty(hours))//当为钟点房时
+                //{
+
+                //}
+                //else if (!string.IsNullOrEmpty(months))//当为月租房时
+                //{
+
+                //}
             }
             catch (Exception ex)
             {
@@ -416,4 +483,22 @@ public class AuthorizeOrderDB
             }
         }
     }
+
+    public DateTime GetLiveDayEndTime(string startTime, string startHour, int days,int checkout_hour,int checkout_minu)
+    {
+        string[] hours = startHour.Split(':');
+        if (Int32.Parse(hours[0]) < checkout_hour)
+        {
+            days -= 1;
+        }
+        else if (Int32.Parse(hours[0]) < checkout_hour)
+        { 
+            if (Int32.Parse(hours[1]) < checkout_minu)
+                days -= 1;
+        }
+
+        DateTime LiveEndDate = Convert.ToDateTime(startTime).AddDays(days);
+        return LiveEndDate;
+    }
+
 }
