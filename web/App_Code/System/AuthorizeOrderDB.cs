@@ -480,12 +480,16 @@ public class AuthorizeOrderDB
                     if (IsUseWeekPrice)
                     {//如果是周末价
                         if (UnitPrice == 0)
+                        {
                             UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["WeekEndPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["WeekEndPrice"].ToString());
+                        }
                     }
                     else
                     {//如果是平常价格
                         if (UnitPrice == 0)
+                        {
                             UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["Price"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["Price"].ToString());
+                        }
                     }
                     if (DepositPrice == 0)
                         DepositPrice = string.IsNullOrEmpty(dt_hotel.Rows[0]["DepositPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_hotel.Rows[0]["DepositPrice"].ToString());
@@ -494,18 +498,76 @@ public class AuthorizeOrderDB
 
                     return new { LiveEndDate = LiveEndDate, EarliestDate = EarliestDate, LatestDate = LatestDate, UnitPrice = UnitPrice, DepositPrice = DepositPrice, LiveTotalPrice = LiveTotalPrice, ActualTotalPrice = ActualTotalPrice };
                 }
-                else //if (AuthorRoomStyle == "2")
+                else if (AuthorRoomStyle == "2")
                 {
-                    return true;
+                    LiveEndDate = Convert.ToDateTime(Convert.ToDateTime(startTime).ToString("yyyy-MM-dd") + " " + startHour).AddHours(Int32.Parse(hours));
+                    string LiveEndDateHour = LiveEndDate.ToString("HH:mm");
+                    EarliestDate = DateTime.Now;
+                    LatestDate = LiveEndDate.AddHours(-1);
+                    string LatestDateHour = LatestDate.ToString("HH:mm");
+
+                    //计算金额
+                    if (IsUseWeekPrice)
+                    {//如果是周末价
+                        if (UnitPrice == 0)
+                        {
+                            if (dt_hotel.Rows[0]["HourRoomTimeLong"].ToString() == hours.ToString())
+                            {
+                                UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["HourWeekEndPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["HourWeekEndPrice"].ToString());
+                            }
+                            else if (dt_hotel.Rows[0]["HourRoomTimeLong2"].ToString() == hours.ToString())
+                            {
+                                UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["HourWeekEndPrice2"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["HourWeekEndPrice2"].ToString());
+                            }
+                            else if (dt_hotel.Rows[0]["HourRoomTimeLong3"].ToString() == hours.ToString())
+                            {
+                                UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["HourWeekEndPrice3"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["HourWeekEndPrice3"].ToString());
+                            }
+                        }
+                    }
+                    else
+                    {//如果是平常价格
+                        if (UnitPrice == 0)
+                        {
+                            if (dt_hotel.Rows[0]["HourRoomTimeLong"].ToString() == hours.ToString())
+                            {
+                                UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["HourPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["HourPrice"].ToString());
+                            }
+                            else if (dt_hotel.Rows[0]["HourRoomTimeLong2"].ToString() == hours.ToString())
+                            {
+                                UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["HourPrice2"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["HourPrice2"].ToString());
+                            }
+                            else if (dt_hotel.Rows[0]["HourRoomTimeLong3"].ToString() == hours.ToString())
+                            {
+                                UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["HourPrice3"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["HourPrice3"].ToString());
+                            }
+                        }
+                    }
+                    if (DepositPrice == 0)
+                        DepositPrice = string.IsNullOrEmpty(dt_hotel.Rows[0]["DepositPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_hotel.Rows[0]["DepositPrice"].ToString());
+                    LiveTotalPrice = UnitPrice;
+                    ActualTotalPrice = LiveTotalPrice + DepositPrice;
+
+                    return new { LiveEndDate = LiveEndDate, LiveEndDateHour = LiveEndDateHour, EarliestDate = EarliestDate, LatestDate = LatestDate, LatestDateHour = LatestDateHour, UnitPrice = UnitPrice, DepositPrice = DepositPrice, LiveTotalPrice = LiveTotalPrice, ActualTotalPrice = ActualTotalPrice };
                 }
-                //else if (!string.IsNullOrEmpty(hours))//当为钟点房时
-                //{
+                else
+                {
+                    //计算结束时间
+                    LiveEndDate = GetLiveMonthEndTime(startTime, startHour, Int32.Parse(months), 6, 0);//写死每天6点为开始时间
+                    EarliestDate = DateTime.Now;
+                    LatestDate = LiveEndDate;
+                    //计算金额
+                    if (UnitPrice == 0)
+                    {
+                        UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["MonthRentPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["MonthRentPrice"].ToString());
+                    }
+                    if (DepositPrice == 0)
+                        DepositPrice = string.IsNullOrEmpty(dt_hotel.Rows[0]["DepositPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_hotel.Rows[0]["DepositPrice"].ToString());
+                    LiveTotalPrice = UnitPrice * Int32.Parse(days);
+                    ActualTotalPrice = LiveTotalPrice + DepositPrice;
 
-                //}
-                //else if (!string.IsNullOrEmpty(months))//当为月租房时
-                //{
-
-                //}
+                    return new { LiveEndDate = LiveEndDate, EarliestDate = EarliestDate, LatestDate = LatestDate, UnitPrice = UnitPrice, DepositPrice = DepositPrice, LiveTotalPrice = LiveTotalPrice, ActualTotalPrice = ActualTotalPrice };
+                }
             }
             catch (Exception ex)
             {
@@ -528,6 +590,23 @@ public class AuthorizeOrderDB
         }
 
         DateTime LiveEndDate = Convert.ToDateTime(startTime).AddDays(days);
+        return LiveEndDate;
+    }
+
+    public DateTime GetLiveMonthEndTime(string startTime, string startHour, int months, int checkout_hour, int checkout_minu)
+    {
+        string[] hours = startHour.Split(':');
+        if (Int32.Parse(hours[0]) < checkout_hour)
+        {
+            months -= 1;
+        }
+        else if (Int32.Parse(hours[0]) < checkout_hour)
+        {
+            if (Int32.Parse(hours[1]) < checkout_minu)
+                months -= 1;
+        }
+
+        DateTime LiveEndDate = Convert.ToDateTime(startTime).AddMonths(months);
         return LiveEndDate;
     }
 

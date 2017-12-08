@@ -41,9 +41,11 @@ Ext.onReady(function () {
                     {
                         xtype: 'panel',
                         layout: {
-                            type: 'anchor'
+                            type: 'vbox',
+                            align: 'center'
                         },
                         autoScroll: true,
+                        title: '新增授权',
                         items: [
                             {
                                 xtype: 'form',
@@ -51,8 +53,8 @@ Ext.onReady(function () {
                                 layout: {
                                     type: 'column'
                                 },
-                                border: true,
-                                title: '授权信息',
+                                width: 850,
+                                border: false,
                                 items: [
                                     {
                                         xtype: 'textfield',
@@ -144,12 +146,21 @@ Ext.onReady(function () {
                                         listeners: {
                                             'select': function (field, val, obj) {
                                                 if (field.value == 1) {
+                                                    Ext.getCmp("UnitPrice").setValue(0);
                                                     Ext.getCmp("LiveDays").show();
                                                     Ext.getCmp("LiveHour").hide();
+                                                    Ext.getCmp("LiveMonths").hide();
                                                 }
                                                 else if (field.value == 2) {
+                                                    Ext.getCmp("UnitPrice").setValue(0);
                                                     Ext.getCmp("LiveDays").hide();
                                                     Ext.getCmp("LiveHour").show();
+                                                    Ext.getCmp("LiveMonths").hide();
+                                                } else if (field.value == 4) {
+                                                    Ext.getCmp("UnitPrice").setValue(0);
+                                                    Ext.getCmp("LiveDays").hide();
+                                                    Ext.getCmp("LiveHour").hide();
+                                                    Ext.getCmp("LiveMonths").show();
                                                 }
                                             }
                                         }
@@ -221,7 +232,16 @@ Ext.onReady(function () {
                                         displayField: 'TEXT',
                                         valueField: 'VALUE',
                                         editable: false,
-                                        store: hourStore
+                                        store: hourStore,
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    Ext.getCmp("UnitPrice").setValue(0);
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
+
                                     },
                                     {
                                         xtype: 'numberfield',
@@ -573,6 +593,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 
 function CalculateTimeAndPrice() {
     var UnitPrice = 0;
+    alert(Ext.getCmp("UnitPrice").getValue());
     if (Ext.getCmp("UnitPrice").getValue() != "" && Ext.getCmp("UnitPrice").getValue() != null)
         UnitPrice = Ext.getCmp("UnitPrice").getValue();
     var DepositPrice = 0;
@@ -581,11 +602,17 @@ function CalculateTimeAndPrice() {
     CS("CZCLZ.AuthorizeOrderDB.CalculateTimeAndPrice", function (ret) {
         if (ret) {
             Ext.getCmp("LiveEndDate").setValue(new Date(ret.LiveEndDate));
-            Ext.getCmp("LiveEndHour").setValue("12:00");
+            if (Ext.getCmp("AuthorRoomStyle").getValue() == "1" || Ext.getCmp("AuthorRoomStyle").getValue() == "4")
+                Ext.getCmp("LiveEndHour").setValue("12:00");
+            else if (Ext.getCmp("AuthorRoomStyle").getValue() == "2")
+                Ext.getCmp("LiveEndHour").setValue(ret.LiveEndDateHour);
             Ext.getCmp("EarliestDate").setValue(new Date(ret.EarliestDate));
             Ext.getCmp("EarliestHour").setValue(new Date(ret.EarliestDate).Format("hh:mm"));
             Ext.getCmp("LatestDate").setValue(new Date(ret.LatestDate));
-            Ext.getCmp("LatestHour").setValue("11:00");
+            if (Ext.getCmp("AuthorRoomStyle").getValue() == "1" || Ext.getCmp("AuthorRoomStyle").getValue() == "4")
+                Ext.getCmp("LatestHour").setValue("11:00");
+            else if (Ext.getCmp("AuthorRoomStyle").getValue() == "2")
+                Ext.getCmp("LatestHour").setValue(ret.LatestDateHour);
             Ext.getCmp("UnitPrice").setValue(ret.UnitPrice);
             Ext.getCmp("DepositPrice").setValue(ret.DepositPrice);
             Ext.getCmp("LiveTotalPrice").setValue(ret.LiveTotalPrice);
