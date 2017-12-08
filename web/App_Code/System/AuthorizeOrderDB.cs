@@ -389,10 +389,35 @@ public class AuthorizeOrderDB
                 string sql = "select ID VALUE,RoomNo TEXT from Lock_Room where ID = '" + RoomId + "'";
                 DataTable dt_room = db.ExecuteDataTable(sql);
 
-                sql = "select ID VALUE,HotelName TEXT from Lock_Hotel where ID = (select HotelId from Lock_Room where ID = '" + RoomId + "')";
+                sql = "select ID VALUE,HotelName TEXT,* from Lock_Hotel where ID = (select HotelId from Lock_Room where ID = '" + RoomId + "')";
                 DataTable dt_hotel = db.ExecuteDataTable(sql);
 
-                return new { dt_room = dt_room, dt_hotel = dt_hotel };
+                DataTable dt_hour = new DataTable();
+                dt_hour.Columns.Add("VALUE");
+                dt_hour.Columns.Add("TEXT");
+                if (dt_hotel.Rows[0]["HourRoomTimeLong"].ToString() != "0")
+                {
+                    DataRow dr = dt_hour.NewRow();
+                    dr["TEXT"] = dt_hotel.Rows[0]["HourRoomTimeLong"].ToString() + "小时";
+                    dr["VALUE"] = dt_hotel.Rows[0]["HourRoomTimeLong"].ToString();
+                    dt_hour.Rows.Add(dr);
+                }
+                if (dt_hotel.Rows[0]["HourRoomTimeLong2"].ToString() != "0")
+                {
+                    DataRow dr = dt_hour.NewRow();
+                    dr["TEXT"] = dt_hotel.Rows[0]["HourRoomTimeLong2"].ToString() + "小时";
+                    dr["VALUE"] = dt_hotel.Rows[0]["HourRoomTimeLong2"].ToString();
+                    dt_hour.Rows.Add(dr);
+                }
+                if (dt_hotel.Rows[0]["HourRoomTimeLong3"].ToString() != "0")
+                {
+                    DataRow dr = dt_hour.NewRow();
+                    dr["TEXT"] = dt_hotel.Rows[0]["HourRoomTimeLong3"].ToString() + "小时";
+                    dr["VALUE"] = dt_hotel.Rows[0]["HourRoomTimeLong3"].ToString();
+                    dt_hour.Rows.Add(dr);
+                }
+
+                return new { dt_room = dt_room, dt_hotel = dt_hotel,dt_hour = dt_hour };
             }
             catch (Exception ex)
             {
@@ -404,7 +429,7 @@ public class AuthorizeOrderDB
     public string[] Day = new string[] { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
 
     [CSMethod("CalculateTimeAndPrice")]
-    public object CalculateTimeAndPrice(int hotelid, int roomid, string startTime, string startHour, string days, string hours, string months)
+    public object CalculateTimeAndPrice(int hotelid, int roomid, string AuthorRoomStyle, string startTime, string startHour, string days, string hours, string months, decimal UnitPrice, decimal DepositPrice)
     {
         using (var db = new DBConnection())
         {
@@ -442,29 +467,34 @@ public class AuthorizeOrderDB
                 DateTime LiveEndDate; //结束时间
                 DateTime EarliestDate;//预计保留时间（当前时间）
                 DateTime LatestDate;//最晚到店时间（结束前一小时）
-                decimal UnitPrice;//单价
-                decimal DepositPrice;//押金
                 decimal LiveTotalPrice;//房费总价
                 decimal ActualTotalPrice;//总价
 
-                if (!string.IsNullOrEmpty(days))//当为全天房时
+                if (AuthorRoomStyle=="1")//当为全天房时
                 {
                     //计算结束时间
                     LiveEndDate = GetLiveDayEndTime(startTime, startHour, Int32.Parse(days), 6, 0);//写死每天6点为开始时间
                     EarliestDate = DateTime.Now;
                     LatestDate = LiveEndDate;
                     //计算金额
-                    if (IsUseWeekPrice)//如果是周末价
-                        UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["WeekEndPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["WeekEndPrice"].ToString());
-                    else //如果是平常价格
-                        UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["Price"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["Price"].ToString());
-                    DepositPrice = string.IsNullOrEmpty(dt_hotel.Rows[0]["DepositPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_hotel.Rows[0]["DepositPrice"].ToString());
+                    if (IsUseWeekPrice)
+                    {//如果是周末价
+                        if (UnitPrice == 0)
+                            UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["WeekEndPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["WeekEndPrice"].ToString());
+                    }
+                    else
+                    {//如果是平常价格
+                        if (UnitPrice == 0)
+                            UnitPrice = string.IsNullOrEmpty(dt_price.Rows[0]["Price"].ToString()) ? 0 : Convert.ToDecimal(dt_price.Rows[0]["Price"].ToString());
+                    }
+                    if (DepositPrice == 0)
+                        DepositPrice = string.IsNullOrEmpty(dt_hotel.Rows[0]["DepositPrice"].ToString()) ? 0 : Convert.ToDecimal(dt_hotel.Rows[0]["DepositPrice"].ToString());
                     LiveTotalPrice = UnitPrice * Int32.Parse(days);
                     ActualTotalPrice = LiveTotalPrice + DepositPrice;
 
                     return new { LiveEndDate = LiveEndDate, EarliestDate = EarliestDate, LatestDate = LatestDate, UnitPrice = UnitPrice, DepositPrice = DepositPrice, LiveTotalPrice = LiveTotalPrice, ActualTotalPrice = ActualTotalPrice };
                 }
-                else
+                else //if (AuthorRoomStyle == "2")
                 {
                     return true;
                 }
@@ -501,4 +531,17 @@ public class AuthorizeOrderDB
         return LiveEndDate;
     }
 
+    [CSMethod("GetRealNameByCellPhone")]
+    public string GetRealNameByCellPhone(string CellPhone)
+    {
+        using (var dbc = new DBConnection())
+        {
+            string sql = "select RealName from aspnet_Members where CellPhone = '" + CellPhone + "'";
+            DataTable dt = dbc.ExecuteDataTable(sql);
+            if (dt.Rows.Count > 0)
+                return dt.Rows[0]["RealName"].ToString();
+            else
+                return "";
+        }
+    }
 }

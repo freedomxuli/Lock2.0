@@ -15,6 +15,10 @@ var RoomStore = Ext.create('Ext.data.Store', {
     ]
 });
 
+var hourStore = Ext.create('Ext.data.Store', {
+    fields: ['TEXT', 'VALUE']
+});
+
 function getHourMinute(date) {
     date = new Date(date);
     var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
@@ -116,6 +120,7 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'combobox',
+                                        id: 'AuthorRoomStyle',
                                         name: 'AuthorRoomStyle',
                                         allowBlank: false,
                                         margin: '10 10 10 10',
@@ -125,6 +130,7 @@ Ext.onReady(function () {
                                         queryMode: 'local',
                                         displayField: 'TEXT',
                                         valueField: 'VALUE',
+                                        editable: false,
                                         store: new Ext.data.ArrayStore({
                                             fields: ['TEXT', 'VALUE'],
                                             data: [
@@ -157,8 +163,14 @@ Ext.onReady(function () {
                                         margin: '10 10 10 10',
                                         fieldLabel: '入住时间',
                                         columnWidth: 0.25,
-                                        labelWidth: 80
-
+                                        labelWidth: 80,
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'timefield',
@@ -169,8 +181,14 @@ Ext.onReady(function () {
                                         increment: 1,
                                         margin: '10 10 10 0',
                                         columnWidth: 0.25,
-                                        value: '0'
-
+                                        value: '0',
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'numberfield',
@@ -181,7 +199,14 @@ Ext.onReady(function () {
                                         minValue: 1,
                                         value:1,
                                         columnWidth: 0.5,
-                                        labelWidth: 80
+                                        labelWidth: 80,
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'combobox',
@@ -195,14 +220,8 @@ Ext.onReady(function () {
                                         queryMode: 'local',
                                         displayField: 'TEXT',
                                         valueField: 'VALUE',
-                                        store: new Ext.data.ArrayStore({
-                                            fields: ['TEXT', 'VALUE'],
-                                            data: [
-                                                ['3小时', 3],
-                                                ['4小时', 4],
-                                                ['5小时', 5]
-                                            ]
-                                        })
+                                        editable: false,
+                                        store: hourStore
                                     },
                                     {
                                         xtype: 'numberfield',
@@ -214,7 +233,14 @@ Ext.onReady(function () {
                                         minValue: 1,
                                         value: 1,
                                         columnWidth: 0.5,
-                                        labelWidth: 80
+                                        labelWidth: 80,
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'datefield',
@@ -268,6 +294,7 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'textfield',
+                                        id: 'RealName',
                                         name: 'RealName',
                                         allowBlank: false,
                                         margin: '10 10 10 10',
@@ -277,13 +304,26 @@ Ext.onReady(function () {
                                     },
                                     {
                                         xtype: 'textfield',
+                                        id: 'CellPhone',
                                         name: 'CellPhone',
                                         allowBlank: false,
                                         margin: '10 10 10 10',
                                         fieldLabel: '手机号码',
                                         columnWidth: 0.5,
-                                        labelWidth: 80
-
+                                        labelWidth: 80,
+                                        listeners: {
+                                            blur: function () {
+                                                if (Ext.getCmp("RealName").getValue() == "" || Ext.getCmp("RealName").getValue() == null)
+                                                {
+                                                    CS('CZCLZ.AuthorizeOrderDB.GetRealNameByCellPhone', function (retVal) {
+                                                        if (retVal)
+                                                        {
+                                                            Ext.getCmp("RealName").setValue(retVal);
+                                                        }
+                                                    }, CS.onError, Ext.getCmp("CellPhone").getValue());
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'datefield',
@@ -359,8 +399,14 @@ Ext.onReady(function () {
                                         fieldLabel: '房费(单价)',
                                         allowBlank: false,
                                         columnWidth: 0.5,
-                                        labelWidth: 80
-
+                                        labelWidth: 80,
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'numberfield',
@@ -381,8 +427,14 @@ Ext.onReady(function () {
                                         allowBlank: false,
                                         fieldLabel: '押金',
                                         columnWidth: 0.5,
-                                        labelWidth: 80
-
+                                        labelWidth: 80,
+                                        listeners: {
+                                            change: function (obj, newValue, oldValue, eOpts) {
+                                                if (oldValue != undefined) {
+                                                    CalculateTimeAndPrice();
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         xtype: 'numberfield',
@@ -463,30 +515,44 @@ Ext.onReady(function () {
     });
     new add();
 
-    CS('CZCLZ.AuthorizeOrderDB.GetHotelAndRoomDetails', function (retVal) {
-        if (retVal) {
-            HotelStore.loadData(retVal.dt_hotel);
-            RoomStore.loadData(retVal.dt_room);
-            Ext.getCmp("HotelId").setValue(retVal.dt_hotel[0]["VALUE"]);
-            Ext.getCmp("RoomId").setValue(retVal.dt_room[0]["VALUE"]);
-            Ext.getCmp("LiveStartDate").setValue(new Date());
-            Ext.getCmp("LiveStartHour").setValue(new Date().Format("hh:mm"));
-            CS("CZCLZ.AuthorizeOrderDB.CalculateTimeAndPrice", function (ret) {
-                if (ret) {
-                    Ext.getCmp("LiveEndDate").setValue(new Date(ret.LiveEndDate));
-                    Ext.getCmp("LiveEndHour").setValue("12:00");
-                    Ext.getCmp("EarliestDate").setValue(new Date(ret.EarliestDate));
-                    Ext.getCmp("EarliestHour").setValue(new Date(ret.EarliestDate).Format("hh:mm"));
-                    Ext.getCmp("LatestDate").setValue(new Date(ret.LatestDate));
-                    Ext.getCmp("LatestHour").setValue("11:00");
-                    Ext.getCmp("UnitPrice").setValue(ret.UnitPrice);
-                    Ext.getCmp("DepositPrice").setValue(ret.DepositPrice);
-                    Ext.getCmp("LiveTotalPrice").setValue(ret.LiveTotalPrice);
-                    Ext.getCmp("ActualTotalPrice").setValue(ret.ActualTotalPrice);
-                }
-            }, CS.onError, retVal.dt_hotel[0]["VALUE"], roomid, Ext.getCmp("LiveStartDate").getValue(), new Date(Ext.getCmp("LiveStartHour").getValue()).Format("hh:mm"), Ext.getCmp("LiveDays").getValue(), Ext.getCmp("LiveHour").getValue(), Ext.getCmp("LiveMonths").getValue());
-        }
-    }, CS.onError, roomid);
+    dataBind();
+
+    function dataBind() {
+        CS('CZCLZ.AuthorizeOrderDB.GetHotelAndRoomDetails', function (retVal) {
+            if (retVal) {
+                HotelStore.loadData(retVal.dt_hotel);
+                RoomStore.loadData(retVal.dt_room);
+                hourStore.loadData(retVal.dt_hour);
+                HotelId = retVal.dt_hotel[0]["VALUE"];
+                Ext.getCmp("HotelId").setValue(retVal.dt_hotel[0]["VALUE"]);
+                Ext.getCmp("RoomId").setValue(retVal.dt_room[0]["VALUE"]);
+                if (retVal.dt_hour.length > 0)
+                    Ext.getCmp("LiveHour").setValue(retVal.dt_hour[0]["VALUE"]);
+                Ext.getCmp("LiveStartDate").setValue(new Date());
+                Ext.getCmp("LiveStartHour").setValue(new Date().Format("hh:mm"));
+                var UnitPrice = 0;
+                if (Ext.getCmp("UnitPrice").getValue() != "" && Ext.getCmp("UnitPrice").getValue() != null)
+                    UnitPrice = Ext.getCmp("UnitPrice").getValue();
+                var DepositPrice = 0;
+                if (Ext.getCmp("DepositPrice").getValue() != "" && Ext.getCmp("DepositPrice").getValue() != null)
+                    DepositPrice = Ext.getCmp("DepositPrice").getValue();
+                CS("CZCLZ.AuthorizeOrderDB.CalculateTimeAndPrice", function (ret) {
+                    if (ret) {
+                        Ext.getCmp("LiveEndDate").setValue(new Date(ret.LiveEndDate));
+                        Ext.getCmp("LiveEndHour").setValue("12:00");
+                        Ext.getCmp("EarliestDate").setValue(new Date(ret.EarliestDate));
+                        Ext.getCmp("EarliestHour").setValue(new Date(ret.EarliestDate).Format("hh:mm"));
+                        Ext.getCmp("LatestDate").setValue(new Date(ret.LatestDate));
+                        Ext.getCmp("LatestHour").setValue("11:00");
+                        Ext.getCmp("UnitPrice").setValue(ret.UnitPrice);
+                        Ext.getCmp("DepositPrice").setValue(ret.DepositPrice);
+                        Ext.getCmp("LiveTotalPrice").setValue(ret.LiveTotalPrice);
+                        Ext.getCmp("ActualTotalPrice").setValue(ret.ActualTotalPrice);
+                    }
+                }, CS.onError, retVal.dt_hotel[0]["VALUE"], roomid, Ext.getCmp("AuthorRoomStyle").getValue(), Ext.getCmp("LiveStartDate").getValue(), new Date(Ext.getCmp("LiveStartHour").getValue()).Format("hh:mm"), Ext.getCmp("LiveDays").getValue(), Ext.getCmp("LiveHour").getValue(), Ext.getCmp("LiveMonths").getValue(), UnitPrice, DepositPrice);
+            }
+        }, CS.onError, roomid);
+    }
 });
 
 Date.prototype.Format = function (fmt) { //author: meizz 
@@ -503,4 +569,27 @@ Date.prototype.Format = function (fmt) { //author: meizz
     for (var k in o)
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
+}
+
+function CalculateTimeAndPrice() {
+    var UnitPrice = 0;
+    if (Ext.getCmp("UnitPrice").getValue() != "" && Ext.getCmp("UnitPrice").getValue() != null)
+        UnitPrice = Ext.getCmp("UnitPrice").getValue();
+    var DepositPrice = 0;
+    if (Ext.getCmp("DepositPrice").getValue() != "" && Ext.getCmp("DepositPrice").getValue() != null)
+        DepositPrice = Ext.getCmp("DepositPrice").getValue();
+    CS("CZCLZ.AuthorizeOrderDB.CalculateTimeAndPrice", function (ret) {
+        if (ret) {
+            Ext.getCmp("LiveEndDate").setValue(new Date(ret.LiveEndDate));
+            Ext.getCmp("LiveEndHour").setValue("12:00");
+            Ext.getCmp("EarliestDate").setValue(new Date(ret.EarliestDate));
+            Ext.getCmp("EarliestHour").setValue(new Date(ret.EarliestDate).Format("hh:mm"));
+            Ext.getCmp("LatestDate").setValue(new Date(ret.LatestDate));
+            Ext.getCmp("LatestHour").setValue("11:00");
+            Ext.getCmp("UnitPrice").setValue(ret.UnitPrice);
+            Ext.getCmp("DepositPrice").setValue(ret.DepositPrice);
+            Ext.getCmp("LiveTotalPrice").setValue(ret.LiveTotalPrice);
+            Ext.getCmp("ActualTotalPrice").setValue(ret.ActualTotalPrice); 
+        }
+    }, CS.onError, HotelId, roomid, Ext.getCmp("AuthorRoomStyle").getValue(), Ext.getCmp("LiveStartDate").getValue(), new Date(Ext.getCmp("LiveStartHour").getValue()).Format("hh:mm"), Ext.getCmp("LiveDays").getValue(), Ext.getCmp("LiveHour").getValue(), Ext.getCmp("LiveMonths").getValue(), UnitPrice, DepositPrice);
 }
