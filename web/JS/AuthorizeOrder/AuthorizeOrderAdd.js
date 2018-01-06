@@ -1360,7 +1360,7 @@ Ext.onReady(function () {
                                    handler: function () {
                                        Ext.MessageBox.confirm('提示', '确认重新下发？', function (obj) {
                                            if (obj == "yes") {
-                                               CS('CZCLZ.AuthorizeOrderDB.ConfirmBook2', function (retVal) {
+                                               CS('CZCLZ.AuthorizeOrderDB.SendCMDAgain', function (retVal) {
                                                    if (retVal.status == "ok") {
                                                        Ext.MessageBox.alert("提示", "下发成功!", function () {
                                                            FrameStack.popFrame();

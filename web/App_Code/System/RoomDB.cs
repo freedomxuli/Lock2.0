@@ -783,14 +783,27 @@ public class RoomDB
             dbc.BeginTransaction();
             try
             {
-                int wgNum = Convert.ToInt16(dbc.ExecuteScalar("select count(*) from Lock_Device where RoomId=" + RoomId + " and DeviceType=" + jsr["DeviceType"].ToInteger()).ToString());
-                if (wgNum > 0)
-                    throw new Exception("该房间已存在网关设备");
+                string ID = jsr["ID"].ToString();
+                if (jsr["DeviceType"].ToInteger() == 2)
+                {
+                    if (ID == "")
+                    {
+                        int wgNum = Convert.ToInt16(dbc.ExecuteScalar("select count(*) from Lock_Device where RoomId=" + RoomId + " and DeviceType=2 "));
+                        if (wgNum > 0)
+                            throw new Exception("该房间已存在网关设备");
+                    }
+                    else
+                    {
+                        int wgNum = Convert.ToInt16(dbc.ExecuteScalar("select count(*) from Lock_Device where RoomId=" + RoomId + " and DeviceType=2 and ID<>" + ID));
+                        if (wgNum > 0)
+                            throw new Exception("该房间已存在网关设备");
+                    }
+                }
 
                 var dtDevice = dbc.GetEmptyDataTable("Lock_Device");
                 DataTableTracker dtt = new DataTableTracker(dtDevice);
                 var drDevice = dtDevice.NewRow();
-                string ID = jsr["ID"].ToString();
+
                 drDevice["RoomId"] = RoomId;
                 drDevice["DeviceName"] = jsr["DeviceName"].ToString();
                 drDevice["DeviceNo"] = jsr["DeviceNo"].ToString();
@@ -798,6 +811,21 @@ public class RoomDB
                 drDevice["DeviceType"] = jsr["DeviceType"].ToInteger();
                 drDevice["CallBackData"] = jsr["CallBackData"].ToString();
                 drDevice["BindSuccess"] = 0;
+                JObject json = JsonConvert.DeserializeObject(jsr["CallBackData"].ToString()) as JObject;
+                string equipmentpara = json["equipmentpara_table"].ToString();
+                JObject json2 = JsonConvert.DeserializeObject(equipmentpara.Replace("\r\n", "").Replace("[", "").Replace("]", "")) as JObject;
+                drDevice["EquipmentInfoNum"] = json2["EquipmentInfoNum"].ToString();
+                drDevice["EquipmentInfo1Type"] = json2["EquipmentInfo1Type"].ToString();
+                drDevice["EquipmentInfo2Type"] = json2["EquipmentInfo2Type"].ToString();
+                drDevice["EquipmentInfo3Type"] = json2["EquipmentInfo3Type"].ToString();
+                drDevice["EquipmentInfo4Type"] = json2["EquipmentInfo4Type"].ToString();
+                drDevice["EquipmentInfo5Type"] = json2["EquipmentInfo5Type"].ToString();
+                drDevice["EquipmentConNum"] = json2["EquipmentConNum"].ToString();
+                drDevice["EquipmentCon1Type"] = json2["EquipmentCon1Type"].ToString();
+                drDevice["EquipmentCon2Type"] = json2["EquipmentCon2Type"].ToString();
+                drDevice["EquipmentCon3Type"] = json2["EquipmentCon3Type"].ToString();
+                drDevice["EquipmentCon4Type"] = json2["EquipmentCon4Type"].ToString();
+                drDevice["EquipmentCon5Type"] = json2["EquipmentCon5Type"].ToString();
                 if (ID == "")
                 {
                     dtDevice.Rows.Add(drDevice);

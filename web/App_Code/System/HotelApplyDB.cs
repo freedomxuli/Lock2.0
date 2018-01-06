@@ -4,6 +4,7 @@ using SmartFramework4v2.Web.Common.JSON;
 using SmartFramework4v2.Web.WebExcutor;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -279,6 +280,22 @@ public class HotelApplyDB
                     dtTag.Rows.Add(drTag);
                 }
                 dbc.InsertTable(dtTag);
+
+                using (SmartFramework4v2.Data.MySql.DBConnection db = new SmartFramework4v2.Data.MySql.DBConnection(ConfigurationManager.ConnectionStrings["DzfConnStr"].ConnectionString))
+                {
+                    db.BeginTransaction();
+                    try
+                    {
+                        int flowId = Flow.SetFlow(db, HotelId.ToString(), "门店申请");
+                        Flow.SetStep(db, flowId, 1, "经济人审核", 4, "");
+                        db.CommitTransaction();
+                    }
+                    catch (Exception ex)
+                    {
+                        db.RoolbackTransaction();
+                        throw ex;
+                    }
+                }
 
                 dbc.CommitTransaction();
                 return true;
