@@ -923,6 +923,17 @@ public class RoomDB
         return s;
     }
 
+    [CSMethod("GetRoomPrice")]
+    public DataTable GetRoomPrice(int roomId)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            string sql = "select * from Lock_RoomOtherDayPrice where RoomId = '" + roomId + "'";
+            DataTable dt = dbc.ExecuteDataTable(sql);
+            return dt;
+        }
+    }
+
     [CSMethod("GetRoomPriceList")]
     public object GetRoomPriceList(int pagnum, int pagesize, int roomId)
     {
@@ -959,33 +970,19 @@ public class RoomDB
                 //DataTable dt = dbc.ExecuteDataTable("select * from Lock_RoomOtherDayPrice where RoomId=" + roomId + " and ((StartDate>='" + jsr["StartDate"].ToString() + "' and StartDate<='" + jsr["EndDate"].ToString() + "') or (EndDate>='" + jsr["StartDate"].ToString() + "' and EndDate<='" + jsr["EndDate"].ToString() + "'))");
                 //if (dt.Rows.Count > 0)
                 //    throw new Exception("该时间段内有价格设置请重新选择");
-                var dtPrice = dbc.GetEmptyDataTable("Lock_RoomOtherDayPrice");
-                DataTableTracker dtt = new DataTableTracker(dtPrice);
-                var drPrice = dtPrice.NewRow();
-                string ID = jsr["ID"].ToString();
-                drPrice["RoomId"] = roomId;
-                drPrice["StartDate"] = jsr["StartDate"].ToDate();
-                drPrice["EndDate"] = jsr["EndDate"].ToDate();
-                drPrice["Price"] = jsr["Price"].ToSingle();
-                drPrice["WeekEndPrice"] = jsr["WeekEndPrice"].ToSingle();
-                drPrice["HourPrice"] = jsr["HourPrice"].ToSingle();
-                drPrice["HourWeekEndPrice"] = jsr["HourWeekEndPrice"].ToSingle();
-                drPrice["HourPrice2"] = jsr["HourPrice2"].ToSingle();
-                drPrice["HourWeekEndPrice2"] = jsr["HourWeekEndPrice2"].ToSingle();
-                drPrice["HourPrice3"] = jsr["HourPrice3"].ToSingle();
-                drPrice["HourWeekEndPrice3"] = jsr["HourWeekEndPrice3"].ToSingle();
-                if (ID == "")
+                string sql = "select * from Lock_RoomOtherDayPrice where RoomId = '" + roomId + "' and StartDate >= '" + jsr["StartDate"].ToDate() + "' and StartDate <= '" + jsr["EndDate"].ToDate() + "'";
+                DataTable dt_price = dbc.ExecuteDataTable(sql);
+                if (dt_price.Rows.Count > 0)
                 {
-                    dbc.ExecuteNonQuery("delete from Lock_RoomOtherDayPrice where RoomId=" + roomId);
-                    dtPrice.Rows.Add(drPrice);
-                    dbc.InsertTable(dtPrice);
+                    sql = "delete from Lock_RoomOtherDayPrice where RoomId = '" + roomId + "' and StartDate >= '" + jsr["StartDate"].ToDate() + "' and StartDate <= '" + jsr["EndDate"].ToDate() + "'";
+                    dbc.ExecuteNonQuery(sql);
                 }
-                else
+                TimeSpan days = jsr["EndDate"].ToDate().Subtract(jsr["StartDate"].ToDate());
+                int days_num = days.Days;
+                for (int i = 0; i <= days_num; i++)
                 {
-                    drPrice["ID"] = Convert.ToInt16(ID);
-                    dtPrice.Rows.Add(drPrice);
-                    dtPrice.Columns["ID"].ReadOnly = false;
-                    dbc.UpdateTable(dtPrice, dtt);
+                    sql = "insert into Lock_RoomOtherDayPrice values("+roomId+",'"+jsr["StartDate"].ToDate().AddDays(i)+"','"+jsr["StartDate"].ToDate().AddDays(i)+"','"+jsr["Price"].ToSingle()+"',null,null,'"+jsr["WeekEndPrice"].ToSingle()+"','"+jsr["HourPrice"].ToSingle()+"','"+jsr["HourWeekEndPrice"].ToSingle()+"',null,'"+jsr["HourPrice2"].ToSingle()+"','"+jsr["HourWeekEndPrice2"].ToSingle()+"','"+jsr["HourPrice3"].ToSingle()+"','"+jsr["HourWeekEndPrice3"].ToSingle()+"','"+jsr["MonthRentPrice"].ToSingle()+"')";
+                    dbc.ExecuteNonQuery(sql);
                 }
                 dbc.CommitTransaction();
                 return true;
