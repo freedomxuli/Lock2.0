@@ -385,7 +385,7 @@ Ext.onReady(function () {
                                                    items: [
                                                        {
                                                            xtype: 'numberfield',
-                                                           name: 'CheckinHour',
+                                                           name: 'JudgeinHour',
                                                            margin: '10 10 10 10',
                                                            fieldLabel: '默认入住时间',
                                                            allowBlank: false,
@@ -399,7 +399,7 @@ Ext.onReady(function () {
                                                         },
                                                         {
                                                             xtype: 'numberfield',
-                                                            name: 'CheckinMinute',
+                                                            name: 'JudgeinMinute',
                                                             allowBlank: false,
                                                             width: 100
                                                         },
@@ -445,7 +445,41 @@ Ext.onReady(function () {
                                                          }
                                                     ]
                                                 },
-
+                                                {
+                                                    xtype: 'fieldcontainer',
+                                                    columnWidth: 1,
+                                                    layout: {
+                                                        type: 'hbox',
+                                                        align: 'middle'
+                                                    },
+                                                    items: [
+                                                        {
+                                                            xtype: 'numberfield',
+                                                            name: 'CheckinHour',
+                                                            margin: '10 10 10 10',
+                                                            fieldLabel: '默认计算时间',
+                                                            allowBlank: false,
+                                                            width: 190,
+                                                            labelWidth: 80
+                                                        },
+                                                         {
+                                                             xtype: 'displayfield',
+                                                             width: 20,
+                                                             value: '时'
+                                                         },
+                                                         {
+                                                             xtype: 'numberfield',
+                                                             name: 'CheckinMinute',
+                                                             allowBlank: false,
+                                                             width: 100
+                                                         },
+                                                         {
+                                                             xtype: 'displayfield',
+                                                             width: 40,
+                                                             value: '分'
+                                                         }
+                                                    ]
+                                                },
                                                {
                                                    xtype: 'checkboxgroup',
                                                    id: 'IsHasWeekendPrice',

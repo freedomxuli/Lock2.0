@@ -124,6 +124,8 @@ public class HotelDB
                 int HourRoomTimeLong3 = 0;
                 int CheckinHour = 0;
                 int CheckinMinute = 0;
+                int JudgeinHour = 0;
+                int JudgeinMinute = 0;
                 int CheckoutHour = 0;
                 int CheckoutMinute = 0;
                 float MonthRentPrice = 0;
@@ -155,6 +157,10 @@ public class HotelDB
                     CheckinHour = jsr["CheckinHour"].ToInteger();
                 if (jsr["CheckinMinute"].ToString() != "")
                     CheckinMinute = jsr["CheckinMinute"].ToInteger();
+                if (jsr["JudgeinHour"].ToString() != "")
+                    JudgeinHour = jsr["JudgeinHour"].ToInteger();
+                if (jsr["JudgeinMinute"].ToString() != "")
+                    JudgeinMinute = jsr["JudgeinMinute"].ToInteger();
                 if (jsr["CheckoutHour"].ToString() != "")
                     CheckoutHour = jsr["CheckoutHour"].ToInteger();
                 if (jsr["CheckoutMinute"].ToString() != "")
@@ -189,6 +195,8 @@ public class HotelDB
                 drHotel["HourRoomTimeLong3"] = HourRoomTimeLong3;
                 drHotel["CheckinHour"] = CheckinHour;
                 drHotel["CheckinMinute"] = CheckinMinute;
+                drHotel["JudgeinHour"] = JudgeinHour;
+                drHotel["JudgeinMinute"] = JudgeinMinute;
                 drHotel["CheckoutHour"] = CheckoutHour;
                 drHotel["CheckoutMinute"] = CheckoutMinute;
                 drHotel["MonthRentPrice"] = MonthRentPrice;
