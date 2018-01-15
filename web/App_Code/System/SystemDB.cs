@@ -1039,19 +1039,24 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
                     Buffer.BlockCopy(src, 0, dst, 0, src.Length);
                     Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
                     inArray = HashAlgorithm.Create("SHA1").ComputeHash(dst);
-                    string sqlStr = "update aspnet_Users set OperatePassword='" + Convert.ToBase64String(inArray) + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
-                    dbc.ExecuteNonQuery(sqlStr);
+                    string sqlStr = "select * from aspnet_Users where OperatePassword='" + Convert.ToBase64String(inArray) + "' where UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                    if (dt.Rows.Count > 0)
+                        return true;
+                    else
+                        return false;
                 }
                 else
                 {
-                    string sqlStr = "update aspnet_Users set OperatePassword='" + password + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
-                    dbc.ExecuteNonQuery(sqlStr);
+                    string sqlStr = "select * from aspnet_Users where OperatePassword=" + dbc.ToSqlValue(password);
+                    DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                    if (dt.Rows.Count > 0)
+                        return true;
+                    else
+                        return false;
                 }
 
-                string sqlStr = "select * from aspnet_Users where OperatePassword=" + dbc.ToSqlValue(password);
-                DataTable dt = dbc.ExecuteDataTable(sqlStr);
-                if (dt.Rows.Count > 0)
-                    return true;
+              
             }
             catch (Exception ex)
             {
