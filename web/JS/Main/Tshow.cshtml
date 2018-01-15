@@ -2,6 +2,7 @@
     System.Collections.Generic.List<string> days = Model.Data.days;
     System.Collections.Generic.List<string> week = Model.Data.week;
     System.Data.DataTable dt_room = Model.Data.dt_room;
+    System.Data.DataTable dt_hotel = Model.Data.dt_hotel;
     System.Data.DataTable dt_order = Model.Data.dt_order;
     System.Int32 num = 10 - dt_room.Rows.Count;
     System.Int32 dcldd = Model.Data.dcldd;
@@ -11,6 +12,11 @@
 }
 
 <div style="overflow:hidden;height:95%;">
+        <table width="100%" cellpadding="0"  cellspacing="0" border="1" bordercolor="#cccccc">
+            <tr>
+                <td style="height:40px;line-height:40px;font-size:16px;background-color:#3f6296;color:#ffffff;cursor:pointer;" onclick="ShowHotel();">　@dt_hotel.Rows[0]["HotelName"]　<img src="approot/r/Images/index/qh.png"/></td>
+            </tr>
+        </table>
     	<table width="100%" cellpadding="0"  cellspacing="0" border="1" bordercolor="#cccccc">
             <thead class="fixedHeader" width="100%">
                 <tr>
@@ -151,7 +157,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -175,7 +182,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
                                 
@@ -259,7 +267,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -292,7 +301,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
                                 
@@ -376,7 +386,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -409,7 +420,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
 
@@ -493,7 +505,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -526,7 +539,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
                                 
@@ -610,7 +624,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -643,7 +658,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
                                 
@@ -727,7 +743,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -760,7 +777,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
                                 
@@ -844,7 +862,8 @@
                                                 <input type="hidden" value="0" />
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                                @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                             </td>
                                         }
                                     }else
@@ -877,7 +896,8 @@
                                         <input type="hidden" value="0" />
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
-                                        <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>
+                                        @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
                                     </td>
                                 }
                             }

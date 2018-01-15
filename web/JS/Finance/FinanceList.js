@@ -8,7 +8,7 @@ var FinanceStore = createSFW4Store({
     pageSize: pageSize,
     total: 1,
     currentPage: 1,
-    fields: ['StartTime', 'EndTime', 'HotelName', 'FinanceStatus', 'TotalPrice', 'PlatYJ', 'ID'],
+    fields: ['StartTime', 'EndTime', 'HotelName', 'FinanceStatus', 'TotalPrice', 'PlatYJ', 'ID', 'FPSJ'],
     //sorters: [{ property: 'b', direction: 'DESC'}],
     onPageChange: function (sto, nPage, sorters) {
         loadData(nPage);
@@ -89,6 +89,14 @@ Ext.onReady(function () {
                                 sortable: false,
                                 menuDisabled: true,
                                 text: '平台佣金'
+                            },
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'FPSJ',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true,
+                                text: '发票税金'
                             },
                             {
                                 xtype: 'gridcolumn',
