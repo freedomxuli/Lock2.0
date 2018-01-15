@@ -98,6 +98,9 @@ public class MenuControl
                    <Tab p='' Name='字典管理'>approot/r/page/Dictionary/zdb.html</Tab>
                    <Tab p='' Name='字典类型管理'>approot/r/page/Dictionary/zdblx.html</Tab>                 
                 </Item>
+               <Item Name='账户管理'>
+                   <Tab p='' Name='账户管理'>approot/r/page/System/PassWordGL.html</Tab>
+                </Item>
             </Menu>
           
         </MainMenu>
@@ -152,7 +155,22 @@ public class MenuControl
                 }
                 if (msg != "")
                 {
-                    lis += "+ '<li class=\"fore\"><a class=\"MenuItem\" href=\"page/TabMenu.html?msg=" + msg + "\" target=\"mainframe\"><img height=16 width=16 align=\"absmiddle\" style=\"border:0\" src=\"../CSS/images/application.png\" />　" + secname + "</a></li>'";
+                    string RoleName = Task.TaskNum.GetRoleName();
+                    if (RoleName.Equals("房东"))
+                    {
+                        if (msg != "字典管理,approot/r/page/Dictionary/zdb.html|字典类型管理,approot/r/page/Dictionary/zdblx.html")
+                            lis += "+ '<li class=\"fore\"><a class=\"MenuItem\" href=\"page/TabMenu.html?msg=" + msg + "\" target=\"mainframe\"><img height=16 width=16 align=\"absmiddle\" style=\"border:0\" src=\"../CSS/images/application.png\" />　" + secname + "</a></li>'";
+                    }
+                    else if (RoleName.Equals("门店管理员"))
+                    {
+                        if (msg != "字典管理,approot/r/page/Dictionary/zdb.html|字典类型管理,approot/r/page/Dictionary/zdblx.html" && msg != "已上线,approot/r/page/Hotel/HotelManage.html|待上线,approot/r/page/Hotel/HotelApply.html")
+                            lis += "+ '<li class=\"fore\"><a class=\"MenuItem\" href=\"page/TabMenu.html?msg=" + msg + "\" target=\"mainframe\"><img height=16 width=16 align=\"absmiddle\" style=\"border:0\" src=\"../CSS/images/application.png\" />　" + secname + "</a></li>'";
+                    }
+                    else if (RoleName.Equals("SystemAdministrator"))
+                    {
+                        if (msg == "字典管理,approot/r/page/Dictionary/zdb.html|字典类型管理,approot/r/page/Dictionary/zdblx.html" || msg == "账户管理,approot/r/page/System/PassWordGL.html")
+                            lis += "+ '<li class=\"fore\"><a class=\"MenuItem\" href=\"page/TabMenu.html?msg=" + msg + "\" target=\"mainframe\"><img height=16 width=16 align=\"absmiddle\" style=\"border:0\" src=\"../CSS/images/application.png\" />　" + secname + "</a></li>'";
+                    }
 
                 }
             }

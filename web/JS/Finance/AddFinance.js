@@ -51,7 +51,7 @@ Ext.onReady(function () {
                                         displayField: 'HotelName',
                                         store: hotelStore,
                                         id: 'HotelSelect',
-                                        padding:20,
+                                        padding: 20,
                                         fieldLabel: '提现宾馆',
                                         listeners: {
                                             change: function (obj, newValue, oldValue, eOpts) {
@@ -64,7 +64,7 @@ Ext.onReady(function () {
                                         columnWidth: 1,
                                         padding: 20,
                                         fieldLabel: '可提现余额（元）',
-                                        id:'MoneyShow',
+                                        id: 'MoneyShow',
                                         value: ''
                                     },
                                     {
@@ -103,29 +103,25 @@ Ext.onReady(function () {
                                         text: '提交',
                                         iconCls: 'save',
                                         handler: function () {
-                                            if (Ext.getCmp("HotelSelect").getValue() == "" || Ext.getCmp("HotelSelect").getValue() == null)
-                                            {
+                                            if (Ext.getCmp("HotelSelect").getValue() == "" || Ext.getCmp("HotelSelect").getValue() == null) {
                                                 Ext.Msg.alert("提示", "没有可提款的门店！", function () {
                                                     return;
                                                 });
                                             }
 
-                                            if (Ext.getCmp("TxMoney").getValue() == "" || Ext.getCmp("TxMoney").getValue() == null)
-                                            {
+                                            if (Ext.getCmp("TxMoney").getValue() == "" || Ext.getCmp("TxMoney").getValue() == null) {
                                                 Ext.Msg.alert("提示", "提现金额不能为空！", function () {
                                                     return;
                                                 });
                                             }
 
-                                            if (parseFloat(Ext.getCmp("TxMoney").getValue()) > parseFloat(Ext.getCmp("MoneyShow").getValue()))
-                                            {
+                                            if (parseFloat(Ext.getCmp("TxMoney").getValue()) > parseFloat(Ext.getCmp("MoneyShow").getValue())) {
                                                 Ext.Msg.alert("提示", "提现金额不能超过可提现总额！", function () {
                                                     return;
                                                 });
                                             }
 
-                                            if (Ext.getCmp("PayType").getValue() == "" || Ext.getCmp("PayType").getValue() == null)
-                                            {
+                                            if (Ext.getCmp("PayType").getValue() == "" || Ext.getCmp("PayType").getValue() == null) {
                                                 Ext.Msg.alert("提示", "打款方式不能为空！", function () {
                                                     return;
                                                 });
@@ -157,9 +153,12 @@ Ext.onReady(function () {
 
     });
 
-    var mainView = new MainView();
+    var win = new czmmWin();
+    win.show();
 
-    getHotel();
+    //var mainView = new MainView();
+
+    //getHotel();
 
 });
 
@@ -175,12 +174,69 @@ function getHotel() {
     }, CS.onError)
 }
 
-function getHotelBanlance(hotelid)
-{
+function getHotelBanlance(hotelid) {
     CS('CZCLZ.FinanceDB.getHotelBalance', function (retVal) {
-        if(retVal)
-        {
+        if (retVal) {
             Ext.getCmp("MoneyShow").setValue(retVal);
         }
     }, CS.onError, hotelid)
 }
+
+Ext.define('czmmWin', {
+    extend: 'Ext.window.Window',
+
+    height: 120,
+    width: 400,
+    layout: {
+        type: 'fit'
+    },
+    id: 'czmmWin',
+    modal: true,
+    title: '操作密码',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'czmmForm',
+                frame: true,
+                bodyPadding: 10,
+
+                title: '',
+                items: [
+
+                    {
+                        xtype: 'textfield',
+                        name: 'Name',
+                        fieldLabel: '操作密码',
+                        labelWidth: 70,
+                        inputType: 'password',
+                        allowBlank: false,
+                        anchor: '100%'
+                    }
+                ],
+                buttonAlign: 'center',
+                buttons: [
+                    {
+                        text: '确定',
+                        handler: function () {
+                            var form = Ext.getCmp('czmmForm');
+                            if (form.form.isValid()) {
+                                Ext.getCmp("czmmWin").close();
+                                var mainView = new MainView();
+                                getHotel();
+                            }
+                        }
+                    },
+                    {
+                        text: '取消',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});

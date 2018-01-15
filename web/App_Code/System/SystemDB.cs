@@ -947,5 +947,116 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
         }
     }
 
+    [CSMethod("ModifyDLPassWord")]
+    public object ModifyDLPassWord(string password)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                DataTable dtUser = dbc.ExecuteDataTable("select * from aspnet_Users where UserId='" + SystemUser.CurrentUser.UserID + "'");
+                string pws = dtUser.Rows[0]["PasswordSalt"].ToString();
+                string pwf = dtUser.Rows[0]["PasswordFormat"].ToString();
+                if (pwf == "1")
+                {
+                    byte[] bytes = Encoding.Unicode.GetBytes(password);
+                    byte[] src = Convert.FromBase64String(pws);
+                    byte[] dst = new byte[src.Length + bytes.Length];
+                    byte[] inArray = null;
+                    Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+                    Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+                    inArray = HashAlgorithm.Create("SHA1").ComputeHash(dst);
+                    string sqlStr = "update aspnet_Users set Password='" + Convert.ToBase64String(inArray) + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    dbc.ExecuteNonQuery(sqlStr);
+                }
+                else
+                {
+                    string sqlStr = "update aspnet_Users set Password='" + password + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    dbc.ExecuteNonQuery(sqlStr);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
 
+    [CSMethod("ModifyCZPassWord")]
+    public object ModifyCZPassWord(string password)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                DataTable dtUser = dbc.ExecuteDataTable("select * from aspnet_Users where UserId='" + SystemUser.CurrentUser.UserID + "'");
+                string pws = dtUser.Rows[0]["PasswordSalt"].ToString();
+                string pwf = dtUser.Rows[0]["PasswordFormat"].ToString();
+                if (pwf == "1")
+                {
+                    byte[] bytes = Encoding.Unicode.GetBytes(password);
+                    byte[] src = Convert.FromBase64String(pws);
+                    byte[] dst = new byte[src.Length + bytes.Length];
+                    byte[] inArray = null;
+                    Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+                    Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+                    inArray = HashAlgorithm.Create("SHA1").ComputeHash(dst);
+                    string sqlStr = "update aspnet_Users set OperatePassword='" + Convert.ToBase64String(inArray) + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    dbc.ExecuteNonQuery(sqlStr);
+                }
+                else
+                {
+                    string sqlStr = "update aspnet_Users set OperatePassword='" + password + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    dbc.ExecuteNonQuery(sqlStr);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("CheckCZPassWord")]
+    public object CheckCZPassWord(string password)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                DataTable dtUser = dbc.ExecuteDataTable("select * from aspnet_Users where UserId='" + SystemUser.CurrentUser.UserID + "'");
+                string pws = dtUser.Rows[0]["PasswordSalt"].ToString();
+                string pwf = dtUser.Rows[0]["PasswordFormat"].ToString();
+                if (pwf == "1")
+                {
+                    byte[] bytes = Encoding.Unicode.GetBytes(password);
+                    byte[] src = Convert.FromBase64String(pws);
+                    byte[] dst = new byte[src.Length + bytes.Length];
+                    byte[] inArray = null;
+                    Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+                    Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+                    inArray = HashAlgorithm.Create("SHA1").ComputeHash(dst);
+                    string sqlStr = "update aspnet_Users set OperatePassword='" + Convert.ToBase64String(inArray) + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    dbc.ExecuteNonQuery(sqlStr);
+                }
+                else
+                {
+                    string sqlStr = "update aspnet_Users set OperatePassword='" + password + "' where  UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    dbc.ExecuteNonQuery(sqlStr);
+                }
+
+                string sqlStr = "select * from aspnet_Users where OperatePassword=" + dbc.ToSqlValue(password);
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                if (dt.Rows.Count > 0)
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
 }
