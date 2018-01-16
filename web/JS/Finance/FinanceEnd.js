@@ -93,9 +93,9 @@ Ext.onReady(function () {
 
     });
 
-    var mainView = new FinanceList();
+    var win = new czmmWin();
+    win.show();
 
-    loadData(1);
 });
 
 function loadData(nPage) {
@@ -110,3 +110,67 @@ function loadData(nPage) {
         }
     }, CS.onError, nPage, pageSize, 1)
 }
+
+Ext.define('czmmWin', {
+    extend: 'Ext.window.Window',
+
+    height: 120,
+    width: 400,
+    layout: {
+        type: 'fit'
+    },
+    id: 'czmmWin',
+    modal: true,
+    title: '操作密码',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'czmmForm',
+                frame: true,
+                bodyPadding: 10,
+
+                title: '',
+                items: [
+
+                    {
+                        xtype: 'textfield',
+                        id: 'czmm',
+                        fieldLabel: '操作密码',
+                        labelWidth: 70,
+                        inputType: 'password',
+                        allowBlank: false,
+                        anchor: '100%'
+                    }
+                ],
+                buttonAlign: 'center',
+                buttons: [
+                    {
+                        text: '确定',
+                        handler: function () {
+                            var form = Ext.getCmp('czmmForm');
+                            if (form.form.isValid()) {
+                                CS('CZCLZ.SystemDB.CheckCZPassWord', function (retVal) {
+                                    if (retVal) {
+                                        Ext.getCmp("czmmWin").close();
+
+                                        var mainView = new FinanceList();
+
+                                        loadData(1);
+
+                                    }
+                                    else {
+                                        Ext.MessageBox.alert('提示', '密码错误');
+
+                                    }
+                                }, CS.onError, Ext.getCmp("czmm").getValue())
+                            }
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});

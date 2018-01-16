@@ -207,7 +207,7 @@ Ext.define('czmmWin', {
 
                     {
                         xtype: 'textfield',
-                        name: 'Name',
+                        id: 'czmm',
                         fieldLabel: '操作密码',
                         labelWidth: 70,
                         inputType: 'password',
@@ -222,16 +222,18 @@ Ext.define('czmmWin', {
                         handler: function () {
                             var form = Ext.getCmp('czmmForm');
                             if (form.form.isValid()) {
-                                Ext.getCmp("czmmWin").close();
-                                var mainView = new MainView();
-                                getHotel();
+                                CS('CZCLZ.SystemDB.CheckCZPassWord', function (retVal) {
+                                    if (retVal) {
+                                        Ext.getCmp("czmmWin").close();
+                                        var mainView = new MainView();
+                                        getHotel();
+                                    }
+                                    else {
+                                        Ext.MessageBox.alert('提示', '密码错误');
+
+                                    }
+                                }, CS.onError, Ext.getCmp("czmm").getValue())
                             }
-                        }
-                    },
-                    {
-                        text: '取消',
-                        handler: function () {
-                            this.up('window').close();
                         }
                     }
                 ]

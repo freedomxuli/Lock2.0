@@ -89,7 +89,7 @@ Ext.onReady(function () {
                 id: 'MainHeader',
                 collapsible: true,
 
-                html: '<div class="LoginHeader"><div class=leftHeader><a href="page/Main/desktop.html" target="mainframe"><img  src="approot/d/Images/logo_zns.png"></a></div><div class="rightHeader"><a href="page/Main/desktop.html" target="mainframe"><img align="absmiddle" src="approot/d/images/home.png">首页</a><a href="approot/r/help.aspx"><img align="absmiddle" src="approot/d/images/help.png">帮助</a><a onclick="logout()" href="javascript:void(0);"><img align="absmiddle" src="approot/d/images/exit.png">退出</a></div></div>'
+                html: '<div class="LoginHeader"><div class=leftHeader><a href="page/Main/desktop.html" target="mainframe"><img align="absmiddle"  src="approot/d/images/logo_zns.png" style="height:75px;width:120px" ></a></div><div class="rightHeader"><a href="page/Main/desktop.html" target="mainframe"><img align="absmiddle" src="approot/d/images/home.png">首页</a><a href="approot/r/help.aspx"><img align="absmiddle" src="approot/d/images/help.png">帮助</a><a onclick="logout()" href="javascript:void(0);"><img align="absmiddle" src="approot/d/images/exit.png">退出</a></div></div>'
                 + '<div class="LoginInfo" style="height:24px;line-height:24px;">' + strHelp + '　　欢迎您：' + UserName + '　　　　当前时间：<span id="CurrentTime"></span></div>'
             },
             {

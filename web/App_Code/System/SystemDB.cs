@@ -1039,7 +1039,7 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
                     Buffer.BlockCopy(src, 0, dst, 0, src.Length);
                     Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
                     inArray = HashAlgorithm.Create("SHA1").ComputeHash(dst);
-                    string sqlStr = "select * from aspnet_Users where OperatePassword='" + Convert.ToBase64String(inArray) + "' where UserId='" + SystemUser.CurrentUser.UserID + "'";
+                    string sqlStr = "select * from aspnet_Users where OperatePassword='" + Convert.ToBase64String(inArray) + "' and UserId='" + SystemUser.CurrentUser.UserID + "'";
                     DataTable dt = dbc.ExecuteDataTable(sqlStr);
                     if (dt.Rows.Count > 0)
                         return true;

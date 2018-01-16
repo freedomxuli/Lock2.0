@@ -666,7 +666,8 @@ public class RoomDB
                 drRG["Unit"] = jsr["Unit"].ToString();
                 drRG["Sort"] = jsr["Sort"].ToInteger();
                 drRG["Type"] = jsr["Type"].ToInteger();
-                drRG["Brand"] = jsr["Brand"].ToInteger();
+                //  drRG["Brand"] = jsr["Brand"].ToInteger();
+                drRG["BrandName"] = jsr["BrandName"].ToString();
                 drRG["LossPrice"] = jsr["LossPrice"].ToString();
                 drRG["Condition"] = jsr["Condition"].ToString();
 
@@ -891,6 +892,25 @@ public class RoomDB
         }
     }
 
+    [CSMethod("GetMainRoomCombobox")]
+    public object GetMainRoomCombobox()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = @"select a.ID VALUE,a.RoomNo TEXT  from Lock_Room a left join Lock_Hotel b on a.HotelId=b.ID left join aspnet_Members c on a.UserId=c.UserId where (ParentRoomId=-1)
+                      and (a.UserId in(select MEUSERID from aspnet_FdAndMdUser where FDUSERID=" + SystemUser.CurrentUser.UserID + ") or a.UserId=" + SystemUser.CurrentUser.UserID + ")";
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
     [CSMethod("GetChildDeviceTypeCombobox")]
     public object GetChildDeviceTypeCombobox()
     {
@@ -899,6 +919,24 @@ public class RoomDB
             try
             {
                 string sqlStr = "select ID VALUE,TypeName TEXT from Lock_DeviceType where ID<>2";
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetRoomById")]
+    public object GetRoomById(int ID)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select * from Lock_Room where ID=" + ID;
                 DataTable dt = dbc.ExecuteDataTable(sqlStr);
                 return dt;
             }
@@ -981,7 +1019,7 @@ public class RoomDB
                 int days_num = days.Days;
                 for (int i = 0; i <= days_num; i++)
                 {
-                    sql = "insert into Lock_RoomOtherDayPrice values("+roomId+",'"+jsr["StartDate"].ToDate().AddDays(i)+"','"+jsr["StartDate"].ToDate().AddDays(i)+"','"+jsr["Price"].ToSingle()+"',null,null,'"+jsr["WeekEndPrice"].ToSingle()+"','"+jsr["HourPrice"].ToSingle()+"','"+jsr["HourWeekEndPrice"].ToSingle()+"',null,'"+jsr["HourPrice2"].ToSingle()+"','"+jsr["HourWeekEndPrice2"].ToSingle()+"','"+jsr["HourPrice3"].ToSingle()+"','"+jsr["HourWeekEndPrice3"].ToSingle()+"','"+jsr["MonthRentPrice"].ToSingle()+"')";
+                    sql = "insert into Lock_RoomOtherDayPrice values(" + roomId + ",'" + jsr["StartDate"].ToDate().AddDays(i) + "','" + jsr["StartDate"].ToDate().AddDays(i) + "','" + jsr["Price"].ToSingle() + "',null,null,'" + jsr["WeekEndPrice"].ToSingle() + "','" + jsr["HourPrice"].ToSingle() + "','" + jsr["HourWeekEndPrice"].ToSingle() + "',null,'" + jsr["HourPrice2"].ToSingle() + "','" + jsr["HourWeekEndPrice2"].ToSingle() + "','" + jsr["HourPrice3"].ToSingle() + "','" + jsr["HourWeekEndPrice3"].ToSingle() + "','" + jsr["MonthRentPrice"].ToSingle() + "')";
                     dbc.ExecuteNonQuery(sql);
                 }
                 dbc.CommitTransaction();

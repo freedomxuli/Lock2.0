@@ -57,6 +57,11 @@ var DeviceTypeStore = Ext.create('Ext.data.Store', {
     ]
 });
 
+var RoomStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
 
 
 function loadData(nPage) {
@@ -530,20 +535,28 @@ Ext.define('addGoodsWin', {
                           valueField: 'VALUE',
                           value: ''
                       },
-                      {
-                          xtype: 'combobox',
-                          name: 'Brand',
-                          fieldLabel: '物品品牌',
-                          editable: false,
-                          allowBlank: false,
-                          labelWidth: 70,
-                          anchor: '100%',
-                          store: BrandStore,
-                          queryMode: 'local',
-                          displayField: 'TEXT',
-                          valueField: 'VALUE',
-                          value: ''
-                      },
+                      //{
+                      //    xtype: 'combobox',
+                      //    name: 'Brand',
+                      //    fieldLabel: '物品品牌',
+                      //    editable: false,
+                      //    allowBlank: false,
+                      //    labelWidth: 70,
+                      //    anchor: '100%',
+                      //    store: BrandStore,
+                      //    queryMode: 'local',
+                      //    displayField: 'TEXT',
+                      //    valueField: 'VALUE',
+                      //    value: ''
+                      //},
+                       {
+                           xtype: 'textfield',
+                           name: 'BrandName',
+                           fieldLabel: '物品品牌',
+                           labelWidth: 70,
+                           allowBlank: false,
+                           anchor: '100%'
+                       },
                     {
                         xtype: 'textfield',
                         name: 'Name',
@@ -1028,7 +1041,33 @@ Ext.onReady(function () {
                                     xtype: 'toolbar',
                                     dock: 'top',
                                     items: [
-
+                                         {
+                                             xtype: 'combobox',
+                                             id: 'mainRoom',
+                                             fieldLabel: '所属主间',
+                                             editable: false,
+                                             allowBlank: false,
+                                             labelWidth: 60,
+                                             width: 180,
+                                             store: RoomStore,
+                                             queryMode: 'local',
+                                             displayField: 'TEXT',
+                                             valueField: 'VALUE',
+                                             value: '',
+                                             listeners: {
+                                                 'select': function (field, val, obj) {
+                                                     var rid = field.value;
+                                                     CS('CZCLZ.RoomDB.GetRoomById', function (retVal) {
+                                                         if (retVal) {
+                                                             ParentId = rid;
+                                                             RoomGuid = retVal[0]["RoomGuid"];
+                                                             HotelId = retVal[0]["HotelId"];
+                                                             loadData(1);
+                                                         }
+                                                     }, CS.onError, rid);
+                                                 }
+                                             }
+                                         },
 
                                         {
                                             xtype: 'buttongroup',
@@ -1146,6 +1185,13 @@ Ext.onReady(function () {
     CS('CZCLZ.RoomDB.GetChildDeviceTypeCombobox', function (retVal) {
         if (retVal) {
             DeviceTypeStore.loadData(retVal, true);
+        }
+    }, CS.onError);
+
+    CS('CZCLZ.RoomDB.GetMainRoomCombobox', function (retVal) {
+        if (retVal) {
+            RoomStore.loadData(retVal, true);
+            Ext.getCmp("mainRoom").setValue(parseInt(ParentId));
         }
     }, CS.onError);
 })

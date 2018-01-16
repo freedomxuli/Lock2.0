@@ -551,20 +551,28 @@ Ext.define('addGoodsWin', {
                           valueField: 'VALUE',
                           value: ''
                       },
-                      {
-                          xtype: 'combobox',
-                          name: 'Brand',
-                          fieldLabel: '物品品牌',
-                          editable: false,
-                          allowBlank: false,
-                          labelWidth: 70,
-                          anchor: '100%',
-                          store: BrandStore,
-                          queryMode: 'local',
-                          displayField: 'TEXT',
-                          valueField: 'VALUE',
-                          value: ''
-                      },
+                      //{
+                      //    xtype: 'combobox',
+                      //    name: 'Brand',
+                      //    fieldLabel: '物品品牌',
+                      //    editable: false,
+                      //    allowBlank: false,
+                      //    labelWidth: 70,
+                      //    anchor: '100%',
+                      //    store: BrandStore,
+                      //    queryMode: 'local',
+                      //    displayField: 'TEXT',
+                      //    valueField: 'VALUE',
+                      //    value: ''
+                      //},
+                       {
+                           xtype: 'textfield',
+                           name: 'BrandName',
+                           fieldLabel: '物品品牌',
+                           labelWidth: 70,
+                           allowBlank: false,
+                           anchor: '100%'
+                       },
                     {
                         xtype: 'textfield',
                         name: 'Name',
