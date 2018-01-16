@@ -26,7 +26,7 @@ public class DeskTop
     private string[] Day = new string[] { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
 
     [CSMethod("Tshow")]
-    public string Tshow(string now_date)
+    public string Tshow(string now_date,string Hotel_Id)
     {
         using (var db = new DBConnection())
         {
@@ -45,7 +45,18 @@ public class DeskTop
                     week.Add(xq);
                 }
 
-                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose,IsService FROM Lock_Room WHERE UserId = " + user.UserID + " ORDER BY ID";
+                string hotel_conn = "";
+                if(!string.IsNullOrEmpty(Hotel_Id))
+                    hotel_conn = " and ID = '" + Hotel_Id + "'";
+
+                string sql_hotel = @"select * from Lock_Hotel where UserId in (
+                                      select distinct FDUSERID UserId from aspnet_FdAndMdUser where FDUSERID = " + user.UserID + @"
+                                      union
+                                      select distinct MEUSERID UserId from aspnet_FdAndMdUser where MEUSERID = " + user.UserID + @"
+                                    ) or UserId = " + user.UserID + @"" + hotel_conn;
+                DataTable dt_hotel = db.ExecuteDataTable(sql_hotel);
+
+                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose,IsService FROM Lock_Room WHERE HotelId = " + dt_hotel.Rows[0]["ID"].ToString() + " ORDER BY ID";
                 DataTable dt_room = db.ExecuteDataTable(sql);
                 dt_room.Columns.Add("DAY1");
                 dt_room.Columns.Add("DAY2");
@@ -142,8 +153,6 @@ public class DeskTop
                 int jrrz = 0;//今日入住
                 int jrdtf = 0;//今日待退房
                 int jrkf = 0;//今日空房
-                string sql_hotel = "SELECT HandlerKind,ID FROM Lock_Hotel WHERE ID IN (SELECT HotelId FROM Lock_Room WHERE UserId = " + user.UserID + ")";
-                DataTable dt_hotel = db.ExecuteDataTable(sql_hotel);
                 for (int i = 0; i < dt_hotel.Rows.Count; i++)
                 {
                     if (dt_hotel.Rows[i]["HandlerKind"].ToString() == "0")
@@ -171,7 +180,7 @@ public class DeskTop
                         jrkf++;
                 }
 
-                string html = SmartFramework4v2.Web.Common.SmartTemplate.RenderTemplate(HttpContext.Current.Server.MapPath("~/JS/Main/Tshow.cshtml"), new { days = days, week = week, dt_room = dt_room, dt_order = dt_order, dt_service = dt_service, dcldd = dcldd, jrrz = jrrz, jrdtf = jrdtf, jrkf = jrkf });
+                string html = SmartFramework4v2.Web.Common.SmartTemplate.RenderTemplate(HttpContext.Current.Server.MapPath("~/JS/Main/Tshow.cshtml"), new { days = days, week = week, dt_room = dt_room, dt_hotel = dt_hotel, dt_order = dt_order, dt_service = dt_service, dcldd = dcldd, jrrz = jrrz, jrdtf = jrdtf, jrkf = jrkf });
 
                 return html;
             }
@@ -179,6 +188,22 @@ public class DeskTop
             {
                 throw ex;
             }
+        }
+    }
+
+    [CSMethod("GetHotelList")]
+    public DataTable GetHotelList()
+    {
+        using (var db = new DBConnection())
+        {
+            SystemUser user = SystemUser.CurrentUser;
+            string sql_hotel = @"select * from Lock_Hotel where UserId in (
+                                      select distinct FDUSERID UserId from aspnet_FdAndMdUser where FDUSERID = " + user.UserID + @"
+                                      union
+                                      select distinct MEUSERID UserId from aspnet_FdAndMdUser where MEUSERID = " + user.UserID + @"
+                                    ) or UserId = " + user.UserID + @"";
+            DataTable dt_hotel = db.ExecuteDataTable(sql_hotel);
+            return dt_hotel;
         }
     }
 

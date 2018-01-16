@@ -1,4 +1,8 @@
 ﻿var now_date = new Date();
+var hotelid = "";
+var mdStore = Ext.create('Ext.data.Store', {
+    fields: ['ID', 'HotelName']
+});
 
 Ext.onReady(function () {
     Ext.define('MainView', {
@@ -38,7 +42,94 @@ function dataBind() {
             Ext.getCmp("t_show").update(retVal);
             addListen();
         }
-    }, CS.onError, now_date)
+    }, CS.onError, now_date, hotelid);
+}
+
+Ext.define('HotelWin', {
+    extend: 'Ext.window.Window',
+
+    height: 401,
+    width: 282,
+    layout: {
+        type: 'fit'
+    },
+    title: '门店列表',
+    modal: true,
+    id: 'HotelWin',
+
+    initComponent: function () {
+        var me = this;
+
+        Ext.applyIf(me, {
+            items: [
+                {
+                    xtype: 'panel',
+                    layout: {
+                        type: 'fit'
+                    },
+                    items: [
+                        {
+                            xtype: 'gridpanel',
+                            border: 1,
+                            columnLines: 1,
+                            store:mdStore,
+                            columns: [
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'HotelName',
+                                    flex: 2,
+                                    sortable: false,
+                                    menuDisabled:true,
+                                    text: '门店'
+                                },
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'ID',
+                                    flex: 1,
+                                    sortable: false,
+                                    menuDisabled: true,
+                                    text: '操作',
+                                    renderer: function (value,cellmeta,record,rowIndex,columnIndex,store) {
+                                        return "<a href='javascript:void(0);' onClick='selHotel(\"" + value + "\");'>选择</a>";
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    buttonAlign: 'center',
+                    buttons: [
+                        {
+                            text: '关闭',
+                            handler: function () {
+                                me.close();
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+
+        me.callParent(arguments);
+    }
+
+});
+
+function ShowHotel() {
+    var win = new HotelWin();
+    win.show(null, function () {
+        CS('CZCLZ.DeskTop.GetHotelList', function (retVal) {
+            if (retVal)
+            {
+                mdStore.loadData(retVal);
+            }
+        }, CS.onError);
+    });
+}
+
+function selHotel(id) {
+    hotelid = id;
+    dataBind();
+    Ext.getCmp("HotelWin").close();
 }
 
 function selecttime() {
