@@ -162,6 +162,7 @@ Ext.onReady(function () {
                                                     Ext.getCmp("LiveHour").hide();
                                                     Ext.getCmp("LiveMonths").show();
                                                 }
+                                                CalculateTimeAndPrice();
                                             }
                                         }
                                     },
@@ -593,7 +594,6 @@ Date.prototype.Format = function (fmt) { //author: meizz
 
 function CalculateTimeAndPrice() {
     var UnitPrice = 0;
-    alert(Ext.getCmp("UnitPrice").getValue());
     if (Ext.getCmp("UnitPrice").getValue() != "" && Ext.getCmp("UnitPrice").getValue() != null)
         UnitPrice = Ext.getCmp("UnitPrice").getValue();
     var DepositPrice = 0;
