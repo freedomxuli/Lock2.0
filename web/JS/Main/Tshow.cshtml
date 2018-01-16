@@ -9,6 +9,7 @@
     System.Int32 jrrz = Model.Data.jrrz;
     System.Int32 jrdtf = Model.Data.jrdtf;
     System.Int32 jrkf = Model.Data.jrkf;
+    System.Data.DataTable dt_price = Model.Data.dt_price;
 }
 
 <div style="overflow:hidden;height:95%;">
@@ -46,42 +47,42 @@
                 for(int i = 0;i<dt_room.Rows.Count;i++)
                 {
                     <tr>
-                        <td width="15%" height="150" align="center" style="background-color:#7f96b9;color:#ffffff;font-weight:bold;font-size:14px;">房间号 <br /> @dt_room.Rows[i]["RoomNo"]</td>
+                        <td width="15%" height="150" align="center" style="background-color:#7f96b9;color:#ffffff;font-weight:bold;font-size:14px;">间号 <br /> @dt_room.Rows[i]["RoomNo"]</td>
                         @{
                             if (dt_room.Rows[i]["IsClose"].ToString()=="1")
                             { 
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
                                 <td align="center" width="12.14%" style="background-color:#a0a0a0;color:#333333;font-size:14px;">
-                                    （关房）
+                                    （关）
                                     <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                     <input type="hidden" value="2" />
                                 </td>
@@ -94,7 +95,49 @@
                                 System.Data.DataRow[] drs5 = dt_order.Select("LiveStartDate <= '" + dt_room.Rows[i]["DAY5"] + "' and LiveEndDate >= '" + dt_room.Rows[i]["DAY5"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
                                 System.Data.DataRow[] drs6 = dt_order.Select("LiveStartDate <= '" + dt_room.Rows[i]["DAY6"] + "' and LiveEndDate >= '" + dt_room.Rows[i]["DAY6"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
                                 System.Data.DataRow[] drs7 = dt_order.Select("LiveStartDate <= '" + dt_room.Rows[i]["DAY7"] + "' and LiveEndDate >= '" + dt_room.Rows[i]["DAY7"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
-                                
+
+                                System.Data.DataRow[] drs_p1 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY1"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                System.Data.DataRow[] drs_p2 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY2"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                System.Data.DataRow[] drs_p3 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY3"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                System.Data.DataRow[] drs_p4 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY4"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                System.Data.DataRow[] drs_p5 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY5"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                System.Data.DataRow[] drs_p6 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY6"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                System.Data.DataRow[] drs_p7 = dt_price.Select("TIME = '" + dt_room.Rows[i]["DAY7"] + "' and RoomId = '" + dt_room.Rows[i]["ID"] + "'");
+                                string price1 = "";
+                                string price2 = "";
+                                string price3 = "";
+                                string price4 = "";
+                                string price5 = "";
+                                string price6 = "";
+                                string price7 = "";
+                                if (drs_p1.Length > 0)
+                                {
+                                    price1 = Math.Round(Convert.ToDecimal(drs_p1[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p1[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p1[0]["MonthRentPrice"].ToString()));
+                                }
+                                if (drs_p2.Length > 0)
+                                {
+                                    price2 = Math.Round(Convert.ToDecimal(drs_p2[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p2[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p2[0]["MonthRentPrice"].ToString()));
+                                }
+                                if (drs_p3.Length > 0)
+                                {
+                                    price3 = Math.Round(Convert.ToDecimal(drs_p3[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p3[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p3[0]["MonthRentPrice"].ToString()));
+                                }
+                                if (drs_p4.Length > 0)
+                                {
+                                    price4 = Math.Round(Convert.ToDecimal(drs_p4[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p4[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p4[0]["MonthRentPrice"].ToString()));
+                                }
+                                if (drs_p5.Length > 0)
+                                {
+                                    price5 = Math.Round(Convert.ToDecimal(drs_p5[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p5[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p5[0]["MonthRentPrice"].ToString()));
+                                }
+                                if (drs_p6.Length > 0)
+                                {
+                                    price6 = Math.Round(Convert.ToDecimal(drs_p6[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p6[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p6[0]["MonthRentPrice"].ToString()));
+                                }
+                                if (drs_p7.Length > 0)
+                                {
+                                    price7 = Math.Round(Convert.ToDecimal(drs_p7[0]["HourPrice"].ToString())) + "　  " + Math.Round(Convert.ToDecimal(drs_p7[0]["PRICE"].ToString())) + "　 " + Math.Round(Convert.ToDecimal(drs_p7[0]["MonthRentPrice"].ToString()));
+                                }
                                 if (drs1.Length > 0)
                                 {
                                     if (drs1[0]["AuthorLiveStatus"].ToString() == "0")
@@ -103,6 +146,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs1[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs1[0]["RealName"].ToString() (@drs1[0]["AuthorRoomStyle"].ToString())</div>
@@ -118,11 +162,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs1[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs1[0]["RealName"].ToString()（@drs1[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs1[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                         }
                                         else
@@ -131,6 +176,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs1[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
                                                 <div style="padding-top:5px;">@drs1[0]["RealName"].ToString()（@drs1[0]["AuthorRoomStyle"].ToString()）</div>
@@ -147,7 +193,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs1[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -158,7 +205,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price1</div>
                                             </td>
                                         }
                                     }else
@@ -167,6 +214,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs1[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs1[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs1[0]["RealName"].ToString() (@drs1[0]["AuthorRoomStyle"].ToString())</div>
@@ -183,7 +231,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price1</div>
                                     </td>
                                 }
                                 
@@ -195,6 +243,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs2[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs2[0]["RealName"].ToString() (@drs2[0]["AuthorRoomStyle"].ToString())</div>
@@ -210,11 +259,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs2[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs2[0]["RealName"].ToString()（@drs2[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs2[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#0FF" align="center"  width="12.14%">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
@@ -232,6 +282,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs2[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
                                                 <div style="padding-top:5px;">@drs2[0]["RealName"].ToString()（@drs2[0]["AuthorRoomStyle"].ToString()）</div>
@@ -257,7 +308,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs2[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -268,7 +320,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price2</div>
                                             </td>
                                         }
                                     }else
@@ -277,6 +329,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs2[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs2[0]["RealName"].ToString() (@drs2[0]["AuthorRoomStyle"].ToString())</div>
@@ -302,7 +355,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price2</div>
                                     </td>
                                 }
                                 
@@ -314,6 +367,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs3[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs3[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs3[0]["RealName"].ToString() (@drs3[0]["AuthorRoomStyle"].ToString())</div>
@@ -329,11 +383,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs3[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs3[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs3[0]["RealName"].ToString()（@drs3[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs3[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#0FF" align="center"  width="12.14%">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
@@ -350,11 +405,12 @@
                                             <td align="center" width="12.14%" style="background-color:#ffe600;color:#333333;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
-                                                <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs3[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs3[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
-                                                <div style="padding-top:5px;">@drs2[0]["RealName"].ToString()（@drs2[0]["AuthorRoomStyle"].ToString()）</div>
-                                                <div style="padding-top:5px;">@drs2[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">@drs3[0]["RealName"].ToString()（@drs3[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs3[0]["PlatType"].ToString()</div>
                                                 <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#FF0"  align="center" width="12.14%">
@@ -376,7 +432,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs3[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs3[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -387,7 +444,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price3</div>
                                             </td>
                                         }
                                     }else
@@ -395,11 +452,12 @@
                                         <td bgcolor="#0F0"  align="center" width="12.14%">
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
-                                            <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs3[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs3[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
-                                            <div style="padding-top:5px;">@drs2[0]["RealName"].ToString() (@drs2[0]["AuthorRoomStyle"].ToString())</div>
-                                            <div style="padding-top:5px;">@drs2[0]["PlatType"].ToString()</div>
+                                            <div style="padding-top:5px;">@drs3[0]["RealName"].ToString() (@drs3[0]["AuthorRoomStyle"].ToString())</div>
+                                            <div style="padding-top:5px;">@drs3[0]["PlatType"].ToString()</div>
                                             <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                         </td>
                                         @*<td bgcolor="#0F0"  align="center" width="12.14%">
@@ -421,7 +479,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price3</div>
                                     </td>
                                 }
 
@@ -433,6 +491,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs4[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs4[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs4[0]["RealName"].ToString() (@drs4[0]["AuthorRoomStyle"].ToString())</div>
@@ -448,11 +507,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs4[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs4[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs4[0]["RealName"].ToString()（@drs4[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs4[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#0FF" align="center"  width="12.14%">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
@@ -469,11 +529,12 @@
                                             <td align="center" width="12.14%" style="background-color:#ffe600;color:#333333;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
-                                                <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs4[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs4[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
-                                                <div style="padding-top:5px;">@drs2[0]["RealName"].ToString()（@drs2[0]["AuthorRoomStyle"].ToString()）</div>
-                                                <div style="padding-top:5px;">@drs2[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">@drs4[0]["RealName"].ToString()（@drs4[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs4[0]["PlatType"].ToString()</div>
                                                 <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#FF0"  align="center" width="12.14%">
@@ -495,7 +556,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs4[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs4[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -506,7 +568,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price4</div>
                                             </td>
                                         }
                                     }else
@@ -515,6 +577,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs4[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs4[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs4[0]["RealName"].ToString() (@drs4[0]["AuthorRoomStyle"].ToString())</div>
@@ -540,7 +603,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price4</div>
                                     </td>
                                 }
                                 
@@ -552,6 +615,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs5[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs5[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs5[0]["RealName"].ToString() (@drs5[0]["AuthorRoomStyle"].ToString())</div>
@@ -567,11 +631,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs5[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs5[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs5[0]["RealName"].ToString()（@drs5[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs5[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#0FF" align="center"  width="12.14%">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
@@ -588,11 +653,12 @@
                                             <td align="center" width="12.14%" style="background-color:#ffe600;color:#333333;font-size:14px;">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
-                                                <input type="hidden" value="@drs2[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs5[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs5[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
-                                                <div style="padding-top:5px;">@drs2[0]["RealName"].ToString()（@drs2[0]["AuthorRoomStyle"].ToString()）</div>
-                                                <div style="padding-top:5px;">@drs2[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">@drs5[0]["RealName"].ToString()（@drs5[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs5[0]["PlatType"].ToString()</div>
                                                 <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#FF0"  align="center" width="12.14%">
@@ -614,7 +680,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs5[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs5[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -625,7 +692,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price5</div>
                                             </td>
                                         }
                                     }else
@@ -634,6 +701,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs5[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs5[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs5[0]["RealName"].ToString() (@drs5[0]["AuthorRoomStyle"].ToString())</div>
@@ -659,7 +727,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price5</div>
                                     </td>
                                 }
                                 
@@ -671,6 +739,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs6[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs6[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs6[0]["RealName"].ToString() (@drs6[0]["AuthorRoomStyle"].ToString())</div>
@@ -686,11 +755,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs6[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs6[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs6[0]["RealName"].ToString()（@drs6[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs6[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#0FF" align="center"  width="12.14%">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
@@ -708,6 +778,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs6[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs6[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
                                                 <div style="padding-top:5px;">@drs6[0]["RealName"].ToString()（@drs6[0]["AuthorRoomStyle"].ToString()）</div>
@@ -733,7 +804,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs6[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs6[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -744,7 +816,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price6</div>
                                             </td>
                                         }
                                     }else
@@ -753,6 +825,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs6[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs6[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs6[0]["RealName"].ToString() (@drs6[0]["AuthorRoomStyle"].ToString())</div>
@@ -778,7 +851,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price6</div>
                                     </td>
                                 }
                                 
@@ -790,6 +863,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs7[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs7[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs7[0]["RealName"].ToString() (@drs7[0]["AuthorRoomStyle"].ToString())</div>
@@ -805,11 +879,12 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs7[0]["AuthorizeNo"].ToString()" />
-                                                <div>（授权已通过）</div>
-                                                @*<div>@drs1[0]["RealName"].ToString()</div>
-                                                <div>@drs1[0]["AuthorRoomStyle"].ToString()</div>
-                                                <div>@drs1[0]["PlatType"].ToString()</div>
-                                                <div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
+                                                <input type="hidden" value="@drs7[0]["ID"].ToString()" />
+                                                <div><img src="approot/r/Images/index/ysq.png" /></div>
+                                                <div style="padding-top:5px;">（授权已通过）</div>
+                                                <div style="padding-top:5px;">@drs7[0]["RealName"].ToString()（@drs7[0]["AuthorRoomStyle"].ToString()）</div>
+                                                <div style="padding-top:5px;">@drs7[0]["PlatType"].ToString()</div>
+                                                <div style="padding-top:5px;">电量：@dt_room.Rows[i]["DL"].ToString()</div>
                                             </td>
                                             @*<td bgcolor="#0FF" align="center"  width="12.14%">
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
@@ -827,6 +902,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs7[0]["AuthorizeNo"].ToString()" />
+                                                <input type="hidden" value="@drs7[0]["ID"].ToString()" />
                                                 <div><img src="approot/r/Images/index/yrz.png" /></div>
                                                 <div style="padding-top:5px;">（已入住）</div>
                                                 <div style="padding-top:5px;">@drs7[0]["RealName"].ToString()（@drs7[0]["AuthorRoomStyle"].ToString()）</div>
@@ -852,7 +928,8 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                                 <input type="hidden" value="1" />
                                                 <input type="hidden" value="@drs7[0]["AuthorizeNo"].ToString()" />
-                                                <div style="padding-top:5px;">（退房未整理）</div>
+                                                <input type="hidden" value="@drs7[0]["ID"].ToString()" />
+                                                <div style="padding-top:5px;">（退未整理）</div>
                                             </td>
                                         }
                                         else
@@ -863,7 +940,7 @@
                                                 <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                                 <div>（空闲）</div>
                                                 @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                                <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                                <div>钟点　全天　月租</div><div>@price7</div>
                                             </td>
                                         }
                                     }else
@@ -872,6 +949,7 @@
                                             <input type="hidden" value="@dt_room.Rows[i]["ID"].ToString()" />
                                             <input type="hidden" value="1" />
                                             <input type="hidden" value="@drs7[0]["AuthorizeNo"].ToString()" />
+                                            <input type="hidden" value="@drs7[0]["ID"].ToString()" />
                                             <div><img src="approot/r/Images/index/yyd.png" /></div>
                                             <div style="padding-top:5px;">（已预订）</div>
                                             <div style="padding-top:5px;">@drs7[0]["RealName"].ToString() (@drs7[0]["AuthorRoomStyle"].ToString())</div>
@@ -897,7 +975,7 @@
                                         <input type="hidden" value="@dt_room.Rows[i]["IsCanClose"].ToString()" />
                                         <div>（空闲）</div>
                                         @*<div>电量：@dt_room.Rows[i]["DL"].ToString()</div>*@
-                                        <div>钟点房　全天房　月租房</div><div>78　　178　　3000</div>
+                                        <div>钟点　全天　月租</div><div>@price7</div>
                                     </td>
                                 }
                             }
@@ -929,10 +1007,10 @@
         <div style="float:left;">今日入住：</div>
         <div style="float:left;">@jrrz 条</div>
         <div style="float:left;">　　</div>
-        <div style="float:left;">今天待退房：</div>
+        <div style="float:left;">今天待退：</div>
         <div style="float:left;">@jrdtf 条</div>
         <div style="float:left;">　　</div>
-        <div style="float:left;">今天空房：</div>
+        <div style="float:left;">今天空：</div>
         <div style="float:left;">@jrkf 条</div>
         <div style="float:left;">　　</div>
     </div>

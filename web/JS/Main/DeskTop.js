@@ -153,7 +153,7 @@ function addListen() {
                         Ext.getCmp("CloseRoom").show();
                 });
             } else if ($(this).children("input")[1].value == 1) {
-                var win = new Buttons({ roomid: $(this).children("input")[0].value });
+                var win = new Buttons({ roomid: $(this).children("input")[0].value, AuthorizeId: $(this).children("input")[3].value });
                 win.show(null, function () {
                     Ext.getCmp("ShowRoom").show();
                     Ext.getCmp("ShowOrder").show();
@@ -307,7 +307,7 @@ Ext.define('Buttons', {
                             text: '订单信息',
                             handler: function () {
                                 FrameStack.pushFrame({
-                                    url: "approot/r/page/AuthorizeOrder/AuthorizeOrderList.html",
+                                    url: "approot/r/page/AuthorizeOrder/AuthorizeOrderAdd.html?id=" + me.AuthorizeId,
                                     onClose: function (ret) {
                                         dataBind();
                                     }

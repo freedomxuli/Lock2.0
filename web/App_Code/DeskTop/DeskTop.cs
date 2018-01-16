@@ -56,7 +56,10 @@ public class DeskTop
                                     ) or UserId = " + user.UserID + @"" + hotel_conn;
                 DataTable dt_hotel = db.ExecuteDataTable(sql_hotel);
 
-                string sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose,IsService FROM Lock_Room WHERE HotelId = " + dt_hotel.Rows[0]["ID"].ToString() + " ORDER BY ID";
+                string sql = "select * from Lock_Room where HotelId = " + dt_hotel.Rows[0]["ID"].ToString() + " and ParentRoomId = -1 ORDER BY ID";
+                DataTable dt_room_main = db.ExecuteDataTable(sql);
+
+                sql = "SELECT ID,ParentRoomId,RoomNo,RoomGuidNumber,IsClose,IsService,RoomKind FROM Lock_Room WHERE HotelId = " + dt_hotel.Rows[0]["ID"].ToString() + " and ParentRoomId > -1 ORDER BY ID";
                 DataTable dt_room = db.ExecuteDataTable(sql);
                 dt_room.Columns.Add("DAY1");
                 dt_room.Columns.Add("DAY2");
@@ -70,9 +73,26 @@ public class DeskTop
                 dt_room.Columns.Add("HOURPRICE");
                 dt_room.Columns.Add("DAYPRICE");
                 dt_room.Columns.Add("MONTHPRICE");
+                dt_room.Columns.Add("RoomKindMC");
 
                 for (int i = 0; i < dt_room.Rows.Count; i++)
                 {
+                    if (dt_room.Rows[i]["ParentRoomId"].ToString() != "0")
+                        dt_room.Rows[i]["RoomKindMC"] = "合租";
+                    else
+                        dt_room.Rows[i]["RoomKindMC"] = "整租";
+
+                    if (dt_room.Rows[i]["ParentRoomId"].ToString() != "0")
+                    {
+                        DataRow[] drs = dt_room_main.Select("ID = '" + dt_room.Rows[i]["ParentRoomId"].ToString() + "'");
+                        if (drs.Length > 0)
+                            dt_room.Rows[i]["RoomNo"] = dt_room.Rows[i]["RoomKindMC"] + "：" + drs[0]["RoomNo"] + "/" + dt_room.Rows[i]["RoomNo"];
+                    }
+                    else
+                    {
+                        dt_room.Rows[i]["RoomNo"] = dt_room.Rows[i]["RoomKindMC"] + "：" + dt_room.Rows[i]["RoomNo"];
+                    }
+
                     dt_room.Rows[i]["IsCanClose"] = 0;
                     //根据房间获取设备
                     StringBuilder builder = new StringBuilder("select top 1 * from Lock_Device where 1=1 ");
@@ -103,7 +123,83 @@ public class DeskTop
                     dt_room.Rows[i]["DAY7"] = days[6];
                 }
 
-                string sql_order = @"SELECT a.AuthorizeNo,a.AuthorLiveStatus,a.RoomId,a.HotelId,a.OrderUserState,CONVERT(varchar(10), a.LiveStartDate, 120) LiveStartDate,CONVERT(varchar(10), a.LiveEndDate, 120) LiveEndDate,
+                string sql_price = "select * from Lock_RoomOtherDayPrice where RoomId in (select ID from Lock_Room where HotelId = " + dt_hotel.Rows[0]["ID"].ToString() + " and ParentRoomId > -1) and StartDate >= '" + Convert.ToDateTime(now_date).ToString("yyyy-MM-dd") + "' and StartDate < '" + Convert.ToDateTime(now_date).AddDays(6) + "' order by RoomId,StartDate";
+                DataTable dt_price_old = db.ExecuteDataTable(sql_price);
+
+                int IsHasWeekendPrice = Convert.ToInt32(dt_hotel.Rows[0]["IsHasWeekendPrice"].ToString());
+                int WeekendConatin5 = Convert.ToInt32(dt_hotel.Rows[0]["WeekendConatin5"].ToString());
+                int WeekendConatin6 = Convert.ToInt32(dt_hotel.Rows[0]["WeekendConatin6"].ToString());
+                int WeekendConatin7 = Convert.ToInt32(dt_hotel.Rows[0]["WeekendConatin7"].ToString());
+
+                DataTable dt_price = new DataTable();
+                dt_price.Columns.Add("RoomId");
+                dt_price.Columns.Add("TIME");
+                dt_price.Columns.Add("PRICE");
+                dt_price.Columns.Add("HourPrice");
+                dt_price.Columns.Add("MonthRentPrice");
+                for (int i = 0; i < dt_price_old.Rows.Count; i++)
+                {
+                    DataRow dr = dt_price.NewRow();
+                    dr["RoomId"] = dt_price_old.Rows[i]["RoomId"];
+                    string weekstr = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).DayOfWeek.ToString();
+                    if (weekstr == "Monday" || weekstr == "Tuesday" || weekstr == "Wednesday" || weekstr == "Thursday")
+                    {
+                        dr["TIME"] = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).ToString("yyyy-MM-dd");
+                        dr["PRICE"] = dt_price_old.Rows[i]["Price"];
+                        dr["HourPrice"] = dt_price_old.Rows[i]["HourPrice"];
+                        dr["MonthRentPrice"] = dt_price_old.Rows[i]["MonthRentPrice"];
+                    }
+                    else
+                    {
+                        if (IsHasWeekendPrice == 1)
+                        {
+                            if (WeekendConatin5 == 1 && weekstr == "Friday")
+                            {
+                                dr["TIME"] = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).ToString("yyyy-MM-dd");
+                                dr["PRICE"] = dt_price_old.Rows[i]["WeekEndPrice"];
+                                dr["HourPrice"] = dt_price_old.Rows[i]["HourWeekEndPrice"];
+                                dr["MonthRentPrice"] = dt_price_old.Rows[i]["MonthRentPrice"];
+                            }
+                            else
+                            {
+                                if (WeekendConatin6 == 1 && weekstr == "Saturday")
+                                {
+                                    dr["TIME"] = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).ToString("yyyy-MM-dd");
+                                    dr["PRICE"] = dt_price_old.Rows[i]["WeekEndPrice"];
+                                    dr["HourPrice"] = dt_price_old.Rows[i]["HourWeekEndPrice"];
+                                    dr["MonthRentPrice"] = dt_price_old.Rows[i]["MonthRentPrice"];
+                                }
+                                else
+                                {
+                                    if (WeekendConatin7 == 1 && weekstr == "Sunday")
+                                    {
+                                        dr["TIME"] = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).ToString("yyyy-MM-dd");
+                                        dr["PRICE"] = dt_price_old.Rows[i]["WeekEndPrice"];
+                                        dr["HourPrice"] = dt_price_old.Rows[i]["HourWeekEndPrice"];
+                                        dr["MonthRentPrice"] = dt_price_old.Rows[i]["MonthRentPrice"];
+                                    }
+                                    else
+                                    {
+                                        dr["TIME"] = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).ToString("yyyy-MM-dd");
+                                        dr["PRICE"] = dt_price_old.Rows[i]["Price"];
+                                        dr["HourPrice"] = dt_price_old.Rows[i]["HourPrice"];
+                                        dr["MonthRentPrice"] = dt_price_old.Rows[i]["MonthRentPrice"];
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            dr["TIME"] = Convert.ToDateTime(dt_price_old.Rows[i]["StartDate"]).ToString("yyyy-MM-dd");
+                            dr["PRICE"] = dt_price_old.Rows[i]["Price"];
+                            dr["HourPrice"] = dt_price_old.Rows[i]["HourPrice"];
+                            dr["MonthRentPrice"] = dt_price_old.Rows[i]["MonthRentPrice"];
+                        }
+                    }
+                    dt_price.Rows.Add(dr);
+                }
+
+                string sql_order = @"SELECT a.ID,a.AuthorizeNo,a.AuthorLiveStatus,a.RoomId,a.HotelId,a.OrderUserState,CONVERT(varchar(10), a.LiveStartDate, 120) LiveStartDate,CONVERT(varchar(10), a.LiveEndDate, 120) LiveEndDate,
                                  a.UserId,a.RealName,a.CellPhone,case when a.PlatType = 0 then '其他平台' when a.PlatType = 1 then 'E家智宿' when a.PlatType = 2 then '美团' when a.PlatType = 3 then '线下' end PlatType,
                                  b.RoomGuidNumber,case when a.AuthorRoomStyle = 1 then '全天' when a.AuthorRoomStyle = 2 then '钟点' when a.AuthorRoomStyle = 3 then '月租' when a.AuthorRoomStyle = 4 then '看房' end AuthorRoomStyle
                                  FROM Lock_AuthorizeOrder a 
@@ -180,7 +276,7 @@ public class DeskTop
                         jrkf++;
                 }
 
-                string html = SmartFramework4v2.Web.Common.SmartTemplate.RenderTemplate(HttpContext.Current.Server.MapPath("~/JS/Main/Tshow.cshtml"), new { days = days, week = week, dt_room = dt_room, dt_hotel = dt_hotel, dt_order = dt_order, dt_service = dt_service, dcldd = dcldd, jrrz = jrrz, jrdtf = jrdtf, jrkf = jrkf });
+                string html = SmartFramework4v2.Web.Common.SmartTemplate.RenderTemplate(HttpContext.Current.Server.MapPath("~/JS/Main/Tshow.cshtml"), new { days = days, week = week, dt_room = dt_room, dt_price = dt_price, dt_hotel = dt_hotel, dt_order = dt_order, dt_service = dt_service, dcldd = dcldd, jrrz = jrrz, jrdtf = jrdtf, jrkf = jrkf });
 
                 return html;
             }
