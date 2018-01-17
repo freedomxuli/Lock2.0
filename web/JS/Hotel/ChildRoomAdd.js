@@ -273,6 +273,15 @@ Ext.onReady(function () {
                                                      }),
                                                      value: 1
                                                  },
+                                                   {
+                                                       xtype: 'textfield',
+                                                       name: 'RoomAddress',
+                                                       margin: '10 10 10 10',
+                                                       fieldLabel: '房间地址',
+                                                       columnWidth: 0.5,
+                                                       labelWidth: 80
+
+                                                   },
                                               {
                                                   xtype: 'ueditor',
                                                   zIndex: 1,

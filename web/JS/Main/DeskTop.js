@@ -273,7 +273,8 @@ Ext.define('Buttons', {
                                     CS('CZCLZ.AuthorizeOrderDB.GetRoomInfo', function (retVal) {
                                         if (retVal) {
                                             rzjlStore.loadData(retVal.dt3);
-
+                                            wsStore.loadData(retVal.dt4);
+                                            sbStore.loadData(retVal.dt5);
                                             var fjxxForm = Ext.getCmp("fjxxForm");
                                             fjxxForm.form.setValues(retVal.dt1[0]);
                                             for (var i in retVal.dt2) {
@@ -372,12 +373,42 @@ var goodsStore = Ext.create('Ext.data.Store', {
 
 var rzjlStore = Ext.create('Ext.data.Store', {
     fields: [
+       { name: 'AuthorizeNo', type: 'string' },
        { name: 'RealName', type: 'string' },
        { name: 'CellPhone', type: 'string' },
        { name: 'LiveStartDate', type: 'string' },
        { name: 'LiveEndDate', type: 'string' }
     ]
 });
+
+var wsStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'ServiceRemark', type: 'string' },
+       { name: 'DamagePrice', type: 'string' },
+       { name: 'FinishTime', type: 'string' }
+    ]
+});
+
+var sbStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'ID', type: 'string' },
+       { name: 'DeviceName', type: 'string' },
+       { name: 'DeviceNo', type: 'string' },
+       { name: 'DeviceSN', type: 'string' },
+       { name: 'TypeName', type: 'string' },
+       { name: 'BindSuccess', type: 'string' }
+    ]
+
+});
+
+function ckdd(authno) {
+    FrameStack.pushFrame({
+        url: "approot/r/page/AuthorizeOrder/AuthorizeOrderDetail.html?AuthorizeNo=" + authno,
+        onClose: function (ret) {
+            //  loadData(1);
+        }
+    });
+}
 
 Ext.define('fjxxWin', {
     extend: 'Ext.window.Window',
@@ -502,7 +533,7 @@ Ext.define('fjxxWin', {
                                  dataIndex: 'CellPhone',
                                  align: 'center',
                                  text: '手机',
-                                 flex: 1,
+                                 width: 100,
                                  sortable: false,
                                  menuDisabled: true
                              },
@@ -525,12 +556,126 @@ Ext.define('fjxxWin', {
                                   flex: 1,
                                   sortable: false,
                                   menuDisabled: true
-                              }
+                              },
+                               {
+                                   text: '操作',
+                                   width: 100,
+                                   align: 'center',
+                                   sortable: false,
+                                   menuDisabled: true,
+                                   renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                       var str;
+                                       str = "<a href='#' onclick='ckdd(\"" + record.data.AuthorizeNo + "\")'>查看订单</a>";
+                                       return str;
+                                   }
+                               }
                          ]
-                     }
+                     },
+                      {
+                          xtype: 'gridpanel',
+                          margin: '0 0 0 0',
+                          title: '物损记录',
+                          store: wsStore,
+                          columnLines: true,
+                          border: true,
+                          autoscroll: true,
+                          columns: [Ext.create('Ext.grid.RowNumberer'),
+                               {
+                                   xtype: 'gridcolumn',
+                                   dataIndex: 'ServiceRemark',
+                                   align: 'center',
+                                   text: '物损描述',
+                                   flex: 1,
+                                   sortable: false,
+                                   menuDisabled: true
+                               },
+
+                              {
+                                  xtype: 'gridcolumn',
+                                  dataIndex: 'DamagePrice',
+                                  align: 'center',
+                                  text: '物损金额',
+                                  flex: 1,
+                                  sortable: false,
+                                  menuDisabled: true
+                              },
+                              {
+                                  xtype: 'datecolumn',
+                                  dataIndex: 'FinishTime',
+                                  format: 'Y-m-d H:i',
+                                  align: 'center',
+                                  text: '上报时间',
+                                  flex: 1,
+                                  sortable: false,
+                                  menuDisabled: true
+                              }
+                          ]
+                      },
+                      {
+                          xtype: 'gridpanel',
+                          margin: '0 0 0 0',
+                          title: '设备信息',
+                          store: sbStore,
+                          columnLines: true,
+                          border: true,
+                          autoscroll: true,
+                          columns: [Ext.create('Ext.grid.RowNumberer'),
+                               {
+                                   xtype: 'gridcolumn',
+                                   dataIndex: 'DeviceName',
+                                   align: 'center',
+                                   text: '设备名称',
+                                   flex: 1,
+                                   sortable: false,
+                                   menuDisabled: true
+                               },
+
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'TypeName',
+                                    align: 'center',
+                                    text: '设备类型',
+                                    flex: 1,
+                                    sortable: false,
+                                    menuDisabled: true
+                                },
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'DeviceNo',
+                                    align: 'center',
+                                    text: '设备编号',
+                                    flex: 1,
+                                    sortable: false,
+                                    menuDisabled: true
+                                }
+                          ]
+                      },
+                       {
+                           xtype: 'gridpanel',
+                           margin: '0 0 0 0',
+                           title: '开锁信息',
+                           //store: sbStore,
+                           columnLines: true,
+                           border: true,
+                           autoscroll: true,
+                           columns: [Ext.create('Ext.grid.RowNumberer'),
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'DeviceName',
+                                    align: 'center',
+                                    text: '开锁日期',
+                                    width: 150,
+                                    sortable: false,
+                                    menuDisabled: true
+                                }
+
+
+                           ]
+                       }
                 ],
                 buttonAlign: 'center',
                 buttons: [
+
                     {
                         text: '关闭',
                         handler: function () {

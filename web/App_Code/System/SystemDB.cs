@@ -40,18 +40,30 @@ public class SystemDB
                 }
                 if (lx == 1)
                 {
-                    where += " and b.IsReply<>1 ";
+                    where += " and b.IsReply is null ";
                 }
-                else
+                else if (lx == 2)
                 {
                     where += " and b.IsReply=1 ";
+                }
+                else if (lx == 3)
+                {
+                    where += " and (a.JudgeSatr1+a.JudgeSatr2+a.JudgeSatr3+a.JudgeSatr4+a.CreditSatr)/5 > 4";
+                }
+                else if (lx == 4)
+                {
+                    where += " and (a.JudgeSatr1+a.JudgeSatr2+a.JudgeSatr3+a.JudgeSatr4+a.CreditSatr)/5 >=3 and (a.JudgeSatr1+a.JudgeSatr2+a.JudgeSatr3+a.JudgeSatr4+a.CreditSatr)/5 <=4";
+                }
+                else if (lx == 5)
+                {
+                    where += " and (a.JudgeSatr1+a.JudgeSatr2+a.JudgeSatr3+a.JudgeSatr4+a.CreditSatr)/5 < 3";
                 }
                 string str = @" select a.AuthorizeNo,a.ID,a.RoomNo,a.UserName,a.AddDate,a.Content,c.HotelName,b.Content RpContent,b.IsReply ,b.ReplyDate
                                 from Lock_JudgeList a left join Lock_JudgeList b on a.ID=b.ParentId
                                 left join Lock_Hotel c on a.HotelId=c.ID
                                 left join Lock_Room d on a.RoomId=d.ID
                                 where a.ParentId=0 and d.UserId=" + SystemUser.CurrentUser.UserID + where;
-                str += where;
+                // str += where;
                 //开始取分页数据
                 System.Data.DataTable dtPage = new System.Data.DataTable();
                 dtPage = dbc.GetPagedDataTable(str + " order by a.ID", pagesize, ref cp, out ac);
@@ -1056,12 +1068,49 @@ FROM Lock_AuthorizeOrder where HotelId in(select ID from Lock_Hotel where UserId
                         return false;
                 }
 
-              
+
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+    }
+
+    [CSMethod("GetBjXX")]
+    public object GetBjXX(int ID)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select RealName,(select count(*) from Lock_ServiceApply where AssignUserId=" + ID + " and ServiceStatus<3) Num from aspnet_Members where UserId=" + ID;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetWSXX")]
+    public object GetWSXX(int ID)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select * from Lock_ServiceApply where ID=" + ID;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

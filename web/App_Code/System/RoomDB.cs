@@ -28,11 +28,15 @@ public class RoomDB
                 int ac = 0;
 
                 string where = "";
+                //if (!string.IsNullOrEmpty(hotelName))
+                //{
+                //    where += " and " + dbc.C_Like("HotelName", hotelName, LikeStyle.LeftAndRightLike);
+                //}
                 if (!string.IsNullOrEmpty(hotelName))
                 {
-                    where += " and " + dbc.C_Like("HotelName", hotelName, LikeStyle.LeftAndRightLike);
+                    where += " and a.HotelId=" + hotelName;
                 }
-                if (!string.IsNullOrEmpty(hotelName))
+                if (!string.IsNullOrEmpty(roomNo))
                 {
                     where += " and " + dbc.C_Like("RoomNo", roomNo, LikeStyle.LeftAndRightLike);
                 }
@@ -327,6 +331,7 @@ public class RoomDB
                 int RoomLiveStatus = jsr["RoomLiveStatus"].ToInteger();
                 int RoomStyleId;
                 string RoomRemark = jsr["RoomRemark"].ToString().Trim();
+                string RoomAddress = jsr["RoomAddress"].ToString().Trim();
                 string RoomStyle = jsr["Name"].ToString().Trim();
                 DataTable dtRoomStyle = dbc.ExecuteDataTable("select * from Lock_RoomStyle where Name=" + dbc.ToSqlValue(RoomStyle));
                 if (dtRoomStyle.Rows.Count == 0)
@@ -353,6 +358,7 @@ public class RoomDB
                 drRoom["RoomLiveStatus"] = RoomLiveStatus;
                 drRoom["RoomKind"] = 2;
                 drRoom["RoomStyleId"] = RoomStyleId;
+                drRoom["RoomAddress"] = RoomAddress;
                 drRoom["RoomRemark"] = RoomRemark;
                 drRoom["IsContainSubRoom"] = 0;
                 drRoom["GatewayStatus"] = 0;

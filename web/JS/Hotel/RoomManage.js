@@ -67,6 +67,12 @@ var BrandStore = Ext.create('Ext.data.Store', {
     data: [
     ]
 });
+var HotelStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
+
 
 function loadData(nPage) {
 
@@ -1065,14 +1071,25 @@ Ext.onReady(function () {
                                     xtype: 'toolbar',
                                     dock: 'top',
                                     items: [
-
                                         {
-                                            xtype: 'textfield',
+                                            xtype: 'combobox',
                                             id: 'cx_mc',
+                                            fieldLabel: '选择门店',
                                             width: 180,
                                             labelWidth: 60,
-                                            fieldLabel: '宾馆名称'
+                                            store: HotelStore,
+                                            queryMode: 'local',
+                                            displayField: 'TEXT',
+                                            valueField: 'VALUE',
+                                            value: ''
                                         },
+                                        //{
+                                        //    xtype: 'textfield',
+                                        //    id: 'cx_mc',
+                                        //    width: 180,
+                                        //    labelWidth: 60,
+                                        //    fieldLabel: '宾馆名称'
+                                        //},
                                         {
                                             xtype: 'textfield',
                                             id: 'cx_no',
@@ -1193,6 +1210,13 @@ Ext.onReady(function () {
     });
 
     new mainView();
+
+    CS('CZCLZ.AuthorizeOrderDB.GetHotelCombobox', function (retVal) {
+        if (retVal) {
+            HotelStore.loadData(retVal, true);
+
+        }
+    }, CS.onError);
 
 
     loadData(1);

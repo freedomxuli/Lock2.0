@@ -1,6 +1,7 @@
 ﻿var pageSize = 15;
 var RoomId;
 var pjid;
+var zt = queryString.zt;
 
 //************************************数据源*****************************************
 var store = createSFW4Store({
@@ -38,7 +39,7 @@ function loadData(nPage) {
             total: retVal.ac,
             currentPage: retVal.cp
         });
-    }, CS.onError, nPage, pageSize, AuthorizeNo, RoomNo, 2);
+    }, CS.onError, nPage, pageSize, AuthorizeNo, RoomNo, zt);
 }
 
 function hf(id) {
@@ -142,24 +143,24 @@ Ext.onReady(function () {
                               align: 'center',
                               text: "ID"
                           },
-                           {
-                               xtype: 'gridcolumn',
-                               flex: 1,
-                               dataIndex: 'AuthorizeNo',
-                               sortable: false,
-                               menuDisabled: true,
-                               align: 'center',
-                               text: "授权单号"
-                           },
-                            {
-                                xtype: 'gridcolumn',
-                                flex: 1,
-                                dataIndex: 'UserName',
-                                sortable: false,
-                                menuDisabled: true,
-                                align: 'center',
-                                text: "房客姓名"
-                            },
+                           //{
+                           //    xtype: 'gridcolumn',
+                           //    flex: 1,
+                           //    dataIndex: 'AuthorizeNo',
+                           //    sortable: false,
+                           //    menuDisabled: true,
+                           //    align: 'center',
+                           //    text: "授权单号"
+                           //},
+                           // {
+                           //     xtype: 'gridcolumn',
+                           //     flex: 1,
+                           //     dataIndex: 'UserName',
+                           //     sortable: false,
+                           //     menuDisabled: true,
+                           //     align: 'center',
+                           //     text: "房客姓名"
+                           // },
                              {
                                  xtype: 'gridcolumn',
                                  flex: 1,

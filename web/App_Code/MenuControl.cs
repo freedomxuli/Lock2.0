@@ -55,7 +55,16 @@ public class MenuControl
                    <Tab p='' Name='待回复'>approot/r/page/System/JudgeList.html</Tab>               
                 </Item>
                  <Item Name='已回复'>
-                   <Tab p='' Name='已回复'>approot/r/page/System/JudgeList2.html</Tab>
+                   <Tab p='' Name='已回复'>approot/r/page/System/JudgeList2.html?zt=2</Tab>
+                </Item>
+                <Item Name='好评'>
+                   <Tab p='' Name='好评'>approot/r/page/System/JudgeList2.html?zt=3</Tab>
+                </Item>
+                <Item Name='中评'>
+                   <Tab p='' Name='中评'>approot/r/page/System/JudgeList2.html?zt=4</Tab>
+                </Item>
+                <Item Name='差评'>
+                   <Tab p='' Name='差评'>approot/r/page/System/JudgeList2.html?zt=5</Tab>
                 </Item>
             </Menu>
             <Menu Name='门店管理员'> 

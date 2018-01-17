@@ -123,6 +123,25 @@ public class AuthorizeOrderDB
 
     }
 
+    [CSMethod("GetAuthorizeOrderByNo")]
+    public object GetAuthorizeOrderByNo(string AuthorizeNo)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select a.*,b.HotelName from Lock_AuthorizeOrder a left join Lock_Hotel b on a.HotelId=b.ID where a.AuthorizeNo=" + AuthorizeNo;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
     [CSMethod("CheckIsJudge")]
     public object CheckIsJudge(string authno)
     {
@@ -357,6 +376,25 @@ public class AuthorizeOrderDB
         }
     }
 
+
+    [CSMethod("GetMemberInfoByNo")]
+    public object GetMemberInfoByNo(string AuthorizeNo)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select a.IDCard,b.* from Lock_AuthorizeOrder a left join aspnet_Members b on a.UserId=b.UserId where a.AuthorizeNo=" + AuthorizeNo;
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
     [CSMethod("GetRoomInfo")]
     public object GetRoomInfo(int RoomId)
     {
@@ -370,7 +408,11 @@ public class AuthorizeOrderDB
                 DataTable dt2 = dbc.ExecuteDataTable(sqlStr);
                 sqlStr = "select * from Lock_AuthorizeOrder where AuthorStatus>0 and AuthorStatus<=6 and RoomId=" + RoomId + " order by ID desc";
                 DataTable dt3 = dbc.ExecuteDataTable(sqlStr);
-                return new { dt1 = dt1, dt2 = dt2, dt3 = dt3 };
+                sqlStr = "select * from Lock_ServiceApply where RoomId=" + RoomId + " and IsDamage=1 order by FinishTime desc";
+                DataTable dt4 = dbc.ExecuteDataTable(sqlStr);
+                sqlStr = "select a.*,b.TypeName from Lock_Device a left join Lock_DeviceType b on a.DeviceType=b.ID where RoomId=" + RoomId;
+                DataTable dt5 = dbc.ExecuteDataTable(sqlStr);
+                return new { dt1 = dt1, dt2 = dt2, dt3 = dt3, dt4 = dt4, dt5 = dt5 };
             }
             catch (Exception ex)
             {
@@ -417,7 +459,7 @@ public class AuthorizeOrderDB
                     dt_hour.Rows.Add(dr);
                 }
 
-                return new { dt_room = dt_room, dt_hotel = dt_hotel,dt_hour = dt_hour };
+                return new { dt_room = dt_room, dt_hotel = dt_hotel, dt_hour = dt_hour };
             }
             catch (Exception ex)
             {
@@ -536,7 +578,7 @@ public class AuthorizeOrderDB
                 decimal LiveTotalPrice = 0;//房费总价
                 decimal ActualTotalPrice;//总价
 
-                if (AuthorRoomStyle=="1")//当为全天房时
+                if (AuthorRoomStyle == "1")//当为全天房时
                 {
                     //计算结束时间
                     LiveEndDate = GetLiveDayEndTime(startTime, startHour, Int32.Parse(days), 6, 0);//写死每天6点为开始时间
@@ -546,7 +588,7 @@ public class AuthorizeOrderDB
                     for (int i = 0; i < Int32.Parse(days); i++)
                     {
                         DataRow[] drs = dt_price.Select("TIME = '" + Convert.ToDateTime(startTime).AddDays(i).ToString("yyyy-MM-dd") + "'");
-                        if(drs.Length>0)
+                        if (drs.Length > 0)
                             LiveTotalPrice += Convert.ToDecimal(drs[0]["PRICE"]);
                     }
                     ActualTotalPrice = LiveTotalPrice + DepositPrice;
@@ -611,7 +653,7 @@ public class AuthorizeOrderDB
         }
     }
 
-    public DateTime GetLiveDayEndTime(string startTime, string startHour, int days,int checkout_hour,int checkout_minu)
+    public DateTime GetLiveDayEndTime(string startTime, string startHour, int days, int checkout_hour, int checkout_minu)
     {
         string[] hours = startHour.Split(':');
         if (Int32.Parse(hours[0]) < checkout_hour)
@@ -619,7 +661,7 @@ public class AuthorizeOrderDB
             days -= 1;
         }
         else if (Int32.Parse(hours[0]) < checkout_hour)
-        { 
+        {
             if (Int32.Parse(hours[1]) < checkout_minu)
                 days -= 1;
         }

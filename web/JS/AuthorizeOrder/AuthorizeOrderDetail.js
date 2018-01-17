@@ -1,5 +1,5 @@
-﻿var id = queryString.id;
-var AuthorizeNo;
+﻿var id;
+var AuthorizeNo = queryString.AuthorizeNo;
 var userid;
 var RoomId;
 var HotelId;
@@ -63,7 +63,8 @@ var sbStore = Ext.create('Ext.data.Store', {
 });
 
 function DataBind() {
-    CS('CZCLZ.AuthorizeOrderDB.GetAuthorizeOrderById', function (retVal) {
+
+    CS('CZCLZ.AuthorizeOrderDB.GetAuthorizeOrderByNo', function (retVal) {
         if (retVal) {
 
 
@@ -84,40 +85,7 @@ function DataBind() {
                     var AuthorizeBookStatus = retVal[0]["AuthorizeBookStatus"];
                     var AuthorLiveStatus = retVal[0]["AuthorLiveStatus"];
                     Ext.getCmp("ActualTotalPrice").setValue(retVal[0]["LiveTotalPrice"] + retVal[0]["DepositPrice"]);
-                    if (AuthorStatus == 1) {
-                        Ext.getCmp("sc").show();
-                        Ext.getCmp("qx").show();
-                        if (AuthorizeBookStatus == 1)
-                            Ext.getCmp("qryd").show();
-                    }
-                    else if (AuthorStatus == 2) {
-                        Ext.getCmp("cxxf").show();
-                        Ext.getCmp("ys").show();
-                        Ext.getCmp("xz").show();
-                        Ext.getCmp("tf").show();
-                        Ext.getCmp("fkxx").show();
-                    }
-                    else if (AuthorStatus == 2) {
-                        Ext.getCmp("cxxf").show();
-                        Ext.getCmp("ys").show();
-                        Ext.getCmp("xz").show();
-                        Ext.getCmp("tf").show();
-                        Ext.getCmp("fkxx").show();
-                    }
-                    else if (AuthorStatus == 3) {
-                        Ext.getCmp("qtsq").show();
-                        Ext.getCmp("fwzp").show();
-                        Ext.getCmp("fkxx").show();
-                        if (AuthorLiveStatus == 5) {
-                            CS('CZCLZ.AuthorizeOrderDB.CheckIsJudge', function (retVal) {
-                                if (retVal) {
-                                    Ext.getCmp("pj").show();
-                                }
-                            }, CS.onError, AuthorizeNo);
-                        }
-                        if (AuthorLiveStatus == 6)
-                            Ext.getCmp("tfqr").show();
-                    }
+
 
                     CS('CZCLZ.SystemDB.GetHotelBJList', function (retVal) {
                         if (retVal.status == "ok") {
@@ -130,7 +98,7 @@ function DataBind() {
 
 
         }
-    }, CS.onError, id);
+    }, CS.onError, AuthorizeNo);
 }
 
 function getHourMinute(date) {
@@ -159,12 +127,7 @@ function ysAndxz(v) {
 }
 
 function ckdd(authno) {
-    FrameStack.pushFrame({
-        url: "AuthorizeOrderDetail.html?AuthorizeNo=" + authno,
-        onClose: function (ret) {
-          //  loadData(1);
-        }
-    });
+
 }
 
 Ext.define('rzxxWin', {
@@ -1088,7 +1051,7 @@ Ext.onReady(function () {
                                     type: 'column'
                                 },
                                 border: true,
-                                title: '授权信息',
+                                title: '订单信息',
                                 items: [
                                         {
                                             xtype: 'textfield',
@@ -1430,223 +1393,7 @@ Ext.onReady(function () {
                         ],
                         buttonAlign: 'center',
                         buttons: [
-                            {
-                                text: '保存',
-                                id: 'bc',
-                                hidden: true,
-                                handler: function () {
-                                    var form = Ext.getCmp('addform');
-                                    if (form.form.isValid()) {
-                                        var values = form.getValues(false);
-                                        var senddata = {};
-                                        senddata.roomid = values["RoomId"];
-                                        senddata.phone = values["CellPhone"];
-                                        senddata.realname = values["RealName"];
-                                        senddata.plattype = values["PlatType"];
-                                        senddata.roomstyle = values["AuthorRoomStyle"];
-                                        senddata.earlydate = values["EarliestDate"] + " " + values["EarliestHour"] + ":00";
-                                        senddata.latestdate = values["LatestDate"] + " " + values["LatestHour"] + ":00";
-                                        senddata.livestartdate = values["LiveStartDate"] + " " + values["LiveStartHour"] + ":00";
-                                        senddata.liveenddate = values["LiveEndDate"] + " " + values["LiveEndHour"] + ":00";
-                                        if (senddata.roomstyle != 3) {
-                                            //全天与钟点房的预留开始时间与入住时间一致
-                                            senddata.earlydate = senddata.livestartdate;
-                                        }
-                                        senddata.timelong = 0;
-                                        if (senddata.roomstyle == 1)
-                                            senddata.timelong = values["LiveDays"];//天数
-                                        else if (senddata.roomstyle == 2)
-                                            senddata.timelong = values["LiveHour"];//小时数
-                                        senddata.takepowertype = values["TakepowerType"];
-                                        senddata.unlocktype = values["TakepowerType"];
-                                        senddata.takepowertype = values["UnlockType"];
 
-                                        senddata.unitprice = values["UnitPrice"];
-                                        senddata.livetotalprice = values["LiveTotalPrice"];
-                                        senddata.depositprice = values["DepositPrice"];
-                                        senddata.consumerecordtotal = values["ActualTotalPrice"];
-
-                                        CS('CZCLZ.AuthorizeOrderDB.SubmitAuthorizeOrder', function (retVal) {
-                                            if (retVal.status == "ok") {
-                                                Ext.MessageBox.alert("提示", "保存成功", function () {
-                                                    FrameStack.popFrame();
-                                                });
-                                            }
-                                        }, CS.onError, senddata);
-                                    }
-                                }
-
-                            },
-                              {
-                                  text: '确认预订',
-                                  id: 'qryd',
-                                  hidden: true,
-                                  handler: function () {
-                                      Ext.MessageBox.confirm('提示', '确认预定？', function (obj) {
-                                          if (obj == "yes") {
-                                              CS('CZCLZ.AuthorizeOrderDB.ConfirmBook2', function (retVal) {
-                                                  if (retVal.status == "ok") {
-                                                      Ext.MessageBox.alert("提示", "预定成功!", function () {
-                                                          FrameStack.popFrame();
-                                                      });
-                                                  }
-                                              }, CS.onError, AuthorizeNo, userid);
-                                          }
-                                      });
-                                  }
-
-                              },
-                               {
-                                   text: '重新下发',
-                                   id: 'cxxf',
-                                   hidden: true,
-                                   handler: function () {
-                                       Ext.MessageBox.confirm('提示', '确认重新下发？', function (obj) {
-                                           if (obj == "yes") {
-                                               CS('CZCLZ.AuthorizeOrderDB.SendCMDAgain', function (retVal) {
-                                                   if (retVal.status == "ok") {
-                                                       Ext.MessageBox.alert("提示", "下发成功!", function () {
-                                                           FrameStack.popFrame();
-                                                       });
-                                                   }
-                                               }, CS.onError, AuthorizeNo);
-                                           }
-                                       });
-                                   }
-                               },
-                               {
-                                   text: '延时',
-                                   id: 'ys',
-                                   hidden: true,
-                                   handler: function () {
-                                       ysAndxz(3);
-                                   }
-                               },
-                                {
-                                    text: '续住',
-                                    id: 'xz',
-                                    hidden: true,
-                                    handler: function () {
-                                        ysAndxz(2);
-                                    }
-                                },
-                                {
-                                    text: '退房',
-                                    id: 'tf',
-                                    hidden: true,
-                                    handler: function () {
-                                        var win = new tfWin();
-                                        win.show(null, function () {
-                                            CS('CZCLZ.AuthorizeOrderDB.ReFundMoney', function (retVal) {
-                                                if (retVal.status == "ok") {
-                                                    Ext.getCmp("litdays").setValue(retVal.info["litdays"]);
-                                                    Ext.getCmp("lithours").setValue(retVal.info["lithours"]);
-                                                    Ext.getCmp("hidConsumeRecordTotal").setValue(retVal.info["hidConsumeRecordTotal"]);
-                                                    Ext.getCmp("ActualTotalPrice").setValue(retVal.info["txtActualTotalPrice"]);
-                                                    Ext.getCmp("RefundPrice").setValue(retVal.info["txtRefundPrice"]);
-                                                }
-                                            }, CS.onError, AuthorizeNo);
-                                        });
-                                    }
-                                },
-                                {
-                                    text: '强退授权',
-                                    id: 'qtsq',
-                                    hidden: true,
-                                    handler: function () {
-                                        Ext.MessageBox.confirm('提示', '是否重新下发退房授权单？', function (obj) {
-                                            if (obj == "yes") {
-                                                CS('CZCLZ.AuthorizeOrderDB.SendCMDAgainTF', function (retVal) {
-                                                    if (retVal.status == "ok") {
-                                                        Ext.MessageBox.alert("提示", "下发成功!", function () {
-                                                            FrameStack.popFrame();
-                                                        });
-                                                    }
-                                                }, CS.onError, AuthorizeNo);
-                                            }
-                                        });
-                                    }
-
-                                },
-                             {
-                                 text: '服务指派',
-                                 id: 'fwzp',
-                                 hidden: true,
-                                 handler: function () {
-                                     var win = new rwpfWin();
-                                     win.show(null, function () {
-                                         Ext.getCmp("rwHotelId").setValue(HotelId);
-                                         Ext.getCmp("rwRoomId").setValue(RoomId);
-                                     });
-                                 }
-
-                             },
-                               {
-                                   text: '评价',
-                                   id: 'pj',
-                                   hidden: true,
-                                   handler: function () {
-                                       var win = new pjWin();
-                                       win.show();
-                                   }
-                               },
-                             {
-                                 text: '退房确认',
-                                 id: 'tfqr',
-                                 hidden: true,
-                                 handler: function () {
-                                     var win = new tfWin();
-                                     win.show(null, function () {
-                                         CS('CZCLZ.AuthorizeOrderDB.ReFundMoney', function (retVal) {
-                                             if (retVal.status == "ok") {
-                                                 Ext.getCmp("litdays").setValue(retVal.info["litdays"]);
-                                                 Ext.getCmp("lithours").setValue(retVal.info["lithours"]);
-                                                 Ext.getCmp("hidConsumeRecordTotal").setValue(retVal.info["hidConsumeRecordTotal"]);
-                                                 Ext.getCmp("ActualTotalPrice").setValue(retVal.info["txtActualTotalPrice"]);
-                                                 Ext.getCmp("RefundPrice").setValue(retVal.info["txtRefundPrice"]);
-                                             }
-                                         }, CS.onError, AuthorizeNo);
-                                     });
-                                 }
-                             },
-                             {
-                                 text: '删除',
-                                 id: 'sc',
-                                 hidden: true,
-                                 handler: function () {
-                                     Ext.MessageBox.confirm('提示', '确认删除？', function (obj) {
-                                         if (obj == "yes") {
-                                             CS('CZCLZ.AuthorizeOrderDB.CancelAuthorizeOrder', function (retVal) {
-                                                 if (retVal.status == "ok") {
-                                                     Ext.MessageBox.alert("提示", "删除成功!", function () {
-                                                         FrameStack.popFrame();
-                                                     });
-                                                 }
-                                             }, CS.onError, id, 1);
-                                         }
-                                     });
-                                 }
-
-                             },
-                             {
-                                 text: '取消',
-                                 id: 'qx',
-                                 hidden: true,
-                                 handler: function () {
-                                     Ext.MessageBox.confirm('提示', '确认取消？', function (obj) {
-                                         if (obj == "yes") {
-                                             CS('CZCLZ.AuthorizeOrderDB.CancelAuthorizeOrder', function (retVal) {
-                                                 if (retVal.status == "ok") {
-                                                     Ext.MessageBox.alert("提示", "取消成功!", function () {
-                                                         FrameStack.popFrame();
-                                                     });
-                                                 }
-                                             }, CS.onError, id, 2);
-                                         }
-                                     });
-                                 }
-
-                             },
                               {
                                   text: '房客信息',
                                   id: 'fkxx',
@@ -1654,59 +1401,21 @@ Ext.onReady(function () {
                                   handler: function () {
                                       var win = new fkxxWin();
                                       win.show(null, function () {
-                                          CS('CZCLZ.AuthorizeOrderDB.GetMemberInfo', function (retVal) {
+                                          CS('CZCLZ.AuthorizeOrderDB.GetMemberInfoByNo', function (retVal) {
                                               if (retVal) {
                                                   var fkxxForm = Ext.getCmp("fkxxForm");
                                                   fkxxForm.form.setValues(retVal[0]);
                                               }
-                                          }, CS.onError, id);
+                                          }, CS.onError, AuthorizeNo);
                                       });
                                   }
-
                               },
-
-                                {
-                                    text: '房间信息',
-                                    id: 'fjxx',
-                                    handler: function () {
-                                        var win = new fjxxWin();
-                                        win.show(null, function () {
-                                            CS('CZCLZ.AuthorizeOrderDB.GetRoomInfo', function (retVal) {
-                                                if (retVal) {
-                                                    rzjlStore.loadData(retVal.dt3);
-                                                    wsStore.loadData(retVal.dt4);
-                                                    sbStore.loadData(retVal.dt5);
-                                                    var fjxxForm = Ext.getCmp("fjxxForm");
-                                                    fjxxForm.form.setValues(retVal.dt1[0]);
-                                                    for (var i in retVal.dt2) {
-                                                        var df = new Ext.form.DisplayField({
-                                                            xtype: 'displayfield',
-                                                            labelWidth: 90,
-                                                            allowBlank: false,
-                                                            fieldLabel: retVal.dt2[i]["TagName"],
-                                                            value: retVal.dt2[i]["TagDec"] + retVal.dt2[i]["Unit"],
-                                                            anchor: '100%'
-                                                        });
-                                                        Ext.getCmp("fjxxForm").items.add(df);
-                                                        Ext.getCmp("fjxxForm").doLayout();
-                                                    }
-
-                                                }
-                                            }, CS.onError, RoomId);
-
-                                            CS('CZCLZ.RoomDB.GetRoomGoods', function (retVal) {
-                                                goodsStore.loadData(retVal);
-                                            }, CS.onError, RoomId);
-                                        });
-                                    }
-
-                                },
-                            {
-                                text: '返回',
-                                handler: function () {
-                                    FrameStack.popFrame();
-                                }
-                            }
+                              {
+                                  text: '返回',
+                                  handler: function () {
+                                      FrameStack.popFrame();
+                                  }
+                              }
                         ]
                     }
                 ]
@@ -1721,14 +1430,10 @@ Ext.onReady(function () {
     CS('CZCLZ.AuthorizeOrderDB.GetHotelCombobox', function (retVal) {
         if (retVal) {
             HotelStore.loadData(retVal, true);
-            if (id != null && id != "") {
 
-                DataBind();
+            DataBind();
 
-            }
-            else {
-                Ext.getCmp("bc").show();
-            }
+
         }
     }, CS.onError);
 });

@@ -142,24 +142,24 @@ Ext.onReady(function () {
                               align: 'center',
                               text: "ID"
                           },
-                           {
-                               xtype: 'gridcolumn',
-                               flex: 1,
-                               dataIndex: 'AuthorizeNo',
-                               sortable: false,
-                               menuDisabled: true,
-                               align: 'center',
-                               text: "授权单号"
-                           },
-                            {
-                                xtype: 'gridcolumn',
-                                flex: 1,
-                                dataIndex: 'UserName',
-                                sortable: false,
-                                menuDisabled: true,
-                                align: 'center',
-                                text: "房客姓名"
-                            },
+                           //{
+                           //    xtype: 'gridcolumn',
+                           //    flex: 1,
+                           //    dataIndex: 'AuthorizeNo',
+                           //    sortable: false,
+                           //    menuDisabled: true,
+                           //    align: 'center',
+                           //    text: "授权单号"
+                           //},
+                           // {
+                           //     xtype: 'gridcolumn',
+                           //     flex: 1,
+                           //     dataIndex: 'UserName',
+                           //     sortable: false,
+                           //     menuDisabled: true,
+                           //     align: 'center',
+                           //     text: "房客姓名"
+                           // },
                              {
                                  xtype: 'gridcolumn',
                                  flex: 1,

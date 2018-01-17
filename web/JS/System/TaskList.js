@@ -18,7 +18,9 @@ var store = createSFW4Store({
        { name: 'EndTime' },
        { name: 'ServiceStatus' },
        { name: 'Remark' },
-       { name: 'ServiceRemark' }
+       { name: 'ServiceRemark' },
+       { name: 'FinishTime' },
+       { name: 'IsDamage' }
 
     ],
     //sorters: [{ property: 'b', direction: 'DESC'}],
@@ -95,7 +97,7 @@ function getHourMinute(date) {
 Ext.define('addWin', {
     extend: 'Ext.window.Window',
 
-    height: 350,
+    height: 380,
     width: 360,
     layout: {
         type: 'fit'
@@ -194,8 +196,34 @@ Ext.define('addWin', {
                              store: UserStore,
                              queryMode: 'local',
                              displayField: 'UserName',
-                             valueField: 'BJUserId'
+                             valueField: 'BJUserId',
+                             listeners: {
+                                 'select': function (field, val, obj) {
+                                     CS('CZCLZ.SystemDB.GetBjXX', function (retVal) {
+                                         if (retVal) {
+                                             Ext.getCmp("bjname").setValue(retVal[0]["RealName"]);
+                                             Ext.getCmp("dclrw").setValue(retVal[0]["Num"] + "条");
+                                         }
+                                     }, CS.onError, field.value);
+                                 }
+                             }
 
+                         },
+                         {
+                             xtype: 'textfield',
+                             fieldLabel: '姓名',
+                             editable: false,
+                             id: 'bjname',
+                             anchor: '100%',
+                             labelWidth: 70
+                         },
+                         {
+                             xtype: 'textfield',
+                             fieldLabel: '待处理任务',
+                             editable: false,
+                             id: 'dclrw',
+                             anchor: '100%',
+                             labelWidth: 70
                          },
                            {
                                xtype: 'fieldcontainer',
@@ -276,6 +304,96 @@ Ext.define('addWin', {
                     },
                     {
                         text: '取消',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
+
+var wsStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'ServiceRemark', type: 'string' },
+       { name: 'DamagePrice', type: 'string' },
+       { name: 'FinishTime', type: 'string' }
+    ]
+});
+
+function ckws(wsid) {
+    CS('CZCLZ.SystemDB.GetWSXX', function (retVal) {
+        if(retVal){
+            wsStore.loadData(retVal);
+        }
+    }, CS.onError, wsid)
+
+
+}
+
+Ext.define('wsWin', {
+    extend: 'Ext.window.Window',
+
+    height: 300,
+    width: 600,
+    layout: {
+        type: 'fit'
+    },
+    closeAction: 'destroy',
+    modal: true,
+    title: '设备列表',
+    id: 'wsWin',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'gridpanel',
+                margin: '0 0 0 0',
+                title: '物损记录',
+                store: wsStore,
+                columnLines: true,
+                border: true,
+                autoscroll: true,
+                columns: [Ext.create('Ext.grid.RowNumberer'),
+                     {
+                         xtype: 'gridcolumn',
+                         dataIndex: 'ServiceRemark',
+                         align: 'center',
+                         text: '物损描述',
+                         flex: 1,
+                         sortable: false,
+                         menuDisabled: true
+                     },
+
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'DamagePrice',
+                        align: 'center',
+                        text: '物损金额',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true
+                    },
+                    {
+                        xtype: 'datecolumn',
+                        dataIndex: 'FinishTime',
+                        format: 'Y-m-d H:i',
+                        align: 'center',
+                        text: '上报时间',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true
+                    }
+
+
+                ],
+                buttonAlign: 'center',
+                buttons: [
+
+                    {
+                        text: '关闭',
                         handler: function () {
                             this.up('window').close();
                         }
@@ -394,6 +512,16 @@ Ext.onReady(function () {
                                     align: 'center',
                                     text: "反馈内容"
                                 },
+                                   {
+                                       xtype: 'datecolumn',
+                                       format: 'Y-m-d H:i:s',
+                                       flex: 1,
+                                       dataIndex: 'FinishTime',
+                                       sortable: false,
+                                       menuDisabled: true,
+                                       align: 'center',
+                                       text: "完成时间"
+                                   },
                                 {
                                     xtype: 'gridcolumn',
                                     flex: 1,
@@ -418,15 +546,17 @@ Ext.onReady(function () {
                                {
                                    text: '操作',
                                    dataIndex: 'IsReply',
-                                   width: 80,
+                                   width: 120,
                                    align: 'center',
                                    sortable: false,
                                    menuDisabled: true,
                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                       var str = "";
                                        if (record.data.ServiceStatus == 1)
-                                           return "<a href='#' onclick='cl(\"" + record.data.ID + "\")'>处理</a>";
-                                       else
-                                           return "";
+                                           str += "<a href='#' onclick='cl(\"" + record.data.ID + "\")'>处理</a>";
+                                       if (record.data.IsDamage == 1)
+                                           str += " <a href='#' onclick='ckws(\"" + record.data.ID + "\")'>物损详情</a>";
+                                       return str;
                                    }
                                }
 
