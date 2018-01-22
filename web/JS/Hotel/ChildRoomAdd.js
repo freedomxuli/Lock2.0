@@ -43,70 +43,6 @@ function initData() {
         if (ret) {
             tag = ret;
             var Items = [];
-            for (var i = 0; i < ret.length; i++) {
-                //var checkbox = new Ext.form.field.Checkbox({
-                //    xtype: 'checkboxfield',
-                //    boxLabel: ret[i].TagName,
-                //    name: 'tag',
-                //    hideLabel: true,
-                //    inputValue: ret[i].ID + '',
-                //    handler: function (chk, checked) {
-                //        if (checked) {
-                //            alert(123);
-                //            var tf = new Ext.form.TextField({
-                //                xtype: 'textfield',
-                //                margin: '10 10 10 10',
-                //                // id: ret[i].ID + '',
-                //                columnWidth: 0.5
-                //            });
-                //            Ext.getCmp("addform").items.add(tf);
-                //        }
-                //        else {
-
-                //        }
-                //    }
-                //});
-                //Items.push(checkbox);
-
-                //var tf = new Ext.form.TextField({
-                //    xtype: 'checkboxfield',
-                //    margin: '10 10 10 10',
-                //    labelWidth: 80,
-                //    fieldLabel: ret[i].TagName,
-                //    id: ret[i].ID + '',
-                //    columnWidth: 0.4
-                //});
-                //Ext.getCmp("addform").items.add(tf);
-
-                //var df = new Ext.form.DisplayField({
-                //    xtype: 'displayfield',
-                //    margin: '10 10 10 10',
-                //    columnWidth: 0.1,
-                //    value: ret[i].Unit
-                //});
-                //Ext.getCmp("addform").items.add(df);
-
-                var tf = new Ext.form.TextField({
-                    xtype: 'textfield',
-                    margin: '10 10 10 10',
-                    labelWidth: 80,
-                    fieldLabel: ret[i].TagName,
-                    id: ret[i].ID + '',
-                    name: ret[i].ID + '',
-                    columnWidth: 0.4
-                });
-                Ext.getCmp("addform").items.add(tf);
-
-                var df = new Ext.form.DisplayField({
-                    xtype: 'displayfield',
-                    margin: '10 10 10 10',
-                    columnWidth: 0.1,
-                    value: ret[i].Unit
-                });
-                Ext.getCmp("addform").items.add(df);
-            }
-            Ext.getCmp("tagGroup").add(Items);
-
             if (id != null && id != "") {
                 CS('CZCLZ.RoomDB.GetRoomInfo', function (retVal) {
                     if (retVal) {
@@ -125,12 +61,133 @@ function initData() {
                             html += '<div class="file-item uploadimages" style="margin-left:5px;margin-bottom:5px" imageurl="~/' + retVal.dt[0]["Image5"] + '"><img src="approot/r/' + retVal.dt[0]["Image5"] + '" width="100px" height="100px"/></div>';
                         $("#fileList").append(html);
 
-                        var tagdata = retVal.dt1;
-                        for (var i in tagdata) {
-                            Ext.getCmp(tagdata[i]["TagId"] + "").setValue(tagdata[i]["TagDec"]);
+                        var checkboxgroup = Ext.getCmp("bq");
+                        for (var i = 0; i < ret.length; i++) {
+                            var isCheck = false;
+                            for (var j = 0; j < retVal.dt1.length; j++) {
+                                if (ret[i].ID == retVal.dt1[j].TagId) {
+                                    isCheck = true;
+                                    break;
+                                }
+                            }
+                            var checkbox = new Ext.form.Checkbox(
+                              {
+                                  boxLabel: ret[i].TagName,
+                                  inputValue: ret[i].ID,
+                                  id: ret[i].ID + "id",
+                                  checked: isCheck,
+                                  unit: ret[i].Unit,
+                                  listeners: {
+                                      change: function (e, newValue, oldValue, eOpts) {
+                                          if (newValue) {
+                                              var tf = new Ext.form.TextField({
+                                                  xtype: 'textfield',
+                                                  margin: '10 10 10 10',
+                                                  labelWidth: 80,
+                                                  fieldLabel: e.boxLabel,
+                                                  id: e.inputValue,
+
+                                                  columnWidth: 0.4
+                                              });
+                                              Ext.getCmp("addform").items.add(tf);
+
+                                              var df = new Ext.form.DisplayField({
+                                                  id: e.inputValue + "unit",
+                                                  xtype: 'displayfield',
+                                                  margin: '10 10 10 10',
+                                                  columnWidth: 0.1,
+                                                  value: e.unit
+                                              });
+                                              Ext.getCmp("addform").items.add(df);
+                                          }
+                                          else {
+                                              var bq = Ext.getCmp(e.inputValue);
+                                              var bq_unit = Ext.getCmp(e.inputValue + "unit");
+                                              Ext.getCmp("addform").remove(bq);
+                                              Ext.getCmp("addform").remove(bq_unit);
+                                          }
+                                          Ext.getCmp("addform").doLayout();
+                                      }
+                                  }
+                              });
+                            checkboxgroup.items.add(checkbox);
                         }
+
+                        for (var i = 0; i < retVal.dt1.length; i++) {
+
+                            var tf = new Ext.form.TextField({
+                                xtype: 'textfield',
+                                margin: '10 10 10 10',
+                                labelWidth: 80,
+                                fieldLabel: retVal.dt1[i].TagName1,
+                                id: retVal.dt1[i].TagId + '',
+                                name: retVal.dt1[i].TagId + '',
+                                columnWidth: 0.4,
+                                value: retVal.dt1[i].TagDec
+                            });
+                            Ext.getCmp("addform").items.add(tf);
+
+                            var df = new Ext.form.DisplayField({
+                                xtype: 'displayfield',
+                                id: retVal.dt1[i].TagId + "unit",
+                                margin: '10 10 10 10',
+                                columnWidth: 0.1,
+                                value: retVal.dt1[i].Unit
+                            });
+                            Ext.getCmp("addform").items.add(df);
+                        }
+
+                        Ext.getCmp("addform").doLayout();
                     }
                 }, CS.onError, id);
+            }
+            else {
+                var checkboxgroup = Ext.getCmp("bq");
+                for (var i = 0; i < ret.length; i++) {
+                    var checkbox = new Ext.form.Checkbox(
+                      {
+                          boxLabel: ret[i].TagName,
+                          inputValue: ret[i].ID,
+                          id: ret[i].ID + "id",
+                          checked: false,
+                          unit: ret[i].Unit,
+                          listeners: {
+                              change: function (e, newValue, oldValue, eOpts) {
+                                  if (newValue) {
+                                      var tf = new Ext.form.TextField({
+                                          xtype: 'textfield',
+                                          margin: '10 10 10 10',
+                                          labelWidth: 80,
+                                          fieldLabel: e.boxLabel,
+                                          id: e.inputValue,
+
+                                          columnWidth: 0.4
+                                      });
+                                      Ext.getCmp("addform").items.add(tf);
+
+                                      var df = new Ext.form.DisplayField({
+                                          id: e.inputValue + "unit",
+                                          xtype: 'displayfield',
+                                          margin: '10 10 10 10',
+                                          columnWidth: 0.1,
+                                          value: e.unit
+                                      });
+                                      Ext.getCmp("addform").items.add(df);
+                                  }
+                                  else {
+                                      var bq = Ext.getCmp(e.inputValue);
+                                      var bq_unit = Ext.getCmp(e.inputValue + "unit");
+                                      Ext.getCmp("addform").remove(bq);
+                                      Ext.getCmp("addform").remove(bq_unit);
+                                  }
+                                  Ext.getCmp("addform").doLayout();
+                              }
+                          }
+                      });
+                    checkboxgroup.items.add(checkbox);
+                }
+
+                Ext.getCmp("addform").doLayout();
             }
         }
     }, CS.onError);
@@ -164,6 +221,7 @@ Ext.onReady(function () {
                                     type: 'column'
                                 },
                                 width: 850,
+                                height:700,
                                 border: true,
                                 // margin: 10,
                                 //title: '房间信息',
@@ -301,11 +359,8 @@ Ext.onReady(function () {
                                               },
                                                {
                                                    xtype: 'checkboxgroup',
-                                                   id: 'tagGroup',
+                                                   id: 'bq',
                                                    margin: '10 10 10 10',
-                                                   layout: {
-                                                       type: 'table'
-                                                   },
                                                    fieldLabel: '房间标签',
                                                    columnWidth: 1,
                                                    labelWidth: 80,
@@ -327,12 +382,15 @@ Ext.onReady(function () {
                                         var tagids = [];
                                         var tagvalues = [];
                                         for (var i in tag) {
-                                            var tagvalue = Ext.getCmp(tag[i]["ID"] + "").getValue();
-                                            if (tagvalue != "") {
-                                                tagids.push(tag[i]["ID"]);
-                                                tagvalues.push(tagvalue);
+                                            if ($("#" + tag[i]["ID"] + "").length > 0) {
+                                                var tagvalue = Ext.getCmp(tag[i]["ID"] + "").getValue();
+                                                if (tagvalue != "") {
+                                                    tagids.push(tag[i]["ID"]);
+                                                    tagvalues.push(tagvalue);
+                                                }
                                             }
                                         }
+
                                         var imglist = "";
                                         $("#fileList .file-item").each(function () {
                                             imglist += $(this).attr("imageurl") + ",";

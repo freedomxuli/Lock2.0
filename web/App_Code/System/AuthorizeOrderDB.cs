@@ -358,6 +358,43 @@ public class AuthorizeOrderDB
         }
     }
 
+    [CSMethod("GetLockRecord")]
+    public object GetLockRecord(int roomid)
+    {
+        try
+        {
+            string url = "http://wx.zhisuroom.com/API/LockHandler.ashx";
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("interface", "GetLockRecord");
+            parameters.Add("roomid", roomid.ToString());
+            parameters.Add("start", "");
+            parameters.Add("end", "");
+            string result = WebService.CallService(url, parameters);
+            JObject json = JsonConvert.DeserializeObject(result) as JObject;
+            JSReader jsr = JSReader.ParseJSON(json["Info"].ToString());
+            DataTable dt = new DataTable();
+            dt.Columns.Add("date");
+            dt.Columns.Add("type");
+            for (int i = 0; i < jsr.Count(); i++)
+            {
+                DataRow dr = dt.NewRow();
+                dr["date"] = jsr[i]["ActionTime"].ToString();
+                dr["type"] = jsr[i]["Action"].ToString();
+                dt.Rows.Add(dr);
+            }
+
+            DataView dv = dt.DefaultView;
+            dv.Sort = "date desc";
+            DataTable dt2 = dv.ToTable();
+
+            return new { status = json["Status"].ToString(), dt = dt2 };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
     [CSMethod("GetMemberInfo")]
     public object GetMemberInfo(int ID)
     {

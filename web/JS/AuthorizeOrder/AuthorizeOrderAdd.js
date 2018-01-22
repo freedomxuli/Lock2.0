@@ -62,6 +62,13 @@ var sbStore = Ext.create('Ext.data.Store', {
 
 });
 
+var lockStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'date', type: 'string' },
+       { name: 'type', type: 'string' }
+    ]
+});
+
 function DataBind() {
     CS('CZCLZ.AuthorizeOrderDB.GetAuthorizeOrderById', function (retVal) {
         if (retVal) {
@@ -162,7 +169,7 @@ function ckdd(authno) {
     FrameStack.pushFrame({
         url: "AuthorizeOrderDetail.html?AuthorizeNo=" + authno,
         onClose: function (ret) {
-          //  loadData(1);
+            //  loadData(1);
         }
     });
 }
@@ -754,19 +761,59 @@ Ext.define('fjxxWin', {
                            xtype: 'gridpanel',
                            margin: '0 0 0 0',
                            title: '开锁信息',
-                           //store: sbStore,
+                           store: lockStore,
                            columnLines: true,
                            border: true,
                            autoscroll: true,
                            columns: [Ext.create('Ext.grid.RowNumberer'),
                                 {
                                     xtype: 'gridcolumn',
-                                    dataIndex: 'DeviceName',
+                                    dataIndex: 'date',
                                     align: 'center',
                                     text: '开锁日期',
-                                    width: 150,
+                                    flex: 1,
                                     sortable: false,
-                                    menuDisabled: true
+                                    menuDisabled: true,
+                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                        var regtime = /(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/;
+                                        regtime.test(value);
+                                        var t = "20" + RegExp.$1 + "." + RegExp.$2 + "." + RegExp.$3 + " " + RegExp.$4 + ":" + RegExp.$5;
+                                        return t;
+                                    }
+                                },
+                                {
+                                    xtype: 'gridcolumn',
+                                    dataIndex: 'type',
+                                    align: 'center',
+                                    text: '开锁方式',
+                                    flex: 1,
+                                    sortable: false,
+                                    menuDisabled: true,
+                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                        var kaisuostyle = "使用密码开锁";
+
+                                        if (value == "1")
+                                            kaisuostyle = "管理密码开锁";
+                                        else if (value == "2")
+                                            kaisuostyle = "超级管理密码开锁";
+                                        else if (value == "3")
+                                            kaisuostyle = "钥匙开锁";
+                                        else if (value == "4")
+                                            kaisuostyle = "应急密码开锁";
+                                        else if (value == "5")
+                                            kaisuostyle = "超级管理员身份证开锁";
+                                        else if (value == "6")
+                                            kaisuostyle = "管理员身份证开锁";
+                                        else if (value == "7")
+                                            kaisuostyle = "授权单密码开锁";
+                                        else if (value == "8")
+                                            kaisuostyle = "授权单身份证主卡开锁";
+                                        else if (value == "9")
+                                            kaisuostyle = "授权单身份证副卡开锁";
+                                        else if (value == "a")
+                                            kaisuostyle = "预设用户密码开锁";
+                                        return kaisuostyle;
+                                    }
                                 }
 
 
@@ -1696,6 +1743,11 @@ Ext.onReady(function () {
 
                                             CS('CZCLZ.RoomDB.GetRoomGoods', function (retVal) {
                                                 goodsStore.loadData(retVal);
+                                            }, CS.onError, RoomId);
+
+                                            CS('CZCLZ.AuthorizeOrderDB.GetLockRecord', function (retVal) {
+                                                if (retVal.status)
+                                                    lockStore.loadData(retVal.dt);
                                             }, CS.onError, RoomId);
                                         });
                                     }

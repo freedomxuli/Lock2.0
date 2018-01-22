@@ -1067,22 +1067,29 @@ Ext.onReady(function () {
 
                     },
                     dockedItems: [
+                                 {
+                                     xtype: 'toolbar',
+                                     dock: 'top',
+                                     items: [
+                                          {
+                                              xtype: 'combobox',
+                                              id: 'cx_mc',
+                                              fieldLabel: '选择门店',
+                                              width: 360,
+                                              labelWidth: 60,
+                                              store: HotelStore,
+                                              queryMode: 'local',
+                                              displayField: 'TEXT',
+                                              valueField: 'VALUE',
+                                              value: ''
+                                          }
+                                     ]
+                                 },
                                 {
                                     xtype: 'toolbar',
                                     dock: 'top',
                                     items: [
-                                        {
-                                            xtype: 'combobox',
-                                            id: 'cx_mc',
-                                            fieldLabel: '选择门店',
-                                            width: 180,
-                                            labelWidth: 60,
-                                            store: HotelStore,
-                                            queryMode: 'local',
-                                            displayField: 'TEXT',
-                                            valueField: 'VALUE',
-                                            value: ''
-                                        },
+                                       
                                         //{
                                         //    xtype: 'textfield',
                                         //    id: 'cx_mc',

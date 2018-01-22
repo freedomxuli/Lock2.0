@@ -457,7 +457,7 @@ public class RoomDB
             {
                 string sqlStr = "select a.*,b.Name from Lock_Room a left join Lock_RoomStyle b on a.RoomStyleId=b.ID where a.ID=" + ID;
                 DataTable dt = dbc.ExecuteDataTable(sqlStr);
-                sqlStr = "select * from Lock_RoomGoodsTag where RoomId=" + ID;
+                sqlStr = "select a.*,b.TagName TagName1,b.Unit from Lock_RoomGoodsTag a inner join Lock_GoodsTag b on a.TagId=b.ID where RoomId=" + ID;
                 DataTable dt1 = dbc.ExecuteDataTable(sqlStr);
                 return new { dt = dt, dt1 = dt1 };
             }

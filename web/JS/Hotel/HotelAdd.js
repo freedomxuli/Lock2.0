@@ -1,6 +1,6 @@
 ﻿var id = queryString.id;
 var picItem = [];
-var tag;
+var tag = [];
 
 var dqstore = Ext.create('Ext.data.Store', {
     fields: ['VALUE', 'TEXT'],
@@ -78,6 +78,7 @@ Ext.onReady(function () {
                                 },
                                 border: true,
                                 width: 850,
+                                height: 1900,
                                 // margin: 10,
 
                                 items: [
@@ -699,17 +700,40 @@ Ext.onReady(function () {
                                               },
                                                 {
                                                     xtype: 'checkboxgroup',
-                                                    id: 'tagGroup',
+                                                    id: 'checkboxgroup1',
                                                     margin: '10 10 10 10',
-                                                    layout: {
-                                                        type: 'table'
-                                                    },
                                                     fieldLabel: '门店标签',
                                                     columnWidth: 1,
                                                     labelWidth: 80,
+                                                    listeners: {
+                                                        render: function (view, opt) {
+                                                            LoadingOperationBehavior()
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    xtype: 'checkboxgroup',
+                                                    id: 'ck',
+                                                    layout: {
+                                                        type: 'table'
+                                                    },
+                                                    columnWidth: 1,
                                                     items: [
                                                     ]
                                                 }
+                                                //{
+                                                //    xtype: 'checkboxgroup',
+                                                //    id: 'tagGroup',
+                                                //    margin: '10 10 10 10',
+                                                //    layout: {
+                                                //        type: 'table'
+                                                //    },
+                                                //    fieldLabel: '门店标签',
+                                                //    columnWidth: 1,
+                                                //    labelWidth: 80,
+                                                //    items: [
+                                                //    ]
+                                                //}
                                 ]
 
                             }
@@ -781,10 +805,12 @@ Ext.onReady(function () {
                                         var tagids = [];
                                         var tagvalues = [];
                                         for (var i in tag) {
-                                            var tagvalue = Ext.getCmp(tag[i]["ZDBID"] + "").getValue();
-                                            if (tagvalue != "") {
-                                                tagids.push(tag[i]["ZDBID"]);
-                                                tagvalues.push(tagvalue);
+                                            if ($("#" + tag[i]["ZDBID"] + "").length > 0) {
+                                                var tagvalue = Ext.getCmp(tag[i]["ZDBID"] + "").getValue();
+                                                if (tagvalue != "") {
+                                                    tagids.push(tag[i]["ZDBID"]);
+                                                    tagvalues.push(tagvalue);
+                                                }
                                             }
                                         }
 
@@ -828,36 +854,96 @@ Ext.onReady(function () {
     initwebupload("filePicker", "fileList", 5);
 });
 
+function LoadingOperationBehavior() {
+
+    //CS('CZCLZ.SystemDB.GetTag', function (ret) {
+    //    if (ret) {
+
+    //    }
+    //}, CS.onError, 1, '');
+
+
+}
 
 function initData() {
     CS('CZCLZ.SystemDB.GetTag', function (ret) {
         if (ret) {
             tag = ret;
-            var Items = [];
+
+            var checkboxgroup = Ext.getCmp("checkboxgroup1");
             for (var i = 0; i < ret.length; i++) {
+                var isCheck = false;
+                if (ret[i].VALUE != "" && ret[i].VALUE != undefined)
+                    isCheck = true;
+                var checkbox = new Ext.form.Checkbox(
+                  {
+                      boxLabel: ret[i].MC,
+                      name: ret[i].Unit,
+                      inputValue: ret[i].ZDBID,
+                      id: ret[i].ZDBID + "id",
+                      checked: isCheck,
+                      unit: ret[i].Unit,
+                      listeners: {
+                          change: function (e, newValue, oldValue, eOpts) {
+                              if (newValue) {
+                                  var tf = new Ext.form.TextField({
+                                      xtype: 'textfield',
+                                      margin: '10 10 10 10',
+                                      labelWidth: 80,
+                                      fieldLabel: e.boxLabel,
+                                      id: e.inputValue,
 
-                var tf = new Ext.form.TextField({
-                    xtype: 'textfield',
-                    margin: '10 10 10 10',
-                    labelWidth: 80,
-                    fieldLabel: ret[i].MC,
-                    id: ret[i].ZDBID + '',
-                    value: ret[i].VALUE,
-                    name: ret[i].ZDBID + '',
+                                      columnWidth: 0.5
+                                  });
+                                  Ext.getCmp("addform").items.add(tf);
 
-                    columnWidth: 0.4
-                });
-                Ext.getCmp("addform").items.add(tf);
+                                  //var df = new Ext.form.DisplayField({
+                                  //    xtype: 'displayfield',
+                                  //    margin: '10 10 10 10',
+                                  //    columnWidth: 0.1,
+                                  //    value: e.name
+                                  //});
+                                  // Ext.getCmp("addform").items.add(df);
+                              }
+                              else {
+                                  var bq = Ext.getCmp(e.inputValue);
 
-                var df = new Ext.form.DisplayField({
-                    xtype: 'displayfield',
-                    margin: '10 10 10 10',
-                    columnWidth: 0.1,
-                    value: ret[i].Unit
-                });
-                Ext.getCmp("addform").items.add(df);
+                                  Ext.getCmp("addform").remove(bq);
+                              }
+                              Ext.getCmp("addform").doLayout();
+                          }
+                      }
+                  });
+                checkboxgroup.items.add(checkbox);
             }
-            Ext.getCmp("tagGroup").add(Items);
+
+            Ext.getCmp("addform").doLayout();
+
+            for (var i = 0; i < ret.length; i++) {
+                if (ret[i].VALUE != "" && ret[i].VALUE != undefined) {
+                    var tf = new Ext.form.TextField({
+                        xtype: 'textfield',
+                        margin: '10 10 10 10',
+                        labelWidth: 80,
+                        fieldLabel: ret[i].MC,
+                        id: ret[i].ZDBID + '',
+                        value: ret[i].VALUE,
+                        name: ret[i].ZDBID + '',
+
+                        columnWidth: 0.5
+                    });
+                    Ext.getCmp("addform").items.add(tf);
+                }
+
+                //var df = new Ext.form.DisplayField({
+                //    xtype: 'displayfield',
+                //    margin: '10 10 10 10',
+                //    columnWidth: 0.1,
+                //    value: ret[i].Unit
+                //});
+                //Ext.getCmp("addform").items.add(df);
+            }
+            ///  Ext.getCmp("tagGroup").add(Items);
             if (id != null && id != "") {
                 CS('CZCLZ.HotelDB.GetHotelInfo', function (retVal) {
                     if (retVal) {

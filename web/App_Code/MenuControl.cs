@@ -167,17 +167,17 @@ public class MenuControl
                     string RoleName = Task.TaskNum.GetRoleName();
                     if (RoleName.Equals("房东"))
                     {
-                        if (msg != "字典管理,approot/r/page/Dictionary/zdb.html|字典类型管理,approot/r/page/Dictionary/zdblx.html")
+                        //if (msg != "字典管理,approot/r/page/Dictionary/zdb.html|字典类型管理,approot/r/page/Dictionary/zdblx.html")
+                        //{
+                        string numHtml = "";
+                        int TaskNum = Task.TaskNum.GetTaskNum(msg);
+                        if (TaskNum > 0)
                         {
-                            string numHtml = "";
-                            int TaskNum = Task.TaskNum.GetTaskNum(msg);
-                            if (TaskNum > 0)
-                            {
-                                numHtml = "<font style=\"color:red;font-size:13px;font-weight:bold\">+" + TaskNum + "</font>";
-                            }
-
-                            lis += "+ '<li class=\"fore\"><a class=\"MenuItem\" href=\"page/TabMenu.html?msg=" + msg + "\" target=\"mainframe\"><img height=16 width=16 align=\"absmiddle\" style=\"border:0\" src=\"../CSS/images/application.png\" />　" + secname + numHtml + "</a></li>'";
+                            numHtml = "<font style=\"color:red;font-size:13px;font-weight:bold\">+" + TaskNum + "</font>";
                         }
+
+                        lis += "+ '<li class=\"fore\"><a class=\"MenuItem\" href=\"page/TabMenu.html?msg=" + msg + "\" target=\"mainframe\"><img height=16 width=16 align=\"absmiddle\" style=\"border:0\" src=\"../CSS/images/application.png\" />　" + secname + numHtml + "</a></li>'";
+                        // }
                     }
                     else if (RoleName.Equals("门店管理员"))
                     {
