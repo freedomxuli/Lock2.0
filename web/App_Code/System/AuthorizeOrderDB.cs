@@ -33,7 +33,7 @@ public class AuthorizeOrderDB
                     mStr += " and " + dbc.C_Like("a.RoomNo", fjh.Trim(), LikeStyle.LeftAndRightLike);
                 if (!string.IsNullOrEmpty(bgmc))
                     mStr += " and " + dbc.C_Like("a.HotelName", bgmc.Trim(), LikeStyle.LeftAndRightLike);
-                if (!string.IsNullOrEmpty(bgmc))
+                if (!string.IsNullOrEmpty(sqzt))
                     mStr += " and AuthorStatus=" + sqzt;
 
 

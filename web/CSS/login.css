@@ -1,0 +1,327 @@
+﻿body{
+	background: #f5f5f6;
+}
+.user-login{
+	min-width:1000px;
+}
+.lianjia-footer-simple{
+	height: 60px;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	min-width:1000px;
+	background: #f5f5f6;
+	padding-top: 0;
+	padding-bottom: 20px;
+}
+.lianjia-footer-reg{
+	margin-top: 100px;
+	text-align: center;
+	width: 100%;
+	min-width:1000px;
+	background: #f5f5f6;
+	color:#999;
+	font-size: 12px;
+}
+.headerBox{
+	position: relative;
+    line-height: 55px;
+    height: 55px;
+    width: 100%;
+    margin-bottom: 40px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9e9ea\9;
+}
+.headerLogo{
+	display: inline-block;
+    height: 55px;
+    width: 151px;
+}
+.gotoIndex{
+	position: absolute;
+    color: #6C707A;
+    font-size: 14px;
+    right: 19px;
+    text-decoration: none;
+}
+.gotoIndex:after{
+	content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(../images/sprite.png) 396px -99px;
+    margin-left: 10px;
+}
+
+.basisyle{
+	display: block;
+	width: 372px;
+	margin: 0 auto;
+    height: 55px;
+    line-height: 55px;
+    font-size: 14px;
+    outline: none;
+    border: none;
+}
+
+.basisyle1{
+	display: block;
+	width: 372px;
+	margin: 0 auto;
+    height: 120px;
+    line-height: 25px;
+    font-size: 14px;
+    outline: none;
+    border: none;
+}
+
+.inputText{
+    text-indent: 19px;
+    border: 1px solid #e4e4e4;
+    border-top: none;
+}
+
+.btnStyle{
+    text-align: center;
+    background: #39ac6a;
+    background: -ms-linear-gradient(top, #00ae66 ,  #00bf70);
+    background:-moz-linear-gradient(top,#00ae66,#00bf70);
+    background: -webkit-linear-gradient(top, #00ae66 , #00bf70);
+    background: -o-linear-gradient(top, #00ae66 , #00bf70);
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+    margin: 25px auto;
+    border-radius: 3px;
+}
+.nullBotborder{
+	border-bottom: none;
+}
+.wrapper,.wrapper li {
+	position: relative;
+}
+
+.twoStep{
+	display: none;
+}
+.wrapper .topSpecial{
+	border-top: 1px solid #e4e4e4;
+	border-radius: 3px 3px 0 0;
+}
+.wrapper .botSpecial{
+	border-radius: 0 0 3px 3px;
+}
+.wrapper h1{
+	margin: 0 auto;
+	width: 372px;
+	font-size: 35px;
+	margin-bottom: 28px;
+}
+.guideBox{
+	position: absolute;
+    left: 575px;
+    top: 25px;
+}
+.guideBox a{
+	color:#39ac6a;
+}
+
+.resetPhone{
+	text-align: center;
+}
+
+.send {
+	position: absolute;
+	left:562px;
+	top: 11px;
+	width: 112px;
+	height: 33px;
+	line-height: 33px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	text-align: center;
+	color: #999;
+	font-size: 14px;
+	text-decoration: none;
+	cursor: pointer;
+	background: -webkit-linear-gradient(top, #fff, #fafafa);
+	background: -moz-linear-gradient(top, #fff, #fafafa);
+	background: -o-linear-gradient(top, #fff, #fafafa);
+	background: -ms-linear-gradient(top, #fff, #fafafa)
+}
+
+/*错误提示*/
+.wrapper .error .errorBox{
+	position: absolute;
+    left: 703px;
+    top: 7px;
+    padding: 10px;
+    border-radius: 3px;
+    background: #fa5741;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 900;
+    white-space:nowrap;
+}
+.errorBox .pull-right{
+	margin-left: 10px;
+}
+.errorBox .pull-right a{
+	color:#fff;
+	text-decoration:underline;
+}
+.wrapper .triangle{
+	position: absolute;
+    left: -9px;
+    bottom: 15px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 5px solid;
+    border-color: transparent #fa5741 transparent transparent;
+}
+.tipStyle{
+	display: inline-block;
+    height: 20px;
+    width: 24px;
+	position: absolute;
+    left: 700px;
+    top: 20px;
+}
+.correctTip{
+	background: url(../images/hint.png) 0 0;
+}
+.errorTip{
+	background: url(../images/hint.png) 0 -132px;
+}
+
+/*语音提示*/
+.error .yuyinStyle{
+	width: 372px;
+    margin: 0 auto;
+    background: #fff;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+    padding-bottom: 10px;
+}
+.yuyin{
+    width: 94%;
+    margin: 0 auto;
+    text-align: center;
+    padding: 10px 0;
+    background: #fbfbfb;
+	color: #9c9fa1;
+    border-radius: 3px;
+}
+.yuyin a{
+	color:#4fac6a;
+}
+
+/*验证码*/
+.verifyLayer {
+	background-color: #fff;
+	position: absolute;
+	padding: 45px 40px;
+	-webkit-animation: fadeIn .3s ease-in;
+	-moz-animation: fadeIn .3s ease-in;
+	-ms-animation: fadeIn .3s ease-in;
+	-o-animation: fadeIn .3s ease-in;
+	animation: fadeIn .3s ease-in
+}
+
+.verifyLayer button,.verifyLayer input {
+	width: 160px;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 20px;
+	vertical-align: middle;
+	border: 1px solid #d0d0d0;
+	border-radius: 3px;
+	color: #333;
+	font-size: 14px
+}
+
+.verifyLayer img {
+	width: 90px;
+	height: 40px;
+	vertical-align: middle;
+	border: 1px solid #d0d0d0;
+	margin-left: 15px
+}
+
+.verifyLayer button {
+	margin-top: 30px;
+	text-align: center;
+	width: 90px;
+	display: block;
+	color: #433;
+	background-color: #fff;
+	cursor: pointer
+}
+.verifyLayer .hintTitle{
+	display: block;
+	font-size: 22px;
+	color:#384043;
+	margin-bottom: 10px;
+}
+
+.verifyLayer .error {
+	color: #e4393c;
+	display: block
+}
+
+.verifyLayer a {
+	position: absolute;
+	top: 5px;
+	right: 10px;
+	font-size: 16px;
+	color:#808080;
+	text-decoration: none;
+}
+.verifyLayer .error p{
+	margin-top: 10px;
+}
+
+/*修改成功*/
+.amendSucc{
+	display: none;
+    width: 372px;
+    margin: 0 auto;
+    text-align: center;
+}
+.titleSucc{
+	font-size: 35px;
+    margin-bottom: 10px;
+}
+.tipSucc{
+	color:#9c9fa1;
+}
+.tipTime{
+	color:#39ac6a;
+}
+.goLogin,.goIndex{
+	display: inline-block;
+	width: 142px;
+	height: 55px;
+	line-height: 55px;
+}
+.goLogin{
+	margin-right: 36px;
+}
+
+/*注册同意文案*/
+.mt10 label{
+	display: block;
+    width: 374px;
+    margin:0 auto;
+    padding-top: 25px;
+}
+.mt10 .alwayCheck{
+	margin-right: 6px;
+}
+.mt10 a{
+	color:#39ac6a;
+}
+.mt10 .errorBox{
+	top: 11px;
+}

@@ -1,0 +1,200 @@
+﻿/*选择图片框样式*/
+#div_imgfile {
+    width: 130px;
+    height: 130px;
+    text-align: center;
+    line-height: 130px;
+    font-family: 微软雅黑;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: 2px solid #808080;
+    cursor: pointer;
+}
+    /*选择图片框鼠标移入移出效果*/
+    #div_imgfile:hover {
+        background-color: #d1cfcf;
+    }
+
+.imgfile {
+    display: none;
+}
+
+/*这里是图片预览容器样式*/
+/*#div_imglook {
+    margin-top: 20px;
+    background-color: #FFEFD5;
+}*/
+
+/*单个图片预览模块样式*/
+.lookimg {
+    width: 130px;
+    height: 130px;
+    float: left;
+    margin: 20px auto;
+    position: relative;
+}
+
+    .lookimg img {
+        width: 100%;
+        height: 100%;
+    }
+
+/*删除按钮样式*/
+.lookimg_delBtn {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    background-color: #808080;
+    opacity: 0.8;
+    color: white;
+    font-size: 16px;
+    font-family: 微软雅黑;
+    display: none;
+    cursor: pointer;
+    margin-left:20px;
+}
+
+    /*删除按钮移入移出效果*/
+    .lookimg_delBtn:hover {
+        opacity: 1;
+    }
+
+/*****************************************************************************************************/
+
+    /*选择图片框样式*/
+#div_imgfile1 {
+    width: 130px;
+    height: 130px;
+    text-align: center;
+    line-height: 130px;
+    font-family: 微软雅黑;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: 2px solid #808080;
+    cursor: pointer;
+}
+    /*选择图片框鼠标移入移出效果*/
+    #div_imgfile1:hover {
+        background-color: #d1cfcf;
+    }
+
+.imgfile1 {
+    display: none;
+}
+
+/*这里是图片预览容器样式*/
+/*#div_imglook {
+    margin-top: 20px;
+    background-color: #FFEFD5;
+}*/
+
+/*单个图片预览模块样式*/
+.lookimg1 {
+    width: 130px;
+    height: 130px;
+    float: left;
+    margin: 20px auto;
+    position: relative;
+}
+
+    .lookimg1 img {
+        width: 100%;
+        height: 100%;
+    }
+
+/*删除按钮样式*/
+.lookimg_delBtn1 {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    background-color: #808080;
+    opacity: 0.8;
+    color: white;
+    font-size: 16px;
+    font-family: 微软雅黑;
+    display: none;
+    cursor: pointer;
+    margin-left:20px;
+}
+
+    /*删除按钮移入移出效果*/
+    .lookimg_delBtn1:hover {
+        opacity: 1;
+    }
+
+
+    
+/*****************************************************************************************************/
+
+    /*选择图片框样式*/
+#div_imgfile2 {
+    width: 130px;
+    height: 130px;
+    text-align: center;
+    line-height: 130px;
+    font-family: 微软雅黑;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: 2px solid #808080;
+    cursor: pointer;
+}
+    /*选择图片框鼠标移入移出效果*/
+    #div_imgfile2:hover {
+        background-color: #d1cfcf;
+    }
+
+.imgfile2 {
+    display: none;
+}
+
+/*这里是图片预览容器样式*/
+/*#div_imglook {
+    margin-top: 20px;
+    background-color: #FFEFD5;
+}*/
+
+/*单个图片预览模块样式*/
+.lookimg2 {
+    width: 130px;
+    height: 130px;
+    float: left;
+    margin: 20px auto;
+    position: relative;
+}
+
+    .lookimg2 img {
+        width: 100%;
+        height: 100%;
+    }
+
+/*删除按钮样式*/
+.lookimg_delBtn2 {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    background-color: #808080;
+    opacity: 0.8;
+    color: white;
+    font-size: 16px;
+    font-family: 微软雅黑;
+    display: none;
+    cursor: pointer;
+    margin-left:20px;
+}
+
+    /*删除按钮移入移出效果*/
+    .lookimg_delBtn2:hover {
+        opacity: 1;
+    }

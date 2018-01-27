@@ -165,7 +165,7 @@
 </html>--%>
 
 
-<%@ Page Language="C#" %>
+
 
 <!DOCTYPE html>
 
@@ -274,6 +274,16 @@
             left: -249px;
             cursor: pointer;
         }
+          #mmxg {
+            width: 50px;
+            height: 35px;
+            font-size:16px;
+            color:blue;
+            position: relative;
+            top: 412px;
+            left: -230px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body onkeydown="Send()">
@@ -281,7 +291,7 @@
         <input id="username" type="text" />
         <input id="password" type="password" />
         <input id="yzm" type="text" />
-        <img id="imgcode" src="captcha.aspx?vctype=log" style="cursor: pointer; vertical-align: top;" onclick='code(this);' />
+        <img id="imgcode" src="captcha.aspx?vctype=log" style="cursor: pointer; vertical-align: top;width:80px;" onclick='code(this);'  /><a href="main/Register.aspx" id="mmxg">忘记密码?</a>
         <img src="Images/login/login_btn.png" id="btnSubmit" />
     </div>
     <script type="text/javascript">
