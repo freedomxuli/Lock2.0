@@ -301,6 +301,11 @@ Ext.define('Buttons', {
                                         if (retVal.status)
                                             lockStore.loadData(retVal.dt);
                                     }, CS.onError, me.roomid);
+
+                                    CS('CZCLZ.AuthorizeOrderDB.GetItemsStatusRecord', function (retVal) {
+                                        if (retVal.status)
+                                            sbStatusStore.loadData(retVal.dt);
+                                    }, CS.onError, me.roomid);
                                 });
                             }
                         },
@@ -402,6 +407,16 @@ var sbStore = Ext.create('Ext.data.Store', {
        { name: 'DeviceSN', type: 'string' },
        { name: 'TypeName', type: 'string' },
        { name: 'BindSuccess', type: 'string' }
+    ]
+
+});
+
+var sbStatusStore = Ext.create('Ext.data.Store', {
+    fields: [
+       { name: 'DeviceName', type: 'string' },
+       { name: 'ConnectStatus', type: 'string' },
+       { name: 'RunStatus', type: 'string' },
+       { name: 'LockStatus', type: 'string' }
     ]
 
 });
@@ -521,213 +536,260 @@ Ext.define('fjxxWin', {
                              }
                         ]
                     },
-                     {
-                         xtype: 'gridpanel',
-                         margin: '0 0 0 0',
-                         title: '入住记录',
-                         store: rzjlStore,
-                         columnLines: true,
-                         border: true,
-                         autoscroll: true,
-                         columns: [Ext.create('Ext.grid.RowNumberer'),
-                              {
-                                  xtype: 'gridcolumn',
-                                  dataIndex: 'RealName',
-                                  align: 'center',
-                                  text: '房客',
-                                  flex: 1,
-                                  sortable: false,
-                                  menuDisabled: true
-                              },
+                    {
+                        xtype: 'gridpanel',
+                        margin: '0 0 0 0',
+                        title: '入住记录',
+                        store: rzjlStore,
+                        columnLines: true,
+                        border: true,
+                        autoscroll: true,
+                        columns: [Ext.create('Ext.grid.RowNumberer'),
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'RealName',
+                                align: 'center',
+                                text: '房客',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
 
-                             {
-                                 xtype: 'gridcolumn',
-                                 dataIndex: 'CellPhone',
-                                 align: 'center',
-                                 text: '手机',
-                                 width: 100,
-                                 sortable: false,
-                                 menuDisabled: true
-                             },
-                             {
-                                 xtype: 'datecolumn',
-                                 dataIndex: 'LiveStartDate',
-                                 format: 'Y-m-d H:i',
-                                 align: 'center',
-                                 text: '开始时间',
-                                 flex: 1,
-                                 sortable: false,
-                                 menuDisabled: true
-                             },
-                              {
-                                  xtype: 'datecolumn',
-                                  dataIndex: 'LiveEndDate',
-                                  format: 'Y-m-d H:i',
-                                  align: 'center',
-                                  text: '结束时间',
-                                  flex: 1,
-                                  sortable: false,
-                                  menuDisabled: true
-                              },
-                               {
-                                   text: '操作',
-                                   width: 100,
-                                   align: 'center',
-                                   sortable: false,
-                                   menuDisabled: true,
-                                   renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                       var str;
-                                       str = "<a href='#' onclick='ckdd(\"" + record.data.AuthorizeNo + "\")'>查看订单</a>";
-                                       return str;
-                                   }
-                               }
-                         ]
-                     },
-                      {
-                          xtype: 'gridpanel',
-                          margin: '0 0 0 0',
-                          title: '物损记录',
-                          store: wsStore,
-                          columnLines: true,
-                          border: true,
-                          autoscroll: true,
-                          columns: [Ext.create('Ext.grid.RowNumberer'),
-                               {
-                                   xtype: 'gridcolumn',
-                                   dataIndex: 'ServiceRemark',
-                                   align: 'center',
-                                   text: '物损描述',
-                                   flex: 1,
-                                   sortable: false,
-                                   menuDisabled: true
-                               },
-
-                              {
-                                  xtype: 'gridcolumn',
-                                  dataIndex: 'DamagePrice',
-                                  align: 'center',
-                                  text: '物损金额',
-                                  flex: 1,
-                                  sortable: false,
-                                  menuDisabled: true
-                              },
-                              {
-                                  xtype: 'datecolumn',
-                                  dataIndex: 'FinishTime',
-                                  format: 'Y-m-d H:i',
-                                  align: 'center',
-                                  text: '上报时间',
-                                  flex: 1,
-                                  sortable: false,
-                                  menuDisabled: true
-                              }
-                          ]
-                      },
-                      {
-                          xtype: 'gridpanel',
-                          margin: '0 0 0 0',
-                          title: '设备信息',
-                          store: sbStore,
-                          columnLines: true,
-                          border: true,
-                          autoscroll: true,
-                          columns: [Ext.create('Ext.grid.RowNumberer'),
-                               {
-                                   xtype: 'gridcolumn',
-                                   dataIndex: 'DeviceName',
-                                   align: 'center',
-                                   text: '设备名称',
-                                   flex: 1,
-                                   sortable: false,
-                                   menuDisabled: true
-                               },
-
-                                {
-                                    xtype: 'gridcolumn',
-                                    dataIndex: 'TypeName',
-                                    align: 'center',
-                                    text: '设备类型',
-                                    flex: 1,
-                                    sortable: false,
-                                    menuDisabled: true
-                                },
-                                {
-                                    xtype: 'gridcolumn',
-                                    dataIndex: 'DeviceNo',
-                                    align: 'center',
-                                    text: '设备编号',
-                                    flex: 1,
-                                    sortable: false,
-                                    menuDisabled: true
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'CellPhone',
+                                align: 'center',
+                                text: '手机',
+                                width: 100,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                xtype: 'datecolumn',
+                                dataIndex: 'LiveStartDate',
+                                format: 'Y-m-d H:i',
+                                align: 'center',
+                                text: '开始时间',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                xtype: 'datecolumn',
+                                dataIndex: 'LiveEndDate',
+                                format: 'Y-m-d H:i',
+                                align: 'center',
+                                text: '结束时间',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                text: '操作',
+                                width: 100,
+                                align: 'center',
+                                sortable: false,
+                                menuDisabled: true,
+                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                    var str;
+                                    str = "<a href='#' onclick='ckdd(\"" + record.data.AuthorizeNo + "\")'>查看订单</a>";
+                                    return str;
                                 }
-                          ]
-                      },
-                       {
-                           xtype: 'gridpanel',
-                           margin: '0 0 0 0',
-                           title: '开锁信息',
-                           store: lockStore,
-                           columnLines: true,
-                           border: true,
-                           autoscroll: true,
-                           columns: [Ext.create('Ext.grid.RowNumberer'),
-                                {
-                                    xtype: 'gridcolumn',
-                                    dataIndex: 'date',
-                                    align: 'center',
-                                    text: '开锁日期',
-                                    flex: 1,
-                                    sortable: false,
-                                    menuDisabled: true,
-                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                        var regtime = /(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/;
-                                        regtime.test(value);
-                                        var t = "20" + RegExp.$1 + "." + RegExp.$2 + "." + RegExp.$3 + " " + RegExp.$4 + ":" + RegExp.$5;
-                                        return t;
-                                    }
-                                },
-                                {
-                                    xtype: 'gridcolumn',
-                                    dataIndex: 'type',
-                                    align: 'center',
-                                    text: '开锁方式',
-                                    flex: 1,
-                                    sortable: false,
-                                    menuDisabled: true,
-                                    renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                        var kaisuostyle = "使用密码开锁";
+                            }
+                        ]
+                    },
+                    {
+                        xtype: 'gridpanel',
+                        margin: '0 0 0 0',
+                        title: '物损记录',
+                        store: wsStore,
+                        columnLines: true,
+                        border: true,
+                        autoscroll: true,
+                        columns: [Ext.create('Ext.grid.RowNumberer'),
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'ServiceRemark',
+                                align: 'center',
+                                text: '物损描述',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
 
-                                        if (value == "1")
-                                            kaisuostyle = "管理密码开锁";
-                                        else if (value == "2")
-                                            kaisuostyle = "超级管理密码开锁";
-                                        else if (value == "3")
-                                            kaisuostyle = "钥匙开锁";
-                                        else if (value == "4")
-                                            kaisuostyle = "应急密码开锁";
-                                        else if (value == "5")
-                                            kaisuostyle = "超级管理员身份证开锁";
-                                        else if (value == "6")
-                                            kaisuostyle = "管理员身份证开锁";
-                                        else if (value == "7")
-                                            kaisuostyle = "授权单密码开锁";
-                                        else if (value == "8")
-                                            kaisuostyle = "授权单身份证主卡开锁";
-                                        else if (value == "9")
-                                            kaisuostyle = "授权单身份证副卡开锁";
-                                        else if (value == "a")
-                                            kaisuostyle = "预设用户密码开锁";
-                                        return kaisuostyle;
-                                    }
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'DamagePrice',
+                                align: 'center',
+                                text: '物损金额',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                xtype: 'datecolumn',
+                                dataIndex: 'FinishTime',
+                                format: 'Y-m-d H:i',
+                                align: 'center',
+                                text: '上报时间',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            }
+                        ]
+                    },
+                    {
+                        xtype: 'gridpanel',
+                        margin: '0 0 0 0',
+                        title: '设备信息',
+                        store: sbStore,
+                        columnLines: true,
+                        border: true,
+                        autoscroll: true,
+                        columns: [Ext.create('Ext.grid.RowNumberer'),
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'DeviceName',
+                                align: 'center',
+                                text: '设备名称',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'TypeName',
+                                align: 'center',
+                                text: '设备类型',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'DeviceNo',
+                                align: 'center',
+                                text: '设备编号',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            }
+                        ]
+                    },
+                    {
+                        xtype: 'gridpanel',
+                        margin: '0 0 0 0',
+                        title: '设备状态',
+                        store: sbStatusStore,
+                        columnLines: true,
+                        border: true,
+                        autoscroll: true,
+                        columns: [Ext.create('Ext.grid.RowNumberer'),
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'DeviceName',
+                                align: 'center',
+                                text: '设备名称',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'ConnectStatus',
+                                align: 'center',
+                                text: '连接状态',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'RunStatus',
+                                align: 'center',
+                                text: '运行状态',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            },
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'LockStatus',
+                                align: 'center',
+                                text: '开关状态',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true
+                            }
+                        ]
+                    },
+                    {
+                        xtype: 'gridpanel',
+                        margin: '0 0 0 0',
+                        title: '开锁信息',
+                        store: lockStore,
+                        columnLines: true,
+                        border: true,
+                        autoscroll: true,
+                        columns: [Ext.create('Ext.grid.RowNumberer'),
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'date',
+                                align: 'center',
+                                text: '开锁日期',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true,
+                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                    var regtime = /(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/;
+                                    regtime.test(value);
+                                    var t = "20" + RegExp.$1 + "." + RegExp.$2 + "." + RegExp.$3 + " " + RegExp.$4 + ":" + RegExp.$5;
+                                    return t;
                                 }
+                            },
+                            {
+                                xtype: 'gridcolumn',
+                                dataIndex: 'type',
+                                align: 'center',
+                                text: '开锁方式',
+                                flex: 1,
+                                sortable: false,
+                                menuDisabled: true,
+                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                    var kaisuostyle = "使用密码开锁";
+
+                                    if (value == "1")
+                                        kaisuostyle = "管理密码开锁";
+                                    else if (value == "2")
+                                        kaisuostyle = "超级管理密码开锁";
+                                    else if (value == "3")
+                                        kaisuostyle = "钥匙开锁";
+                                    else if (value == "4")
+                                        kaisuostyle = "应急密码开锁";
+                                    else if (value == "5")
+                                        kaisuostyle = "超级管理员身份证开锁";
+                                    else if (value == "6")
+                                        kaisuostyle = "管理员身份证开锁";
+                                    else if (value == "7")
+                                        kaisuostyle = "授权单密码开锁";
+                                    else if (value == "8")
+                                        kaisuostyle = "授权单身份证主卡开锁";
+                                    else if (value == "9")
+                                        kaisuostyle = "授权单身份证副卡开锁";
+                                    else if (value == "a")
+                                        kaisuostyle = "预设用户密码开锁";
+                                    return kaisuostyle;
+                                }
+                            }
 
 
-                           ]
-                       }
+                        ]
+                    }
                 ],
                 buttonAlign: 'center',
                 buttons: [
-
                     {
                         text: '关闭',
                         handler: function () {

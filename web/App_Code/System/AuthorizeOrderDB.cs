@@ -395,6 +395,45 @@ public class AuthorizeOrderDB
         }
     }
 
+    [CSMethod("GetItemsStatusRecord")]
+    public object GetItemsStatusRecord(int roomid)
+    {
+        try
+        {
+            string url = "http://wx.zhisuroom.com/API/LockHandler.ashx";
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("interface", "GetDevStaRecord");
+            parameters.Add("roomid", roomid.ToString());
+
+            string result = WebService.CallService(url, parameters);
+            JObject json = JsonConvert.DeserializeObject(result) as JObject;
+            JSReader jsr = JSReader.ParseJSON(json["Info"].ToString());
+            DataTable dt = new DataTable();
+            dt.Columns.Add("DeviceName");
+            dt.Columns.Add("ConnectStatus");
+            dt.Columns.Add("RunStatus");
+            dt.Columns.Add("LockStatus");
+            for (int i = 0; i < jsr.Count(); i++)
+            {
+                DataRow dr = dt.NewRow();
+                dr["DeviceName"] = jsr[i]["DeviceName"].ToString();
+                dr["ConnectStatus"] = jsr[i]["ConnectStatus"].ToString();
+                dr["RunStatus"] = jsr[i]["RunStatus"].ToString();
+                dr["LockStatus"] = jsr[i]["LockStatus"].ToString();
+                dt.Rows.Add(dr);
+            }
+
+            DataView dv = dt.DefaultView;
+            DataTable dt2 = dv.ToTable();
+
+            return new { status = true, dt = dt2 };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
     [CSMethod("GetMemberInfo")]
     public object GetMemberInfo(int ID)
     {

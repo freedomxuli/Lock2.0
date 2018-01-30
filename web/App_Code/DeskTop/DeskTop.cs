@@ -204,7 +204,7 @@ public class DeskTop
                                  b.RoomGuidNumber,case when a.AuthorRoomStyle = 1 then '全天' when a.AuthorRoomStyle = 2 then '钟点' when a.AuthorRoomStyle = 3 then '月租' when a.AuthorRoomStyle = 4 then '看房' end AuthorRoomStyle
                                  FROM Lock_AuthorizeOrder a 
                                  LEFT JOIN Lock_Room b on a.RoomId = b.ID
-                                 WHERE a.FDUsreId = @FDUsreId AND a.AuthorLiveStatus in (0,1,2,3,4,6,16)";
+                                 WHERE a.FDUsreId = @FDUsreId AND a.AuthorLiveStatus in (0,1,2,3,4,6,16) AND a.AuthorizeBookStatus in (1,2)";
                 SqlCommand cmd = db.CreateCommand(sql_order);
                 cmd.Parameters.AddWithValue("@FDUsreId", user.UserID);
                 DataTable dt_order = db.ExecuteDataTable(cmd);
