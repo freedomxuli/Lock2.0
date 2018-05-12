@@ -8,11 +8,15 @@ var FinanceStore = createSFW4Store({
     pageSize: pageSize,
     total: 1,
     currentPage: 1,
-    fields: ['StartTime', 'EndTime', 'HotelName', 'FinanceStatus', 'JSStatus', 'TotalPrice', 'PlatYJ', 'ID'],
+    fields: ['StartTime', 'EndTime', 'HotelName', 'FinanceStatus', 'JSStatus', 'TotalPrice', 'PlatYJ', 'ID', 'HotelId'],
     //sorters: [{ property: 'b', direction: 'DESC'}],
     onPageChange: function (sto, nPage, sorters) {
         loadData(nPage);
     }
+});
+
+var MxStore = Ext.create('Ext.data.Store', {
+    fields: ['LiveStartTime', 'LiveEndTime', 'RealName', 'AuthorizeNo', 'RoomNo', 'ActualTotalPrice']
 });
 
 Ext.onReady(function () {
@@ -98,8 +102,12 @@ Ext.onReady(function () {
                                 menuDisabled: true,
                                 text: '操作',
                                 renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
+                                    var html = "";
                                     if (record.data.FinanceStatus == "2" && record.data.JSStatus == "0")
-                                        return "<a href='javascript:void(0);' onclick='Confirm(\"" + value + "\");'>确认</a>";
+                                        html += "<a href='javascript:void(0);' onclick='Confirm(\"" + value + "\");'>确认</a>　<a href='javascript:void(0);' onclick='ShowDetail(\"" + value + "\",\"" + record.data.HotelId + "\");'>查看详情</a>";
+                                    else
+                                        html += "<a href='javascript:void(0);' onclick='ShowDetail(\"" + value + "\",\"" + record.data.HotelId + "\");'>查看详情</a>";
+                                    return html;
                                 }
                             }
                         ],
@@ -173,7 +181,7 @@ function loadData(nPage) {
                 currentPage: retVal.cp
             });
         }
-    }, CS.onError, nPage, pageSize, Ext.getCmp('HotelSelect').getValue())
+    }, CS.onError, nPage, pageSize, Ext.getCmp('HotelSelect').getValue());
 }
 
 function Confirm(id) {
@@ -260,3 +268,101 @@ Ext.define('czmmWin', {
         me.callParent(arguments);
     }
 });
+
+Ext.define('detailWin', {
+    extend: 'Ext.window.Window',
+
+    height: 600,
+    width: 700,
+    layout: {
+        type: 'fit'
+    },
+    id: 'detailWin',
+    modal: true,
+    title: '授权单明细',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'gridpanel',
+                columnLines: 1,
+                border: 1,
+                store: MxStore,
+                columns: [
+                    {
+                        xtype: 'datecolumn',
+                        dataIndex: 'LiveStartTime',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        format: 'Y-m-d',
+                        text: '入住日期'
+                    },
+                    {
+                        xtype: 'datecolumn',
+                        dataIndex: 'LiveEndTime',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        format: 'Y-m-d',
+                        text: '退房日期'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'RealName',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        text: '姓名'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'AuthorizeNo',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        text: '授权单号'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'RoomNo',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        text: '入住房间号'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'ActualTotalPrice',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        text: '线上支付'
+                    },
+                    {
+                        xtype: 'gridcolumn',
+                        dataIndex: 'ActualTotalPrice',
+                        flex: 1,
+                        sortable: false,
+                        menuDisabled: true,
+                        text: '本单实收'
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
+
+function ShowDetail(id,hotelid)
+{
+    var winDetail = new detailWin();
+    winDetail.show(null, function () {
+        CS('CZCLZ.FinanceDB.GetFinanceDetail', function (retVal) {
+            if (retVal)
+            {
+                MxStore.loadData(retVal);
+            }
+        }, CS.onError, id, hotelid);
+    });
+}

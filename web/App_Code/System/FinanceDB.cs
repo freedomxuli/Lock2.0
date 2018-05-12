@@ -147,7 +147,7 @@ public class FinanceDB
     }
 
     [CSMethod("ApplyListNew")]
-    public object GetFinanceList(int pagnum, int pagesize, int zt)
+    public object ApplyListNew(int pagnum, int pagesize, int zt)
     {
         using (DBConnection dbc = new DBConnection())
         {
