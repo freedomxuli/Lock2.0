@@ -93,6 +93,7 @@ public class MenuControl
                 <Item Name='门店管理'>
                    <Tab p='' Name='已上线'>approot/r/page/Hotel/HotelManage.html</Tab>
                    <Tab p='' Name='待上线'>approot/r/page/Hotel/HotelApply.html</Tab>
+                   <Tab p='' Name='已下线'>approot/r/page/Hotel/HotelOffline.html</Tab>
                 </Item>
                <Item Name='房间管理'>
                    <Tab p='' Name='房间管理'>approot/r/page/Hotel/RoomManage.html</Tab>

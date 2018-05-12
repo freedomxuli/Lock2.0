@@ -4,6 +4,7 @@ using SmartFramework4v2.Web.Common.JSON;
 using SmartFramework4v2.Web.WebExcutor;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -61,8 +62,9 @@ public class HotelDB
                 for (int i = 0; i < jsr.ToArray().Length; i++)
                 {
                     int ID = jsr.ToArray()[i].ToInteger();
-                    dbc.ExecuteNonQuery("delete from Lock_Hotel where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
-                    dbc.ExecuteNonQuery("delete from Lock_Room where HotelId=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
+                    dbc.ExecuteNonQuery("insert into Lock_HotelOffline select * from Lock_Hotel where ID=" + ID);
+                    dbc.ExecuteNonQuery("delete from Lock_Hotel where ID=" + ID);
+                    dbc.ExecuteNonQuery("delete from Lock_Room where HotelId=" + ID);
                 }
                 dbc.CommitTransaction();
                 return true;
@@ -242,7 +244,7 @@ public class HotelDB
                         else
                             drHotel["Image" + i] = "";
                     }
-                  
+
                 }
                 else
                 {
@@ -477,8 +479,8 @@ public class HotelDB
                 for (int i = 0; i < jsr.ToArray().Length; i++)
                 {
                     int ID = jsr.ToArray()[i].ToInteger();
-                    dbc.ExecuteNonQuery("delete from Lock_BJBelong where ID=" + ID);
 
+                    dbc.ExecuteNonQuery("delete from Lock_BJBelong where ID=" + ID);
                 }
                 dbc.CommitTransaction();
                 return true;
@@ -487,6 +489,58 @@ public class HotelDB
             {
                 dbc.RoolbackTransaction();
                 throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetOfflineHotelList")]
+    public object GetOfflineHotelList(int pagnum, int pagesize, string hotelName)
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                int cp = pagnum;
+                int ac = 0;
+
+                string where = "";
+                if (!string.IsNullOrEmpty(hotelName))
+                {
+                    where += " and " + dbc.C_Like("HotelName", hotelName, LikeStyle.LeftAndRightLike);
+                }
+
+
+                string str = @"select a.*,b.CellPhone,b.RealName from Lock_HotelOffline a left join aspnet_Members b on a.UserId=b.UserId 
+                where (a.UserId in(select MEUSERID from aspnet_FdAndMdUser where FDUSERID=" + SystemUser.CurrentUser.UserID + ") or a.UserId=" + SystemUser.CurrentUser.UserID + ")";
+                str += where;
+
+                //开始取分页数据
+                System.Data.DataTable dtPage = new System.Data.DataTable();
+                dtPage = dbc.GetPagedDataTable(str + " order by a.CreateDate desc", pagesize, ref cp, out ac);
+
+                return new { dt = dtPage, cp = cp, ac = ac };
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+    }
+
+    [CSMethod("GetSQM")]
+    public object GetSQM()
+    {
+        using (var dbc = new DBConnection())
+        {
+            string sql = "select UserName from aspnet_Users where UserId=" + SystemUser.CurrentUser.UserID;
+            string username = dbc.ExecuteScalar(sql).ToString();
+
+            using (SmartFramework4v2.Data.MySql.DBConnection db = new SmartFramework4v2.Data.MySql.DBConnection(ConfigurationManager.ConnectionStrings["DzfConnStr"].ConnectionString))
+            {
+                sql = "select DealerAuthoriCode from tb_b_landlord where LoginName='" + username + "'";
+                DataTable dt = db.ExecuteDataTable(sql);
+                return dt;
             }
         }
     }

@@ -217,7 +217,28 @@ Ext.define('addDeviceWin', {
                         fieldLabel: '返回信息',
                         labelWidth: 70,
                         anchor: '100%'
-                    }
+                    },
+                     {
+                         xtype: 'combobox',
+                         id: 'DevicePosition',
+                         name: 'DevicePosition',
+                         fieldLabel: '开关控制位',
+                         labelWidth: 70,
+                         queryMode: 'local',
+                         displayField: 'TEXT',
+                         valueField: 'VALUE',
+                         store: new Ext.data.ArrayStore({
+                             fields: ['TEXT', 'VALUE'],
+                             data: [
+                                 ['不选择', ''],
+                                 ['一号位', 1],
+                                 ['二号位', 2],
+                                 ['三号位', 3],
+                                 ['四号位', 4]
+                             ]
+                         }),
+                         anchor: '100%'
+                     }
                 ],
                 buttonAlign: 'center',
                 buttons: [

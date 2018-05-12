@@ -168,7 +168,7 @@ function editDevice(id) {
 Ext.define('addDeviceWin', {
     extend: 'Ext.window.Window',
 
-    height: 250,
+    height: 350,
     width: 400,
     layout: {
         type: 'fit'
@@ -241,7 +241,49 @@ Ext.define('addDeviceWin', {
                         fieldLabel: '返回信息',
                         labelWidth: 70,
                         anchor: '100%'
-                    }
+                    },
+                    {
+                        xtype: 'combobox',
+                        id: 'DevicePosition',
+                        name: 'DevicePosition',
+                        fieldLabel: '开关控制位',
+                        labelWidth: 70,
+                        queryMode: 'local',
+                        displayField: 'TEXT',
+                        valueField: 'VALUE',
+                        store: new Ext.data.ArrayStore({
+                            fields: ['TEXT', 'VALUE'],
+                            data: [
+                                ['不选择', ''],
+                                ['一号位', 1],
+                                ['二号位', 2],
+                                ['三号位', 3],
+                                ['四号位', 4]
+                            ]
+                        }),
+                        anchor: '100%'
+                    },
+                     {
+                         xtype: 'textfield',
+                         name: 'SwitchName',
+                         fieldLabel: '开关名称',
+                         labelWidth: 70,
+                      //   allowBlank: false,
+                         anchor: '100%'
+                     },
+                      {
+                          xtype: 'combobox',
+                          name: 'SwitchType',
+                          fieldLabel: '开关类型',
+                       //   editable: false,
+                          labelWidth: 70,
+                          anchor: '100%',
+                          store: DeviceTypeStore,
+                          queryMode: 'local',
+                          displayField: 'TEXT',
+                          valueField: 'VALUE',
+                          value: ''
+                      }
                 ],
                 buttonAlign: 'center',
                 buttons: [

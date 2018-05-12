@@ -1109,6 +1109,105 @@ Ext.define('pjWin', {
     }
 });
 
+Ext.define('sfzWin', {
+    extend: 'Ext.window.Window',
+
+    height: 150,
+    width: 400,
+    layout: {
+        type: 'fit'
+    },
+    id: 'sfzWin',
+    closeAction: 'destroy',
+    modal: true,
+    title: '身份证授权',
+    initComponent: function () {
+        var me = this;
+        me.items = [
+            {
+                xtype: 'form',
+                id: 'sfzeForm',
+                frame: true,
+                bodyPadding: 10,
+
+                title: '',
+                items: [
+                    {
+                        xtype: 'textfield',
+                        name: 'IDCard',
+                        id: 'IDCard',
+                        fieldLabel: '身份证UUID',
+                        labelWidth: 70,
+                        allowBlank: false,
+                        anchor: '100%'
+                    }
+
+                ],
+                buttonAlign: 'center',
+                buttons: [
+                     {
+                         text: '保存',
+                         handler: function () {
+                             var form = Ext.getCmp('sfzeForm');
+                             if (form.form.isValid()) {
+                                 //取得表单中的内容
+                                 var values = Ext.getCmp('addform').form.getValues(false);
+                                 var senddata = {};
+                                 senddata.roomid = values["RoomId"];
+                                 senddata.phone = values["CellPhone"];
+                                 senddata.realname = values["RealName"];
+                                 senddata.plattype = values["PlatType"];
+                                 senddata.roomstyle = values["AuthorRoomStyle"];
+                                 senddata.earlydate = values["EarliestDate"] + " " + values["EarliestHour"] + ":00";
+                                 senddata.latestdate = values["LatestDate"] + " " + values["LatestHour"] + ":00";
+                                 senddata.livestartdate = values["LiveStartDate"] + " " + values["LiveStartHour"] + ":00";
+                                 senddata.liveenddate = values["LiveEndDate"] + " " + values["LiveEndHour"] + ":00";
+                                 if (senddata.roomstyle != 3) {
+                                     //全天与钟点房的预留开始时间与入住时间一致
+                                     senddata.earlydate = senddata.livestartdate;
+                                 }
+                                 senddata.timelong = 0;
+                                 if (senddata.roomstyle == 1)
+                                     senddata.timelong = values["LiveDays"];//天数
+                                 else if (senddata.roomstyle == 2)
+                                     senddata.timelong = values["LiveHour"];//小时数
+                                 senddata.takepowertype = values["TakepowerType"];
+                                 senddata.unlocktype = values["TakepowerType"];
+                                 senddata.takepowertype = values["UnlockType"];
+
+                                 senddata.unitprice = values["UnitPrice"];
+                                 senddata.livetotalprice = values["LiveTotalPrice"];
+                                 senddata.depositprice = values["DepositPrice"];
+                                 senddata.consumerecordtotal = values["ActualTotalPrice"];
+
+                                 senddata.IDCard = Ext.getCmp("IDCard").getValue();
+
+                                 CS('CZCLZ.AuthorizeOrderDB.SubmitAuthorizeOrder', function (retVal) {
+                                     if (retVal.status == "ok") {
+                                         Ext.MessageBox.alert("提示", "授权成功", function () {
+                                             FrameStack.popFrame();
+                                         });
+                                     }
+                                 }, CS.onError, senddata);
+
+
+                             }
+                         }
+                     },
+
+                    {
+                        text: '取消',
+                        handler: function () {
+                            this.up('window').close();
+                        }
+                    }
+                ]
+            }
+        ];
+        me.callParent(arguments);
+    }
+});
+
 Ext.onReady(function () {
     Ext.define('add', {
         extend: 'Ext.container.Viewport',
@@ -1525,6 +1624,19 @@ Ext.onReady(function () {
 
                             },
                               {
+                                  text: '身份证授权',
+                                  id: 'sfzsq',
+                                  hidden: true,
+                                  handler: function () {
+                                      var form = Ext.getCmp('addform');
+                                      if (form.form.isValid()) {
+                                          var win = new sfzWin();
+                                          win.show();
+                                      }
+                                  }
+
+                              },
+                              {
                                   text: '确认预订',
                                   id: 'qryd',
                                   hidden: true,
@@ -1780,6 +1892,7 @@ Ext.onReady(function () {
             }
             else {
                 Ext.getCmp("bc").show();
+                Ext.getCmp("sfzsq").show();
             }
         }
     }, CS.onError);

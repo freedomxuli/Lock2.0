@@ -287,7 +287,7 @@ public class HotelApplyDB
                     try
                     {
                         int flowId = Flow.SetFlow(db, HotelId.ToString(), "门店申请");
-                        Flow.SetStep(db, flowId, 1, "经济人审核", 4, "");
+                        Flow.SetStep(db, flowId, 1, "经济人审核", 28, "");
                         db.CommitTransaction();
                     }
                     catch (Exception ex)

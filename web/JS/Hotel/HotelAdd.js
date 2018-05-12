@@ -102,9 +102,11 @@ Ext.onReady(function () {
                                           {
                                               xtype: 'textfield',
                                               name: 'HotelNo',
+                                              id: 'HotelNo',
                                               margin: '10 10 10 10',
                                               fieldLabel: '宾馆编号',
                                               allowBlank: false,
+                                              readOnly: true,
                                               columnWidth: 0.5,
                                               labelWidth: 80
 
@@ -178,7 +180,16 @@ Ext.onReady(function () {
                                                   ]
                                               })
                                           },
+                                          {
+                                              xtype: 'displayfield',
+                                              id: 'sqm',
+                                              margin: '10 10 10 10',
+                                              fieldLabel: '授权码',
+                                              allowBlank: false,
+                                              columnWidth: 1,
+                                              labelWidth: 80
 
+                                          },
                                          {
                                              xtype: 'panel',
                                              id: 'map',
@@ -854,6 +865,17 @@ Ext.onReady(function () {
     initwebupload("filePicker", "fileList", 5);
 });
 
+var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+function generateMixed(n) {
+    var res = "";
+    for (var i = 0; i < n ; i++) {
+        var id = Math.ceil(Math.random() * 35);
+        res += chars[id];
+    }
+    return res;
+}
+
 function LoadingOperationBehavior() {
 
     //CS('CZCLZ.SystemDB.GetTag', function (ret) {
@@ -944,6 +966,12 @@ function initData() {
                 //Ext.getCmp("addform").items.add(df);
             }
             ///  Ext.getCmp("tagGroup").add(Items);
+            CS('CZCLZ.HotelDB.GetSQM', function (retVal) {
+                if (retVal.length > 0) {
+                    Ext.getCmp("sqm").setValue(retVal[0]["DealerAuthoriCode"]);
+                }
+            }, CS.onError);
+
             if (id != null && id != "") {
                 CS('CZCLZ.HotelDB.GetHotelInfo', function (retVal) {
                     if (retVal) {
@@ -1007,6 +1035,7 @@ function initData() {
             }
             else {
                 Ext.getCmp("map").update('<iframe src="approot/r/MapSelect.aspx?v=122" frameborder="0" scrolling="no" width="100%" height="300px"></iframe>');
+                Ext.getCmp("HotelNo").setValue(generateMixed(8));
             }
         }
     }, CS.onError, 1, id);

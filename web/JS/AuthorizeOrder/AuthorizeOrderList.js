@@ -335,6 +335,7 @@ Ext.onReady(function () {
                                                  {
                                                      xtype: 'button',
                                                      iconCls: 'add',
+                                                    // hidden:true,
                                                      text: '新增授权',
                                                      handler: function () {
                                                          FrameStack.pushFrame({

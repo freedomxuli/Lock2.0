@@ -55,7 +55,7 @@ function loadData(nPage) {
 
     var cx_mc = Ext.getCmp("cx_mc").getValue();
 
-    CS('CZCLZ.HotelDB.GetHotelList', function (retVal) {
+    CS('CZCLZ.HotelDB.GetOfflineHotelList', function (retVal) {
         store.setData({
             data: retVal.dt,
             pageSize: pageSize,
@@ -246,7 +246,6 @@ Ext.define('cleanerWin', {
                                        {
                                            xtype: 'button',
                                            iconCls: 'add',
-                                           hidden: true,
                                            text: '新增',
                                            handler: function () {
                                                var win = new addCleanerWin();
@@ -258,7 +257,7 @@ Ext.define('cleanerWin', {
                                         {
                                             xtype: 'button',
                                             iconCls: 'delete',
-                                            text: '删除',
+                                            text: '下线',
                                             handler: function () {
                                                 var idlist = [];
                                                 var grid = Ext.getCmp("cleanergrid");
@@ -266,14 +265,14 @@ Ext.define('cleanerWin', {
                                                 if (rds.length == 0) {
                                                     Ext.Msg.show({
                                                         title: '提示',
-                                                        msg: '请选择至少一条要删除的记录!',
+                                                        msg: '请选择至少一条要下线的门店!',
                                                         buttons: Ext.MessageBox.OK,
                                                         icon: Ext.MessageBox.INFO
                                                     });
                                                     return;
                                                 }
 
-                                                Ext.MessageBox.confirm('删除提示', '是否要删除数据!', function (obj) {
+                                                Ext.MessageBox.confirm('提示', '确定下线？', function (obj) {
                                                     if (obj == "yes") {
                                                         for (var n = 0, len = rds.length; n < len; n++) {
                                                             var rd = rds[n];
@@ -510,21 +509,6 @@ Ext.onReady(function () {
                                 menuDisabled: true,
                                 align: 'center',
                                 text: "创建时间"
-                            },
-
-                            {
-                                text: '操作',
-                                width: 200,
-                                align: 'center',
-                                sortable: false,
-                                menuDisabled: true,
-                                renderer: function (value, cellmeta, record, rowIndex, columnIndex, store) {
-                                    var str;
-                                    str = "<a href='#' onclick='edit(\"" + record.data.ID + "\")'>编辑</a>";
-                                    str += "|<a href='#' onclick='choseAdmin(\"" + record.data.ID + "\")'>选择管理员</a>";
-                                    str += "|<a href='#' onclick='bj(\"" + record.data.ID + "\")'>保洁管理</a>";
-                                    return str;
-                                }
                             }
 
                     ],
@@ -563,74 +547,7 @@ Ext.onReady(function () {
                                                     }
                                                 }
                                             ]
-                                        },
-                                        {
-                                            xtype: 'buttongroup',
-                                            title: '',
-                                            //hidden: true,
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    iconCls: 'add',
-                                                    text: '新增',
-
-                                                    handler: function () {
-                                                        FrameStack.pushFrame({
-                                                            url: "HotelAdd.html",
-                                                            onClose: function (ret) {
-                                                                loadData(1);
-                                                            }
-                                                        });
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            xtype: 'buttongroup',
-                                            title: '',
-                                            items: [
-                                                {
-                                                    xtype: 'button',
-                                                    iconCls: 'delete',
-                                                    text: '下线',
-                                                    handler: function () {
-                                                        var idlist = [];
-                                                        var grid = Ext.getCmp("maingrid");
-                                                        var rds = grid.getSelectionModel().getSelection();
-                                                        if (rds.length == 0) {
-                                                            Ext.Msg.show({
-                                                                title: '提示',
-                                                                msg: '请选择至少一条要下线的门店!',
-                                                                buttons: Ext.MessageBox.OK,
-                                                                icon: Ext.MessageBox.INFO
-                                                            });
-                                                            return;
-                                                        }
-
-                                                        Ext.MessageBox.confirm('提示', '确定下线!', function (obj) {
-                                                            if (obj == "yes") {
-                                                                for (var n = 0, len = rds.length; n < len; n++) {
-                                                                    var rd = rds[n];
-
-                                                                    idlist.push(rd.get("ID"));
-                                                                }
-
-                                                                CS('CZCLZ.HotelDB.DeleteHotel', function (retVal) {
-                                                                    if (retVal) {
-                                                                        loadData(1);
-                                                                    }
-                                                                }, CS.onError, idlist);
-                                                            }
-                                                            else {
-                                                                return;
-                                                            }
-                                                        });
-
-                                                    }
-                                                }
-                                            ]
                                         }
-
                                     ]
                                 },
                                 {

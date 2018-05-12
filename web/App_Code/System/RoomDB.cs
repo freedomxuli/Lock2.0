@@ -75,7 +75,7 @@ public class RoomDB
                 for (int i = 0; i < jsr.ToArray().Length; i++)
                 {
                     int ID = jsr.ToArray()[i].ToInteger();
-                    dbc.ExecuteNonQuery("delete from Lock_Room where ID=" + ID + " and UserId=" + SystemUser.CurrentUser.UserID);
+                    dbc.ExecuteNonQuery("delete from Lock_Room where ID=" + ID);
                 }
                 dbc.CommitTransaction();
                 return true;
@@ -798,6 +798,7 @@ public class RoomDB
                         int wgNum = Convert.ToInt16(dbc.ExecuteScalar("select count(*) from Lock_Device where RoomId=" + RoomId + " and DeviceType=2 "));
                         if (wgNum > 0)
                             throw new Exception("该房间已存在网关设备");
+
                     }
                     else
                     {
@@ -833,13 +834,26 @@ public class RoomDB
                 drDevice["EquipmentCon3Type"] = json2["EquipmentCon3Type"].ToString();
                 drDevice["EquipmentCon4Type"] = json2["EquipmentCon4Type"].ToString();
                 drDevice["EquipmentCon5Type"] = json2["EquipmentCon5Type"].ToString();
+                if (jsr["DevicePosition"].ToString() != "")
+                {
+                    dbc.ExecuteNonQuery("update Lock_Device set DevicePosition=null where RoomId=" + RoomId + " and DevicePosition=" + jsr["DevicePosition"].ToString());
+                    drDevice["DevicePosition"] = Convert.ToInt16(jsr["DevicePosition"].ToString());
+                    drDevice["SwitchName"] = jsr["SwitchName"].ToString();
+                    drDevice["SwitchType"] = jsr["SwitchType"].ToString();
+                }
+
                 if (ID == "")
                 {
+
                     dtDevice.Rows.Add(drDevice);
                     dbc.InsertTable(dtDevice);
                 }
                 else
                 {
+                    if (jsr["DevicePosition"].ToString() == "")
+                    {
+                        drDevice["DevicePosition"] = DBNull.Value;
+                    }
                     drDevice["ID"] = Convert.ToInt16(ID);
                     dtDevice.Rows.Add(drDevice);
                     dtDevice.Columns["ID"].ReadOnly = false;
@@ -1025,7 +1039,7 @@ public class RoomDB
                 int days_num = days.Days;
                 for (int i = 0; i <= days_num; i++)
                 {
-                    sql = "insert into Lock_RoomOtherDayPrice values(" + roomId + ",'" + jsr["StartDate"].ToDate().AddDays(i) + "','" + jsr["StartDate"].ToDate().AddDays(i) + "','" + jsr["Price"].ToSingle() + "',null,null,'" + jsr["WeekEndPrice"].ToSingle() + "','" + jsr["HourPrice"].ToSingle() + "','" + jsr["HourWeekEndPrice"].ToSingle() + "',null,'" + jsr["HourPrice2"].ToSingle() + "','" + jsr["HourWeekEndPrice2"].ToSingle() + "','" + jsr["HourPrice3"].ToSingle() + "','" + jsr["HourWeekEndPrice3"].ToSingle() + "','" + jsr["MonthRentPrice"].ToSingle() + "')";
+                    sql = "insert into Lock_RoomOtherDayPrice values(" + roomId + ",'" + jsr["StartDate"].ToDate().AddDays(i) + "','" + jsr["StartDate"].ToDate().AddDays(i) + "','" + jsr["Price"].ToSingle() + "',null,null,'" + jsr["WeekEndPrice"].ToSingle() + "','" + jsr["HourPrice"].ToSingle() + "','" + jsr["HourWeekEndPrice"].ToSingle() + "',null,'" + jsr["HourPrice2"].ToSingle() + "','" + jsr["HourWeekEndPrice2"].ToSingle() + "','" + jsr["HourPrice3"].ToSingle() + "','" + jsr["HourWeekEndPrice3"].ToSingle() + "','" + jsr["MonthRentPrice"].ToSingle() + "',0)";
                     dbc.ExecuteNonQuery(sql);
                 }
                 dbc.CommitTransaction();
