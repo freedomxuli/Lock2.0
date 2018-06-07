@@ -480,7 +480,18 @@ public class RoomDB
             parameters.Add("devicesn", jsr["DeviceSN"].ToString());
             string result = WebService.CallService(url, parameters);
             JObject json = JsonConvert.DeserializeObject(result) as JObject;
-            return new { status = json["status"].ToString(), result };
+            bool iskg = false;
+            if (json["status"].ToString() == "ok")
+            {
+                string equipmentpara = json["equipmentpara_table"].ToString();
+                JObject json2 = JsonConvert.DeserializeObject(equipmentpara.Replace("\r\n", "").Replace("[", "").Replace("]", "")) as JObject;
+                for (int i = 1; i < 6; i++)
+                {
+                    if (json2["EquipmentCon" + i + "Type"].ToString() != "无")
+                        iskg = true;
+                }
+            }
+            return new { status = json["status"].ToString(), result = result, iskg = iskg };
         }
         catch (Exception ex)
         {
@@ -902,6 +913,24 @@ public class RoomDB
             try
             {
                 string sqlStr = "select ID VALUE,TypeName TEXT from Lock_DeviceType";
+                DataTable dt = dbc.ExecuteDataTable(sqlStr);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+
+    [CSMethod("GetDeviceControlCombobox")]
+    public object GetDeviceControlCombobox()
+    {
+        using (DBConnection dbc = new DBConnection())
+        {
+            try
+            {
+                string sqlStr = "select code VALUE,name TEXT from Lock_DeviceControl";
                 DataTable dt = dbc.ExecuteDataTable(sqlStr);
                 return dt;
             }

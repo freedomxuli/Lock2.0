@@ -56,6 +56,12 @@ var DeviceTypeStore = Ext.create('Ext.data.Store', {
     ]
 });
 
+var DeviceControlStore = Ext.create('Ext.data.Store', {
+    fields: ['VALUE', 'TEXT'],
+    data: [
+    ]
+});
+
 var TypeStore = Ext.create('Ext.data.Store', {
     fields: ['VALUE', 'TEXT'],
     data: [
@@ -160,6 +166,11 @@ function editDevice(id) {
         CS('CZCLZ.RoomDB.GetRoomDeviceInfo', function (retVal) {
             var form = Ext.getCmp("addDeviceForm");
             form.form.setValues(retVal[0]);
+            if (retVal[0].DevicePosition != null) {
+                Ext.getCmp("DevicePosition").show();
+                Ext.getCmp("SwitchName").show();
+                Ext.getCmp("SwitchType").show();
+            }
         }, CS.onError, id);
     });
 }
@@ -244,6 +255,7 @@ Ext.define('addDeviceWin', {
                     },
                     {
                         xtype: 'combobox',
+                        hidden:true,
                         id: 'DevicePosition',
                         name: 'DevicePosition',
                         fieldLabel: '开关控制位',
@@ -265,6 +277,8 @@ Ext.define('addDeviceWin', {
                     },
                      {
                          xtype: 'textfield',
+                         hidden: true,
+                         id: 'SwitchName',
                          name: 'SwitchName',
                          fieldLabel: '开关名称',
                          labelWidth: 70,
@@ -273,12 +287,14 @@ Ext.define('addDeviceWin', {
                      },
                       {
                           xtype: 'combobox',
+                          hidden: true,
+                          id: 'SwitchType',
                           name: 'SwitchType',
-                          fieldLabel: '开关类型',
+                          fieldLabel: '被控对象',
                        //   editable: false,
                           labelWidth: 70,
                           anchor: '100%',
-                          store: DeviceTypeStore,
+                          store: DeviceControlStore,
                           queryMode: 'local',
                           displayField: 'TEXT',
                           valueField: 'VALUE',
@@ -299,6 +315,16 @@ Ext.define('addDeviceWin', {
                                      if (retVal.status == "ok") {
                                          Ext.MessageBox.alert("提示", "获取设备成功", function () {
                                              Ext.getCmp("CallBackData").setValue(retVal.result);
+                                             if (retVal.iskg) {
+                                                 Ext.getCmp("DevicePosition").show();
+                                                 Ext.getCmp("SwitchName").show();
+                                                 Ext.getCmp("SwitchType").show();
+                                             }
+                                             else {
+                                                 Ext.getCmp("DevicePosition").hide();
+                                                 Ext.getCmp("SwitchName").hide();
+                                                 Ext.getCmp("SwitchType").hide();
+                                             }
                                          });
                                      }
 
@@ -1273,6 +1299,12 @@ Ext.onReady(function () {
     CS('CZCLZ.RoomDB.GetDeviceTypeCombobox', function (retVal) {
         if (retVal) {
             DeviceTypeStore.loadData(retVal, true);
+        }
+    }, CS.onError);
+
+    CS('CZCLZ.RoomDB.GetDeviceControlCombobox', function (retVal) {
+        if (retVal) {
+            DeviceControlStore.loadData(retVal, true);
         }
     }, CS.onError);
 
