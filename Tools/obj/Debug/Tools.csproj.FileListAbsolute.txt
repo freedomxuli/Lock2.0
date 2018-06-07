@@ -1,5 +1,0 @@
-E:\MyProject\lockv2.0\Tools\obj\Debug\Tools.csprojResolveAssemblyReference.cache
-E:\MyProject\lockv2.0\Tools\bin\Debug\Tools.dll
-E:\MyProject\lockv2.0\Tools\bin\Debug\Tools.pdb
-E:\MyProject\lockv2.0\Tools\obj\Debug\Tools.dll
-E:\MyProject\lockv2.0\Tools\obj\Debug\Tools.pdb

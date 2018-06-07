@@ -1,4 +1,0 @@
-E:\MyProject\lockv2.0\Tools\bin\Release\Tools.dll
-E:\MyProject\lockv2.0\Tools\bin\Release\Tools.pdb
-E:\MyProject\lockv2.0\Tools\obj\Release\Tools.dll
-E:\MyProject\lockv2.0\Tools\obj\Release\Tools.pdb

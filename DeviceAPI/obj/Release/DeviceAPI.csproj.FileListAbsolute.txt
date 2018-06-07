@@ -1,6 +1,0 @@
-E:\MyProject\lockv2.0\DeviceAPI\bin\Release\DeviceAPI.dll
-E:\MyProject\lockv2.0\DeviceAPI\bin\Release\DeviceAPI.pdb
-E:\MyProject\lockv2.0\DeviceAPI\bin\Release\Newtonsoft.Json.dll
-E:\MyProject\lockv2.0\DeviceAPI\obj\Release\DeviceAPI.csprojResolveAssemblyReference.cache
-E:\MyProject\lockv2.0\DeviceAPI\obj\Release\DeviceAPI.dll
-E:\MyProject\lockv2.0\DeviceAPI\obj\Release\DeviceAPI.pdb
